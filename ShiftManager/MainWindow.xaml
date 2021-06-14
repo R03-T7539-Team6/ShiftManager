@@ -4,9 +4,59 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ShiftManager"
+        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow"
+        FontFamily="BIZ UDPGothic"
+        Height="600"
+        Width="800">
+  <Window.Resources>
+    <sys:Double x:Key="FontSize_Title">24</sys:Double>
+
+    <Style TargetType="Button">
+      <Setter Property="Padding" Value="5"/>
+      <Setter Property="Margin" Value="5"/>
+    </Style>
+  </Window.Resources>
   <Grid>
-    <TextBlock>Hello, World!</TextBlock>
+    <StackPanel
+      Background="LightGray"
+      HorizontalAlignment="Left"
+      VerticalAlignment="Top">
+      <StackPanel Orientation="Horizontal" Margin="4">
+        <Button
+          Content="≡"
+          HorizontalAlignment="Left"
+          VerticalAlignment="Center"/>
+
+        <TextBlock
+          Text="Shift Manager"
+          VerticalAlignment="Center"
+          Padding="5"
+          FontSize="{StaticResource FontSize_Title}"/>
+      </StackPanel>
+
+      <!--ページ選択用ボタン群表示用-->
+      <StackPanel>
+        <Button Content="HOME"/>
+        <Button Content="シフト希望登録"/>
+        <Button Content="予定シフト表示"/>
+        <Button Content="勤務実績表示"/>
+        <Button Content="シフト印刷"/>
+        <Button Content="ユーザ設定"/>
+
+        <Line Stroke="Black"
+              StrokeThickness="2"
+              Margin="0,5"
+              X2="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualWidth}"/>
+
+        <!--#region 管理者用ボタン群  権限が無いなら表示しない-->
+        <Button Content="予定シフト作成"/>
+        <Button Content="新規従業員追加"/>
+        <Button Content="データ管理"/>
+        <Button Content="勤怠登録モード"/>
+        <!--#endregion-->
+      </StackPanel>
+    </StackPanel>
   </Grid>
 </Window>

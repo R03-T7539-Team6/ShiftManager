@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31320.298
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShiftManager", "ShiftManager\ShiftManager.csproj", "{B4BFEA59-B7CB-42F6-ADC3-8E6E5A3FADC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager", "ShiftManager\ShiftManager.csproj", "{B4BFEA59-B7CB-42F6-ADC3-8E6E5A3FADC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShiftManager.DataClasses", "ShiftManager.DataClasses\ShiftManager.DataClasses.csproj", "{9448511A-91C2-49E1-8E10-403A3ED3B59C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShiftManager.Communication", "ShiftManager.Communication\ShiftManager.Communication.csproj", "{2EA56783-983F-4749-8335-C4DDF4E03E3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShiftManager.PrintHelper", "ShiftManager.PrintHelper\ShiftManager.PrintHelper.csproj", "{F17476AD-9C40-474A-87A4-911B92F127EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{B4BFEA59-B7CB-42F6-ADC3-8E6E5A3FADC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4BFEA59-B7CB-42F6-ADC3-8E6E5A3FADC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4BFEA59-B7CB-42F6-ADC3-8E6E5A3FADC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9448511A-91C2-49E1-8E10-403A3ED3B59C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9448511A-91C2-49E1-8E10-403A3ED3B59C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9448511A-91C2-49E1-8E10-403A3ED3B59C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9448511A-91C2-49E1-8E10-403A3ED3B59C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EA56783-983F-4749-8335-C4DDF4E03E3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EA56783-983F-4749-8335-C4DDF4E03E3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EA56783-983F-4749-8335-C4DDF4E03E3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EA56783-983F-4749-8335-C4DDF4E03E3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F17476AD-9C40-474A-87A4-911B92F127EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F17476AD-9C40-474A-87A4-911B92F127EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F17476AD-9C40-474A-87A4-911B92F127EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F17476AD-9C40-474A-87A4-911B92F127EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
