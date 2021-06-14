@@ -6,4 +6,8 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ShiftManager.DataClasses\ShiftManager.DataClasses.csproj" />
+  </ItemGroup>
+
 </Project>
