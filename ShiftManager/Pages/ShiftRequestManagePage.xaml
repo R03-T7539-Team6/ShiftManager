@@ -3,12 +3,18 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:ShiftManager.Pages"
+      xmlns:MyCtrls="clr-namespace:ShiftManager.Controls"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ShiftRequestManagePage">
 
   <Grid>
-
+    <TextBlock>Shift Request Manage Page</TextBlock>
+    <StackPanel Margin="10,50">
+      <!--実際は動的に配置する-->
+      <MyCtrls:ShiftEditorControl/>
+      <MyCtrls:ShiftEditorControl/>
+      <MyCtrls:ShiftEditorControl/>
+    </StackPanel>
   </Grid>
 </Page>

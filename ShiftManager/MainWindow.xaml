@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ShiftManager"
+        xmlns:pages="clr-namespace:ShiftManager.Pages"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+        d:DataContext="{x:Type local:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="MainWindow"
         FontFamily="BIZ UDPGothic"
@@ -19,31 +21,60 @@
     </Style>
   </Window.Resources>
   <Grid>
-    <StackPanel
+    <Grid.ColumnDefinitions>
+      <!--メニューのGridをCollapsedにすると, Frame部か最大幅になります-->
+      <ColumnDefinition Width="auto"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="56"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+
+    <Frame
+      x:Name="MainFrame"
+      NavigationUIVisibility="Hidden"
+      Grid.Row="1"
+      Grid.Column="1"/>
+
+    <Grid Grid.Row="0"
+          Grid.Column="0"
+          Grid.ColumnSpan="2"
+          Background="DarkGray">
+
+      <Grid HorizontalAlignment="Right" Margin="5">
+        <TextBlock>
+          <TextBlock.Text>
+            <MultiBinding StringFormat="ようこそ {0} {1} さん!">
+              <Binding Path="UserName.Value.LastName"/>
+              <Binding Path="UserName.Value.FirstName"/>
+            </MultiBinding>
+          </TextBlock.Text>
+        </TextBlock>
+
+        <Button Content="ログアウト"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"/>
+      </Grid>
+    </Grid>
+
+    <!--ページ選択用ボタン群表示用-->
+    <Grid
+      Width="{Binding ElementName=TitleStackPanel, Path=ActualWidth}"
+      Grid.Row="0"
+      Grid.Column="0"
+      Grid.RowSpan="2"
       Background="LightGray"
       HorizontalAlignment="Left"
-      VerticalAlignment="Top">
-      <StackPanel Orientation="Horizontal" Margin="4">
-        <Button
-          Content="≡"
-          HorizontalAlignment="Left"
-          VerticalAlignment="Center"/>
+      VerticalAlignment="Stretch">
 
-        <TextBlock
-          Text="Shift Manager"
-          VerticalAlignment="Center"
-          Padding="5"
-          FontSize="{StaticResource FontSize_Title}"/>
-      </StackPanel>
-
-      <!--ページ選択用ボタン群表示用-->
-      <StackPanel>
-        <Button Content="HOME"/>
-        <Button Content="シフト希望登録"/>
-        <Button Content="予定シフト表示"/>
-        <Button Content="勤務実績表示"/>
-        <Button Content="シフト印刷"/>
-        <Button Content="ユーザ設定"/>
+      <StackPanel Margin="0,60,0,0">
+        <Button Content="HOME" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Null}"/>
+        <Button Content="シフト希望登録" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftRequestManagePage}"/>
+        <Button Content="予定シフト表示" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ScheduledShiftCheckPage}"/>
+        <Button Content="勤務実績表示" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkLogCheckPage}"/>
+        <Button Content="シフト印刷" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftPrintPage}"/>
+        <Button Content="ユーザ設定" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:UserSettingPage}"/>
 
         <Line Stroke="Black"
               StrokeThickness="2"
@@ -51,12 +82,34 @@
               X2="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualWidth}"/>
 
         <!--#region 管理者用ボタン群  権限が無いなら表示しない-->
-        <Button Content="予定シフト作成"/>
-        <Button Content="新規従業員追加"/>
-        <Button Content="データ管理"/>
-        <Button Content="勤怠登録モード"/>
+        <Button Content="予定シフト作成" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ScheduledShiftManagePage}"/>
+        <Button Content="新規従業員追加" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:SignUpPage}"/>
+        <Button Content="データ管理" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:DataManagePage}"/>
+        <Button Content="勤怠登録モード" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkTimeRecordPage}"/>
         <!--#endregion-->
       </StackPanel>
+
+    </Grid>
+    
+    <StackPanel
+      Name="TitleStackPanel"
+      Grid.Row="0"
+      Grid.Column="0"
+      Grid.ColumnSpan="2"
+      HorizontalAlignment="Left"
+      Orientation="Horizontal">
+      <Button
+        Content="≡"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Center"/>
+
+      <TextBlock
+        Text="Shift Manager"
+        VerticalAlignment="Center"
+        Margin="4"
+        Padding="5"
+        FontSize="{StaticResource FontSize_Title}"/>
     </StackPanel>
+
   </Grid>
 </Window>
