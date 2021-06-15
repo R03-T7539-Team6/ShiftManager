@@ -5,8 +5,187 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ShiftManager.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-  <Grid>
+             FontSize="14"
+             MaxWidth="800"
+             MaxHeight="600"
+             d:DesignHeight="480" d:DesignWidth="560">
+  <UserControl.Resources>
+    <Style TargetType="TextBlock">
+      <Setter Property="TextAlignment" Value="Right"/>
+      <Setter Property="HorizontalAlignment" Value="Right"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="5"/>
+    </Style>
+    <Style TargetType="TextBox">
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="5"/>
+      <Setter Property="Padding" Value="2,4"/>
+    </Style>
+    <Style TargetType="PasswordBox">
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="5"/>
+      <Setter Property="Padding" Value="2,4"/>
+    </Style>
+    <Style TargetType="ComboBox">
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="5"/>
+    </Style>
+    <Style TargetType="Button">
+      <Setter Property="Margin" Value="10"/>
+    </Style>
+  </UserControl.Resources>
+  
+  <Grid Background="WhiteSmoke">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="1*"/>
+      <ColumnDefinition Width="2*"/>
+      <ColumnDefinition Width="1*"/>
+      <ColumnDefinition Width="2*"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <!--ログインID-->
+      <RowDefinition Height="*"/>
+      
+      <!--氏名-->
+      <RowDefinition Height="*"/>
+      
+      <!--Password-->
+      <RowDefinition Height="*"/>
+      
+      <!--Password Check-->
+      <RowDefinition Height="*"/>
+      
+      <!--UserGroup-->
+      <RowDefinition Height="*"/>
+      
+      <!--UserState-->
+      <RowDefinition Height="*"/>
+      
+      <!--通知設定-->
+      <RowDefinition Height="*"/>
+      
+      <!--印刷/保存-->
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    
+    <TextBlock
+      Grid.Column="0"
+      Text="ユーザID&#xa;(ログインID)"/>
+    <TextBox
+      IsEnabled="{Binding CanEditUserID, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      Grid.Column="1"
+      Grid.ColumnSpan="2"/>
 
+    <TextBlock
+      Grid.Column="0"
+      Grid.Row="1"
+      Text="苗字&#xa;(Last Name)"/>
+    <TextBox
+      IsEnabled="{Binding CanEditUserName, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      Grid.Column="1"
+      Grid.Row="1"/>
+
+    <TextBlock
+      Grid.Column="2"
+      Grid.Row="1"
+      Text="名前&#xa;(First Name)"/>
+    <TextBox
+      IsEnabled="{Binding CanEditUserName, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      Grid.Column="3"
+      Grid.Row="1"/>
+
+    <TextBlock
+      Grid.Column="0"
+      Grid.Row="2"
+      Text="パスワード"/>
+    <!--MaxLengthは適宜変更すること-->
+    <PasswordBox
+      IsEnabled="{Binding CanEditPassword, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      MaxLength="32"
+      Grid.Row="2"
+      Grid.Column="1"
+      Grid.ColumnSpan="2"/>
+    <StackPanel
+      Grid.Row="2"
+      Grid.Column="3">
+      <Button
+        Margin="4"
+        Padding="4"
+        Content="パスワード自動生成"/>
+      <local:PasswordStrengthVisualizerControl/>
+    </StackPanel>
+    
+    <TextBlock
+      Grid.Column="0"
+      Grid.Row="3"
+      Text="パスワード&#xa;再入力"/>
+    <!--MaxLengthは適宜変更すること-->
+    <PasswordBox
+      IsEnabled="{Binding CanEditPassword, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      MaxLength="32"
+      Grid.Row="3"
+      Grid.Column="1"
+      Grid.ColumnSpan="2"/>
+    <TextBlock
+      Foreground="Red"
+      HorizontalAlignment="Left"
+      TextAlignment="Left"
+      Grid.Column="3"
+      Grid.Row="3"
+      Text="パスワードが&#xa;一致しません"/>
+
+
+    <TextBlock
+      Grid.Column="0"
+      Grid.Row="4"
+      Text="UserGroup"/>
+    <ComboBox
+      IsEnabled="{Binding CanEditUserGroup, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      Grid.Column="1"
+      Grid.Row="4"/>
+    
+    <TextBlock
+      Grid.Column="0"
+      Grid.Row="5"
+      Text="UserState"/>
+    <ComboBox
+      IsEnabled="{Binding CanEditUserState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      Grid.Column="1"
+      Grid.Row="5"/>
+
+    <Button
+      IsEnabled="{Binding CanEditNotificationSetting, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      Content="通知設定"
+      Grid.Column="1"
+      Grid.Row="6"/>
+    <TextBlock
+      HorizontalAlignment="Left"
+      Grid.Column="2"
+      Grid.ColumnSpan="2"
+      Grid.Row="6"
+      Text="設定されています"/>
+
+    <Button
+      IsEnabled="{Binding CanPrintSettings, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      Content="印刷"
+      Grid.Column="0"
+      Grid.Row="7"/>
+    <Button
+      Content="変更破棄"
+      IsCancel="True"
+      Grid.Column="2"
+      Grid.Row="7"/>
+    <Button
+      IsEnabled="{Binding CanSaveSettings, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      Content="保存"
+      IsDefault="True"
+      Grid.Column="3"
+      Grid.Row="7"/>
+
+    <Grid.BitmapEffect>
+      <DropShadowBitmapEffect/>
+    </Grid.BitmapEffect>
   </Grid>
 </UserControl>
