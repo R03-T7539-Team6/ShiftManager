@@ -47,7 +47,6 @@
               Grid.Column="3"
               Content="[88/88] 01:23 ~ 12:34"/>
             <Popup
-              IsOpen="True"
               AllowsTransparency="True"
               PopupAnimation="Fade"
               StaysOpen="False"
