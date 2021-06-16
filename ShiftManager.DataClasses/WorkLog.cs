@@ -6,4 +6,10 @@ namespace ShiftManager.DataClasses
   public record WorkLog(UserID UserID, SortedDictionary<DateTime, SingleWorkLog> WorkLogDictionary);
 
   public record SingleWorkLog(DateTime AttendanceTime, DateTime LeavingTime, Dictionary<DateTime, int> BreakTimeDictionary);
+
+  public interface IWorkLog
+  {
+    UserID UserID { get; }
+    SortedDictionary<DateTime, SingleWorkLog> WorkLogDictionary { get; }
+  }
 }
