@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace ShiftManager.DataClasses
 {
-  public record UserSetting(UserID UserID, NotificationPublishTimings NotificationPublishTiming, List<ClientData> ClientDataList);
+  public record UserSetting(UserID UserID, NotificationPublishTimings NotificationPublishTiming, List<ClientData> ClientDataList) : IUserSetting;
 
-  public record ClientData(string Name, string EndPoint, string UserPublicKey, string UserAuthToken);
+  public record ClientData(string Name, string EndPoint, string UserPublicKey, string UserAuthToken) : IClientData;
 
   [Flags]
   public enum NotificationPublishTimings
@@ -28,5 +28,19 @@ namespace ShiftManager.DataClasses
     SameDay_9 = 1 << 15,
     SameDay_15 = 1 << 16,
     SameDay_21 = 1 << 17,
+  }
+
+  public interface IUserSetting
+  {
+    UserID UserID { get; }
+    NotificationPublishTimings NotificationPublishTiming { get; }
+    List<ClientData> ClientDataList { get; }
+  }
+  public interface IClientData
+  {
+    string Name { get; }
+    string EndPoint { get; }
+    string UserPublicKey { get; }
+    string UserAuthToken { get; }
   }
 }
