@@ -3,123 +3,18 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:local="clr-namespace:ShiftManager.Controls">
 
-  <Style TargetType="Button">
-    <Setter Property="Margin" Value="4"/>
-    <Setter Property="Padding" Value="4"/>
-  </Style>
-  
   <Style TargetType="{x:Type local:ShiftEditorControl}">
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type local:ShiftEditorControl}">
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="auto"/>
-              <ColumnDefinition Width="auto"/>
-              <ColumnDefinition Width="auto"/>
-              <ColumnDefinition Width="auto"/>
-              <ColumnDefinition Width="*"/>
-              <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock
-              Grid.Column="0"
-              Margin="4"
-              Padding="4"
-              Text="文字列表示"/>
-
-            <!--出勤時刻-->
-            <TextBox
-              Grid.Column="1"
-              Margin="4"
-              Padding="4"
-              Text="00:00"/>
-
-            <!--退勤時刻-->
-            <TextBox
-              Grid.Column="2"
-              Margin="4"
-              Padding="4"
-              Text="23:59"/>
-
-            <!--休憩時刻-->
-            <Button
-              x:Name="BreakTimePopupOpenButton"
-              Grid.Column="3"
-              Content="[88/88] 01:23 ~ 12:34"/>
-            <Popup
-              AllowsTransparency="True"
-              PopupAnimation="Fade"
-              StaysOpen="False"
-              PlacementTarget="{Binding ElementName=BreakTimePopupOpenButton}">
-              <Border
-                BorderThickness="1"
-                BorderBrush="Black">
-                <Grid Background="White">
-                  <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                  </Grid.RowDefinitions>
-                  <StackPanel
-                    Margin="4"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Grid.Row="0">
-                    <Button
-                      Content="追加"/>
-                    <Button
-                      Content="削除"/>
-                  </StackPanel>
-
-                  <ListView
-                    Margin="10"
-                    Grid.Row="1"
-                    MaxHeight="100">
-                    <ListView.View>
-                      <GridView>
-                        <GridViewColumn Header="No"/>
-                        <GridViewColumn Header="休入">
-                          <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                              <TextBox Text="00:00"/>
-                            </DataTemplate>
-                          </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="休出">
-                          <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                              <TextBox Text="00:00"/>
-                            </DataTemplate>
-                          </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="時間">
-                          <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                              <TextBox Text="00:00"/>
-                            </DataTemplate>
-                          </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                      </GridView>
-                    </ListView.View>
-                  </ListView>
-                </Grid>
-              </Border>
-            </Popup>
-            
-            <Rectangle
-              Grid.Column="4"
-              Margin="4"
-              Fill="Aqua"/>
-            
-            <TextBlock
-              Grid.Column="5"
-              Margin="4"
-              Padding="4"
-              Text="12:48"/>
-          </Grid>
+          <Border
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}">
+          </Border>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
   </Style>
 
-  
 </ResourceDictionary>

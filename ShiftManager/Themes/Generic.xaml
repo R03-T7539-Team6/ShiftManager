@@ -5,7 +5,5 @@
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="/ShiftManager;component/Controls/ShiftEditorControl.xaml"/>
-    <ResourceDictionary Source="/ShiftManager;component/Controls/PasswordStrengthVisualizerControl.xaml"/>
   </ResourceDictionary.MergedDictionaries>
-
 </ResourceDictionary>
