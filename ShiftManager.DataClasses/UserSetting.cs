@@ -1,11 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+
+using AutoNotify;
 
 namespace ShiftManager.DataClasses
 {
-  public record UserSetting(UserID UserID, NotificationPublishTimings NotificationPublishTiming, List<ClientData> ClientDataList) : IUserSetting;
+  public record UserSetting(IUserID UserID, NotificationPublishTimings NotificationPublishTiming, List<IClientData> ClientDataList) : IUserSetting;
 
   public record ClientData(string Name, string EndPoint, string UserPublicKey, string UserAuthToken) : IClientData;
+
+  public partial class UserSetting_NotifyPropertyChanged : IUserSetting, INotifyPropertyChanged
+  {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    [AutoNotify]
+    private IUserID _UserID;
+    [AutoNotify]
+    private NotificationPublishTimings _NotificationPublishTiming;
+    [AutoNotify]
+    private List<IClientData> _ClientDataList;
+  }
+
+  public partial class ClientData_NotifyPropertyChanged : IClientData, INotifyPropertyChanged
+  {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    [AutoNotify]
+    private string _Name;
+    [AutoNotify]
+    private string _EndPoint;
+    [AutoNotify]
+    private string _UserPublicKey;
+    [AutoNotify]
+    private string _UserAuthToken;
+  }
 
   [Flags]
   public enum NotificationPublishTimings
@@ -32,9 +61,9 @@ namespace ShiftManager.DataClasses
 
   public interface IUserSetting
   {
-    UserID UserID { get; }
+    IUserID UserID { get; }
     NotificationPublishTimings NotificationPublishTiming { get; }
-    List<ClientData> ClientDataList { get; }
+    List<IClientData> ClientDataList { get; }
   }
   public interface IClientData
   {

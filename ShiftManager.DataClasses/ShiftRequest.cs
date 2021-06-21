@@ -1,14 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+
+using AutoNotify;
 
 namespace ShiftManager.DataClasses
 {
-  public record ShiftRequest(UserID UserID, DateTime LastUpdate, Dictionary<DateTime, SingleShiftData> RequestsDictionary) : IShiftRequest;
+  public record ShiftRequest(IUserID UserID, DateTime LastUpdate, Dictionary<DateTime, ISingleShiftData> RequestsDictionary) : IShiftRequest;
+
+  public partial class ShiftRequest_NotifyPropertuChanged : IShiftRequest, INotifyPropertyChanged
+  {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    [AutoNotify]
+    private IUserID _UserID;
+    [AutoNotify]
+    private DateTime _LastUpdate;
+    [AutoNotify]
+    private Dictionary<DateTime, ISingleShiftData> _RequestsDictionary;
+  }
 
   public interface IShiftRequest
   {
-    UserID UserID { get; }
+    IUserID UserID { get; }
     DateTime LastUpdate { get; }
-    Dictionary<DateTime, SingleShiftData> RequestsDictionary { get; }
+    Dictionary<DateTime, ISingleShiftData> RequestsDictionary { get; }
   }
 }
