@@ -7,7 +7,7 @@ using AutoNotify;
 namespace ShiftManager.DataClasses
 {
   public record StoreID(string Value) : IStoreID;
-  public record StoreData(StoreID StoreID, Dictionary<UserID,UserData> UserDataDictionary, Dictionary<UserID, ShiftRequest> ShiftRequestsDictionary, Dictionary<DateTime, ScheduledShift> ScheduledShiftDictionary) : IStoreData;
+  public record StoreData(IStoreID StoreID, Dictionary<IUserID, IUserData> UserDataDictionary, Dictionary<IUserID, IShiftRequest> ShiftRequestsDictionary, Dictionary<DateTime, IScheduledShift> ScheduledShiftDictionary) : IStoreData;
 
   public partial class StoreID_NotifyPropertyChanged : IStoreID, INotifyPropertyChanged
   {
@@ -22,13 +22,13 @@ namespace ShiftManager.DataClasses
     public event PropertyChangedEventHandler PropertyChanged;
 
     [AutoNotify]
-    private StoreID _StoreID;
+    private IStoreID _StoreID;
     [AutoNotify]
-    private Dictionary<UserID, UserData> _UserDataDictionary;
+    private Dictionary<IUserID, IUserData> _UserDataDictionary;
     [AutoNotify]
-    private Dictionary<UserID, ShiftRequest> _ShiftRequestsDictionary;
+    private Dictionary<IUserID, IShiftRequest> _ShiftRequestsDictionary;
     [AutoNotify]
-    private Dictionary<DateTime, ScheduledShift> _ScheduledShiftDictionary;
+    private Dictionary<DateTime, IScheduledShift> _ScheduledShiftDictionary;
   }
 
   public interface IStoreID
@@ -38,9 +38,9 @@ namespace ShiftManager.DataClasses
 
   public interface IStoreData
   {
-    StoreID StoreID { get; }
-    Dictionary<UserID, UserData> UserDataDictionary { get; }
-    Dictionary<UserID, ShiftRequest> ShiftRequestsDictionary { get; }
-    Dictionary<DateTime, ScheduledShift> ScheduledShiftDictionary { get; }
+    IStoreID StoreID { get; }
+    Dictionary<IUserID, IUserData> UserDataDictionary { get; }
+    Dictionary<IUserID, IShiftRequest> ShiftRequestsDictionary { get; }
+    Dictionary<DateTime, IScheduledShift> ScheduledShiftDictionary { get; }
   }
 }

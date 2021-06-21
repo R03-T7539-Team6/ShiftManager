@@ -6,7 +6,7 @@ using AutoNotify;
 
 namespace ShiftManager.DataClasses
 {
-  public record ScheduledShift(DateTime TargetDate, DateTime StartOfSchedule, DateTime EndOfSchedule, ShiftSchedulingState SchedulingState, Dictionary<UserID, SingleShiftData> ShiftDictionary, List<int> RequiredWorkerCountList) : IScheduledShift;
+  public record ScheduledShift(DateTime TargetDate, DateTime StartOfSchedule, DateTime EndOfSchedule, ShiftSchedulingState SchedulingState, Dictionary<IUserID, ISingleShiftData> ShiftDictionary, List<int> RequiredWorkerCountList) : IScheduledShift;
 
   public partial class ScheduledShift_NotifyPropertyChanged : IScheduledShift, INotifyPropertyChanged
   {
@@ -20,7 +20,7 @@ namespace ShiftManager.DataClasses
     [AutoNotify]
     private ShiftSchedulingState _SchedulingState;
     [AutoNotify]
-    private Dictionary<UserID, SingleShiftData> _ShiftDictionary;
+    private Dictionary<IUserID, ISingleShiftData> _ShiftDictionary;
     [AutoNotify]
     private List<int> _RequiredWorkerCountList;
 
@@ -40,7 +40,7 @@ namespace ShiftManager.DataClasses
     DateTime StartOfSchedule { get; }
     DateTime EndOfSchedule { get; }
     ShiftSchedulingState SchedulingState { get; }
-    Dictionary<UserID, SingleShiftData> ShiftDictionary { get; }
+    Dictionary<IUserID, ISingleShiftData> ShiftDictionary { get; }
     List<int> RequiredWorkerCountList { get; }
   }
 }

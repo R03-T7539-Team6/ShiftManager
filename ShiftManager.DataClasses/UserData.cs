@@ -6,7 +6,7 @@ namespace ShiftManager.DataClasses
 {
 	#region Records
 	public record UserID(string Value) : IUserID;
-  public record UserData(UserID UserID, HashedPassword HashedPassword, NameData FullName, UserGroup UserGroup, UserState UserState, WorkLog WorkLog, UserSetting UserSetting) : IUserData;
+  public record UserData(IUserID UserID, IHashedPassword HashedPassword, INameData FullName, UserGroup UserGroup, UserState UserState, IWorkLog WorkLog, IUserSetting UserSetting) : IUserData;
 
   public record HashedPassword(string Hash, string Salt, int StretchCount) : IHashedPassword;
 
@@ -28,19 +28,19 @@ namespace ShiftManager.DataClasses
     public event PropertyChangedEventHandler PropertyChanged;
 
     [AutoNotify]
-    private UserID _UserID;
+    private IUserID _UserID;
     [AutoNotify]
-    private HashedPassword _HashedPassword;
+    private IHashedPassword _HashedPassword;
     [AutoNotify]
-    private NameData _FullName;
+    private INameData _FullName;
     [AutoNotify]
     private UserGroup _UserGroup;
     [AutoNotify]
     private UserState _UserState;
     [AutoNotify]
-    private WorkLog _WorkLog;
+    private IWorkLog _WorkLog;
     [AutoNotify]
-    private UserSetting _UserSetting;
+    private IUserSetting _UserSetting;
   }
 
   public partial class HashedPassword_NotifyPropertyChanged : IHashedPassword, INotifyPropertyChanged
@@ -114,13 +114,13 @@ namespace ShiftManager.DataClasses
 
   public interface IUserData
   {
-    UserID UserID { get; }
-    HashedPassword HashedPassword { get; }
-    NameData FullName { get; }
+    IUserID UserID { get; }
+    IHashedPassword HashedPassword { get; }
+    INameData FullName { get; }
     UserGroup UserGroup { get; }
     UserState UserState { get; }
-    WorkLog WorkLog { get; }
-    UserSetting UserSetting { get; }
+    IWorkLog WorkLog { get; }
+    IUserSetting UserSetting { get; }
   }
 
   public interface IHashedPassword

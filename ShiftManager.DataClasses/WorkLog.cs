@@ -6,7 +6,7 @@ using AutoNotify;
 
 namespace ShiftManager.DataClasses
 {
-  public record WorkLog(UserID UserID, SortedDictionary<DateTime, SingleWorkLog> WorkLogDictionary) : IWorkLog;
+  public record WorkLog(IUserID UserID, SortedDictionary<DateTime, ISingleWorkLog> WorkLogDictionary) : IWorkLog;
 
   public record SingleWorkLog(DateTime AttendanceTime, DateTime LeavingTime, Dictionary<DateTime, int> BreakTimeDictionary) : ISingleWorkLog;
 
@@ -15,9 +15,9 @@ namespace ShiftManager.DataClasses
     public event PropertyChangedEventHandler PropertyChanged;
 
     [AutoNotify]
-    private UserID _UserID;
+    private IUserID _UserID;
     [AutoNotify]
-    private SortedDictionary<DateTime, SingleWorkLog> _WorkLogDictionary;
+    private SortedDictionary<DateTime, ISingleWorkLog> _WorkLogDictionary;
   }
 
   public partial class SingleWorkLog_NoifyPropertyChanged : ISingleWorkLog, INotifyPropertyChanged
@@ -34,8 +34,8 @@ namespace ShiftManager.DataClasses
 
   public interface IWorkLog
   {
-    UserID UserID { get; }
-    SortedDictionary<DateTime, SingleWorkLog> WorkLogDictionary { get; }
+    IUserID UserID { get; }
+    SortedDictionary<DateTime, ISingleWorkLog> WorkLogDictionary { get; }
   }
 
   public interface ISingleWorkLog
