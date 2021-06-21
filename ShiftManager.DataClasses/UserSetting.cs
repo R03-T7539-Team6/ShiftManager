@@ -1,11 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+
+using AutoNotify;
 
 namespace ShiftManager.DataClasses
 {
   public record UserSetting(UserID UserID, NotificationPublishTimings NotificationPublishTiming, List<ClientData> ClientDataList) : IUserSetting;
 
   public record ClientData(string Name, string EndPoint, string UserPublicKey, string UserAuthToken) : IClientData;
+
+  public partial class UserSetting_NotifyPropertyChanged : IUserSetting, INotifyPropertyChanged
+  {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    [AutoNotify]
+    private UserID _UserID;
+    [AutoNotify]
+    private NotificationPublishTimings _NotificationPublishTiming;
+    [AutoNotify]
+    private List<ClientData> _ClientDataList;
+  }
+
+  public partial class ClientData_NotifyPropertyChanged : IClientData, INotifyPropertyChanged
+  {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    [AutoNotify]
+    private string _Name;
+    [AutoNotify]
+    private string _EndPoint;
+    [AutoNotify]
+    private string _UserPublicKey;
+    [AutoNotify]
+    private string _UserAuthToken;
+  }
 
   [Flags]
   public enum NotificationPublishTimings

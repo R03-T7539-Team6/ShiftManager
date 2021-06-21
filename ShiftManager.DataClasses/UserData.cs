@@ -1,13 +1,72 @@
-﻿namespace ShiftManager.DataClasses
+﻿using System.ComponentModel;
+
+using AutoNotify;
+
+namespace ShiftManager.DataClasses
 {
-  public record UserID(string Value) : IUserID;
+	#region Records
+	public record UserID(string Value) : IUserID;
   public record UserData(UserID UserID, HashedPassword HashedPassword, NameData FullName, UserGroup UserGroup, UserState UserState, WorkLog WorkLog, UserSetting UserSetting) : IUserData;
 
   public record HashedPassword(string Hash, string Salt, int StretchCount) : IHashedPassword;
 
   /// <summary>氏名情報 (FirstName:名前, LastName:苗字)</summary>
   public record NameData(string FirstName, string LastName) : INameData;
+  #endregion
 
+  #region NotifyPropertuChanged Classes
+  public partial class UserID_NotifyPropertyChanged : IUserID, INotifyPropertyChanged
+  {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    [AutoNotify]
+    private string _Value;
+  }
+
+  public partial class UserData_NotifyPropertyChanged : IUserData, INotifyPropertyChanged
+  {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    [AutoNotify]
+    private UserID _UserID;
+    [AutoNotify]
+    private HashedPassword _HashedPassword;
+    [AutoNotify]
+    private NameData _FullName;
+    [AutoNotify]
+    private UserGroup _UserGroup;
+    [AutoNotify]
+    private UserState _UserState;
+    [AutoNotify]
+    private WorkLog _WorkLog;
+    [AutoNotify]
+    private UserSetting _UserSetting;
+  }
+
+  public partial class HashedPassword_NotifyPropertyChanged : IHashedPassword, INotifyPropertyChanged
+  {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    [AutoNotify]
+    private string _Hash;
+    [AutoNotify]
+    private string _Salt;
+    [AutoNotify]
+    private int _StretchCount;
+  }
+
+  public partial class NameData_PropertyChanged : INameData, INotifyPropertyChanged
+  {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    [AutoNotify]
+    private string _FirstName;
+    [AutoNotify]
+    private string _LastName;
+  }
+  #endregion
+
+  #region enums
   /// <summary>ユーザの種別を表す</summary>
   public enum UserGroup
   {
@@ -45,8 +104,10 @@
     /// <summary>その他</summary>
     Others
   }
+	#endregion
 
-  public interface IUserID
+	#region interfaces
+	public interface IUserID
   {
     string Value { get; }
   }
@@ -74,4 +135,5 @@
     string FirstName { get; }
     string LastName { get; }
   }
+	#endregion
 }

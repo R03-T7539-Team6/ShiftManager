@@ -1,10 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+
+using AutoNotify;
 
 namespace ShiftManager.DataClasses
 {
   /// <summary>勤務予定/実績用クラス</summary>
   public record SingleShiftData(UserID UserID, DateTime WorkDate, bool IsPaidHoliday, DateTime AttendanceTime, DateTime LeavingTime, Dictionary<DateTime, int> BreakTimeDictionary) : ISingleShiftData;
+
+  public partial class SingleShiftData_NotifyPropertuChanged : ISingleShiftData, INotifyPropertyChanged
+  {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    [AutoNotify]
+    private UserID _UserID;
+    [AutoNotify]
+    private DateTime _WorkDate;
+    [AutoNotify]
+    private bool _IsPaidHoliday;
+    [AutoNotify]
+    private DateTime _AttendanceTime;
+    [AutoNotify]
+    private DateTime _LeavingTime;
+    [AutoNotify]
+    private Dictionary<DateTime, int> _BreakTimeDictionary;
+  }
 
   public interface ISingleShiftData
   {
