@@ -10,7 +10,7 @@ namespace ShiftManager.Communication
   {
     //自身が所属する店舗に対してのみ操作可能
 
-    Task<ApiResult<bool>> GetIsScheduledShiftFinalVersionAsync();
+    Task<ApiResult> GetIsScheduledShiftFinalVersionAsync();
     Task<ApiResult<UserData>> GetUserDataByIDAsync(IUserID userID);
     Task<ApiResult> SignUpAsync(IUserData userData);
     Task<ApiResult<ImmutableArray<UserData>>> GetAllUserAsync();
@@ -52,7 +52,7 @@ namespace ShiftManager.Communication
       throw new NotImplementedException();
     }
 
-    public Task<ApiResult<bool>> GetIsScheduledShiftFinalVersionAsync()
+    public Task<ApiResult> GetIsScheduledShiftFinalVersionAsync()
     {
       throw new NotImplementedException();
     }
