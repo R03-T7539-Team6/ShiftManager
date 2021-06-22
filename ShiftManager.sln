@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.Communication"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.PrintHelper", "ShiftManager.PrintHelper\ShiftManager.PrintHelper.csproj", "{F17476AD-9C40-474A-87A4-911B92F127EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator", "RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator\RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator.csproj", "{E032B77C-2AE3-43D5-AF20-18D411A4FFEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator", "RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator\RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator.csproj", "{E032B77C-2AE3-43D5-AF20-18D411A4FFEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShiftManager.Communication.Test", "ShiftManager.Communication.Test\ShiftManager.Communication.Test.csproj", "{B7845FED-D7F2-4B63-9965-60BAB9F3AF8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{E032B77C-2AE3-43D5-AF20-18D411A4FFEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E032B77C-2AE3-43D5-AF20-18D411A4FFEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E032B77C-2AE3-43D5-AF20-18D411A4FFEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7845FED-D7F2-4B63-9965-60BAB9F3AF8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7845FED-D7F2-4B63-9965-60BAB9F3AF8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7845FED-D7F2-4B63-9965-60BAB9F3AF8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7845FED-D7F2-4B63-9965-60BAB9F3AF8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
