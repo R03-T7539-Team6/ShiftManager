@@ -6,10 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EditorConfigFiles Include="..\ShiftManager\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
     <ProjectReference Include="..\ShiftManager.DataClasses\ShiftManager.DataClasses.csproj" />
   </ItemGroup>

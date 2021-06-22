@@ -7,6 +7,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
+#pragma warning disable RS1024
+#pragma warning disable IDE0007, IDE0057, IDE0060, IDE0062
+
 namespace SourceGeneratorSamples
 {
     /// <summary>INotifyPropertyChangedによる更新通知実装を容易にします.  開発支援用機能です.</summary>
