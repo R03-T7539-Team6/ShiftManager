@@ -16,11 +16,11 @@
   public interface IApiResult<T> : IApiResult
   {
     /// <summary>実行の結果得られたデータ</summary>
-    T ReturnData { get; }
+    T? ReturnData { get; }
   }
 
   public record ApiResult(bool IsSuccess, ApiResultCodes ResultCode) : IApiResult;
-  public record ApiResult<T>(bool IsSuccess, ApiResultCodes ResultCode, T ReturnData) : IApiResult<T>;
+  public record ApiResult<T>(bool IsSuccess, ApiResultCodes ResultCode, T? ReturnData) : IApiResult<T>;
 
   public enum ApiResultCodes
   {

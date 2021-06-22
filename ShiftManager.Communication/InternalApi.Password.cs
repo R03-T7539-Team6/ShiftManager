@@ -37,7 +37,7 @@ namespace ShiftManager.Communication
     public Task<ApiResult<HashedPassword>> GetPasswordHashingDataAsync(IUserID userID) => Task.Run<ApiResult<HashedPassword>>(() =>
     {
       if (!TestD.UserDataDictionary.TryGetValue(userID, out IUserData? userD) || userD is null)
-        return new(false, ApiResultCodes.UserID_Not_Found, new(string.Empty, string.Empty, 0));
+        return new(false, ApiResultCodes.UserID_Not_Found, null);
       else
         return new(true, ApiResultCodes.Success, new HashedPassword(userD.HashedPassword) with { Hash = string.Empty });
     });
