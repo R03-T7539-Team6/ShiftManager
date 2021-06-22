@@ -5,10 +5,6 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<EditorConfigFiles Include="..\ShiftManager\.editorconfig" Link=".editorconfig" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <ProjectReference Include="..\RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator\RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	</ItemGroup>
 </Project>
