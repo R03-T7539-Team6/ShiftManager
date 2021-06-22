@@ -18,10 +18,20 @@ namespace ShiftManager.Communication
 
   public partial class InternalApi : IInternalApi_SignIn
   {
-
-    public Task<ApiResult> SignInAsync(IUserID userID, IHashedPassword hashedPassword)
+    /// <summary>非同期でサインインを試行します</summary>
+    /// <param name="userID">試行するUserID</param>
+    /// <param name="hashedPassword">試行するハッシュ化パスワード</param>
+    /// <returns>試行結果</returns>
+    public Task<ApiResult> SignInAsync(IUserID userID, IHashedPassword hashedPassword) => Task.Run<ApiResult>(() =>
     {
-      throw new NotImplementedException();
-    }
+      if (!TestD.UserDataDictionary.TryGetValue(userID, out IUserData? userD))
+        return new(false, ApiResultCodes.UserID_Not_Found);
+
+      if (userD.HashedPassword.Hash == hashedPassword.Hash)
+        return new(true, ApiResultCodes.Success);
+      else
+        return new(false, ApiResultCodes.Password_Not_Match);
+    });
+
   }
 }
