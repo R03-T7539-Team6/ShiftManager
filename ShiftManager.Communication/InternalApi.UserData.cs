@@ -7,31 +7,31 @@ namespace ShiftManager.Communication
 {
   public interface IInternalApi_UserData
   {
-    Task<ApiResult> CheckPasswordValid(HashedPasswordGetter hashedPasswordGetter);
-    Task<ApiResult> UpdatePassword(HashedPasswordGetter hashedPasswordGetter);
+    Task<ApiResult> CheckPasswordValidAsync(HashedPasswordGetter hashedPasswordGetter);
+    Task<ApiResult> UpdatePasswordAsync(HashedPasswordGetter hashedPasswordGetter);
 
-    Task<ApiResult<IWorkLog>> GetWorkLog();
-    Task<ApiResult<IUserSetting>> GetUserSetting();
+    Task<ApiResult<IWorkLog>> GetWorkLogAsync();
+    Task<ApiResult<IUserSetting>> GetUserSettingAsync();
   }
 
   public partial class InternalApi : IInternalApi_UserData
   {
-    public Task<ApiResult> CheckPasswordValid(HashedPasswordGetter hashedPasswordGetter)
+    public Task<ApiResult> CheckPasswordValidAsync(HashedPasswordGetter hashedPasswordGetter)
     {
       throw new NotImplementedException();
     }
 
-    public Task<ApiResult<IUserSetting>> GetUserSetting()
+    public Task<ApiResult<IUserSetting>> GetUserSettingAsync()
     {
       throw new NotImplementedException();
     }
 
-    public Task<ApiResult<IWorkLog>> GetWorkLog()
+    public Task<ApiResult<IWorkLog>> GetWorkLogAsync()
     {
       throw new NotImplementedException();
     }
 
-    public Task<ApiResult> UpdatePassword(HashedPasswordGetter hashedPasswordGetter)
+    public Task<ApiResult> UpdatePasswordAsync(HashedPasswordGetter hashedPasswordGetter)
     {
       throw new NotImplementedException();
     }
