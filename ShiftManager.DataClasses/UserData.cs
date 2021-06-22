@@ -4,8 +4,8 @@ using AutoNotify;
 
 namespace ShiftManager.DataClasses
 {
-	#region Records
-	public record UserID(string Value) : IUserID
+  #region Records
+  public record UserID(string Value) : IUserID
   {
     public UserID(IUserID i) : this(i.Value) { }
   }
@@ -113,10 +113,10 @@ namespace ShiftManager.DataClasses
     /// <summary>その他</summary>
     Others
   }
-	#endregion
+  #endregion
 
-	#region interfaces
-	public interface IUserID
+  #region interfaces
+  public interface IUserID
   {
     string Value { get; }
   }
@@ -144,5 +144,5 @@ namespace ShiftManager.DataClasses
     string FirstName { get; }
     string LastName { get; }
   }
-	#endregion
+  #endregion
 }
