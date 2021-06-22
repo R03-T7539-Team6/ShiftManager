@@ -18,7 +18,6 @@ namespace ShiftManager.Communication
 
   public partial class InternalApi : IInternalApi_SignIn
   {
-    public IUserData? CurrentUserData { get; private set; } = null;
 
     public Task<ApiResult> SignInAsync(IUserID userID, IHashedPassword hashedPassword)
     {
