@@ -50,12 +50,23 @@
     Data_Not_Found,
     /// <summary>データが既に存在する</summary>
     Data_Already_Exists,
+    /// <summary>新しいデータがNULLである</summary>
+    NewData_Is_NULL,
 
     /// <summary>データ不足</summary>
     Not_Enough_Data,
 
     /// <summary>パスワード強度不足</summary>
     Password_Strength_Not_Enough,
+
+    /// <summary>指定の日付のデータが見つからなかった</summary>
+    Target_Date_Not_Found,
+
+    /// <summary>シフト組みが完了していない</summary>
+    Scheduling_Is_Still_In_Working,
+
+    /// <summary>シフト組みが完了していない</summary>
+    Scheduling_Is_Not_Started,
 
   }
 }
