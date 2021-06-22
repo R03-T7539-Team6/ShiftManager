@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="5.0.7" />
     <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
     <ProjectReference Include="..\ShiftManager.DataClasses\ShiftManager.DataClasses.csproj" />
   </ItemGroup>
