@@ -6,7 +6,10 @@ using AutoNotify;
 
 namespace ShiftManager.DataClasses
 {
-  public record ScheduledShift(DateTime TargetDate, DateTime StartOfSchedule, DateTime EndOfSchedule, ShiftSchedulingState SchedulingState, Dictionary<IUserID, ISingleShiftData> ShiftDictionary, List<int> RequiredWorkerCountList) : IScheduledShift;
+  public record ScheduledShift(DateTime TargetDate, DateTime StartOfSchedule, DateTime EndOfSchedule, ShiftSchedulingState SchedulingState, Dictionary<IUserID, ISingleShiftData> ShiftDictionary, List<int> RequiredWorkerCountList) : IScheduledShift
+  {
+    public ScheduledShift(IScheduledShift i) : this(i.TargetDate, i.StartOfSchedule, i.EndOfSchedule, i.SchedulingState, i.ShiftDictionary, i.RequiredWorkerCountList) { }
+  }
 
   public partial class ScheduledShift_NotifyPropertyChanged : IScheduledShift, INotifyPropertyChanged
   {
