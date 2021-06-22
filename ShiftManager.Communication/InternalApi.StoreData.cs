@@ -20,71 +20,71 @@ namespace ShiftManager.Communication
     Task<ApiResult<ImmutableArray<ShiftRequest>>> GetAllShiftRequestAsync();
     Task<ApiResult<ShiftRequest>> GenerateShiftRequestAsync(IUserID userID);
     Task<ApiResult<ScheduledShift>> GetScheduledShiftByDateAsync(DateTime dateTime);
-    Task<ApiResult<ScheduledShift>> GenerateScheduledShift(DateTime dateTime);
-    Task<ApiResult> DeleteUserData(UserID userID);
+    Task<ApiResult<ScheduledShift>> GenerateScheduledShiftAsync(DateTime dateTime);
+    Task<ApiResult> DeleteUserDataAsync(UserID userID);
   }
 
   /// <summary>内部で使用するAPI</summary>
   public partial class InternalApi : IInternalApi_StoreData
   {
-    public Task<ApiResult> DeleteUserData(UserID userID)
+    public Task<ApiResult> DeleteUserDataAsync(UserID userID) => Task.Run<ApiResult>(() =>
     {
-      throw new NotImplementedException();
-    }
+      return new(true, ApiResultCodes.Success);
+    });
 
-    public Task<ApiResult<ScheduledShift>> GenerateScheduledShift(DateTime dateTime)
+    public Task<ApiResult<ScheduledShift>> GenerateScheduledShiftAsync(DateTime dateTime) => Task.Run<ApiResult<ScheduledShift>>(() =>
     {
-      throw new NotImplementedException();
-    }
+      return new(true, ApiResultCodes.Success, null);
+    });
 
-    public Task<ApiResult<ShiftRequest>> GenerateShiftRequestAsync(IUserID userID)
+    public Task<ApiResult<ShiftRequest>> GenerateShiftRequestAsync(IUserID userID) => Task.Run<ApiResult<ShiftRequest>>(() =>
     {
-      throw new NotImplementedException();
-    }
+      return new(true, ApiResultCodes.Success, null);
+    });
 
-    public Task<ApiResult<ImmutableArray<ShiftRequest>>> GetAllShiftRequestAsync()
+    public Task<ApiResult<ImmutableArray<ShiftRequest>>> GetAllShiftRequestAsync() => Task.Run<ApiResult<ImmutableArray<ShiftRequest>>>(() =>
     {
-      throw new NotImplementedException();
-    }
+      return new(true, ApiResultCodes.Success, default);
+    });
 
-    public Task<ApiResult<ImmutableArray<UserData>>> GetAllUserAsync()
+    public Task<ApiResult<ImmutableArray<UserData>>> GetAllUserAsync() => Task.Run<ApiResult<ImmutableArray<UserData>>>(() =>
     {
-      throw new NotImplementedException();
-    }
+      return new(true, ApiResultCodes.Success, default);
+    });
 
-    public Task<ApiResult> GetIsScheduledShiftFinalVersionAsync()
+    public Task<ApiResult> GetIsScheduledShiftFinalVersionAsync() => Task.Run<ApiResult>(() =>
     {
-      throw new NotImplementedException();
-    }
+      return new(true, ApiResultCodes.Success);
+    });
 
-    public Task<ApiResult<ScheduledShift>> GetScheduledShiftByDateAsync(DateTime dateTime)
+    public Task<ApiResult<ScheduledShift>> GetScheduledShiftByDateAsync(DateTime dateTime) => Task.Run<ApiResult<ScheduledShift>>(() =>
     {
-      throw new NotImplementedException();
-    }
+      return new(true, ApiResultCodes.Success, null);
+    });
 
-    public Task<ApiResult<ShiftRequest>> GetShiftRequestByIDAsync(IUserID userID)
+    public Task<ApiResult<ShiftRequest>> GetShiftRequestByIDAsync(IUserID userID) => Task.Run<ApiResult<ShiftRequest>>(() =>
     {
-      throw new NotImplementedException();
-    }
+      return new(true, ApiResultCodes.Success, null);
+    });
 
-    public Task<ApiResult<UserData>> GetUserDataByIDAsync(IUserID userID)
+    public Task<ApiResult<UserData>> GetUserDataByIDAsync(IUserID userID) => Task.Run<ApiResult<UserData>>(() =>
     {
-      throw new NotImplementedException();
-    }
+      return new(true, ApiResultCodes.Success, null);
+    });
 
-    public Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserGroupAsync(UserGroup userGroup = UserGroup.None)
+    public Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserGroupAsync(UserGroup userGroup = UserGroup.None) => Task.Run<ApiResult<ImmutableArray<UserData>>>(() =>
     {
-      throw new NotImplementedException();
-    }
+      return new(true, ApiResultCodes.Success, default);
+    });
 
-    public Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserStateAsync(UserState userState = UserState.Normal)
+    public Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserStateAsync(UserState userState = UserState.Normal) => Task.Run<ApiResult<ImmutableArray<UserData>>>(() =>
     {
-      throw new NotImplementedException();
-    }
+      return new(true, ApiResultCodes.Success, default);
+    });
 
-    public Task<ApiResult> SignUpAsync(IUserData userData)
+    public Task<ApiResult> SignUpAsync(IUserData userData) => Task.Run<ApiResult>(() =>
     {
-      throw new NotImplementedException();
-    }
+      return new(true, ApiResultCodes.Success);
+    });
   }
 }
