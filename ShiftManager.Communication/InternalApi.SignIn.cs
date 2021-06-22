@@ -7,6 +7,8 @@ namespace ShiftManager.Communication
 {
   public interface IInternalApi_SignIn
   {
+    IUserData? CurrentUserData { get; }
+
     /// <summary>サインインを試行します.</summary>
     /// <param name="userID">ユーザID</param>
     /// <param name="HashedPasswordGetter">パスワードのハッシュ化に関する情報を受けてハッシュ化パスワードを返す関数</param>
@@ -16,6 +18,7 @@ namespace ShiftManager.Communication
 
   public partial class InternalApi : IInternalApi_SignIn
   {
+    public IUserData? CurrentUserData { get; private set; } = null;
 
     public Task<ApiResult> SignInAsync(IUserID userID, IHashedPassword hashedPassword)
     {
