@@ -29,11 +29,17 @@ namespace ShiftManager.Communication
           KeyDerivation.Pbkdf2(rawPassword, Convert.FromBase64String(hashedPasswordInfo.Salt), KeyDerivationPrf.HMACSHA256, hashedPasswordInfo.StretchCount, HASH_SIZE)
           )
       };
-    
 
-    public Task<ApiResult<HashedPassword>> GetPasswordHashingDataAsync(IUserID userID)
+
+    /// <summary>パスワードのハッシュ化に必要な情報を取得します</summary>
+    /// <param name="userID">ユーザID</param>
+    /// <returns>パスワードのハッシュ化に必要な情報</returns>
+    public Task<ApiResult<HashedPassword>> GetPasswordHashingDataAsync(IUserID userID) => Task.Run<ApiResult<HashedPassword>>(() =>
     {
-      throw new NotImplementedException();
-    }
+      if (!TestD.UserDataDictionary.TryGetValue(userID, out IUserData? userD) || userD is null)
+        return new(false, ApiResultCodes.UserID_Not_Found, new(string.Empty, string.Empty, 0));
+      else
+        return new(true, ApiResultCodes.Success, new HashedPassword(userD.HashedPassword) with { Hash = string.Empty });
+    });
   }
 }
