@@ -10,6 +10,8 @@
              MaxHeight="600"
              d:DesignHeight="480" d:DesignWidth="560">
   <UserControl.Resources>
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConv"/>
+
     <Style TargetType="TextBlock">
       <Setter Property="TextAlignment" Value="Right"/>
       <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -75,6 +77,7 @@
       Text="ユーザID&#xa;(ログインID)"/>
     <TextBox
       IsEnabled="{Binding CanEditUserID, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      Text="{Binding UserIDText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
       Grid.Column="1"
       Grid.ColumnSpan="2"/>
 
@@ -84,6 +87,7 @@
       Text="苗字&#xa;(Last Name)"/>
     <TextBox
       IsEnabled="{Binding CanEditUserName, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      Text="{Binding LastNameText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
       Grid.Column="1"
       Grid.Row="1"/>
 
@@ -93,6 +97,7 @@
       Text="名前&#xa;(First Name)"/>
     <TextBox
       IsEnabled="{Binding CanEditUserName, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      Text="{Binding FirstNameText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
       Grid.Column="3"
       Grid.Row="1"/>
 
@@ -102,7 +107,9 @@
       Text="パスワード"/>
     <!--MaxLengthは適宜変更すること-->
     <PasswordBox
+      x:Name="PWBox"
       IsEnabled="{Binding CanEditPassword, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      PasswordChanged="PasswordBox_PasswordChanged"
       MaxLength="32"
       Grid.Row="2"
       Grid.Column="1"
@@ -111,10 +118,12 @@
       Grid.Row="2"
       Grid.Column="3">
       <Button
+        Click="GeneratePW"
         Margin="4"
         Padding="4"
         Content="パスワード自動生成"/>
-      <local:PasswordStrengthVisualizerControl/>
+      <local:PasswordStrengthVisualizerControl
+        x:Name="PWStrengthVisualizer"/>
     </StackPanel>
     
     <TextBlock
@@ -123,12 +132,15 @@
       Text="パスワード&#xa;再入力"/>
     <!--MaxLengthは適宜変更すること-->
     <PasswordBox
+      x:Name="PWBoxToReType"
       IsEnabled="{Binding CanEditPassword, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      PasswordChanged="PasswordBox_PasswordChanged"
       MaxLength="32"
       Grid.Row="3"
       Grid.Column="1"
       Grid.ColumnSpan="2"/>
     <TextBlock
+      Visibility="{Binding IsReTypedPasswordNotSame, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}, Converter={StaticResource BooleanToVisibilityConv}}"
       Foreground="Red"
       HorizontalAlignment="Left"
       TextAlignment="Left"
