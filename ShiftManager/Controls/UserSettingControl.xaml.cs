@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 
 using ShiftManager.DataClasses;
 
@@ -71,19 +72,32 @@ namespace ShiftManager.Controls
     public int PasswordMaxLength { get; } = 32;
     UserData RemoteData { get; set; }
 
-    static CoerceValueCallback PasswordCoerceCallback { get; } = (d, baseValue) =>
+    static object PasswordCoerceCallback(DependencyObject d, object baseValue)
     {
       if (d is UserSettingControl c && baseValue is string s && s.Length >= c.PasswordMaxLength)
         return s.Substring(0, c.PasswordMaxLength);
       else
         return baseValue;
-    };
-    
+    }
+
     static void UpdatePWBoxText(PasswordBox target, object newValue)
     {
       if (target is not null && newValue is string s)
         if (target.Password != s)
           target.Password = s;
+    }
+
+    IUserData InitialUserData { get; set; }
+    public void SetData(IUserData userData)
+    {
+      InitialUserData = userData;
+      UserIDText = userData.UserID.Value;
+      FirstNameText = userData.FullName.FirstName;
+      LastNameText = userData.FullName.LastName;
+      PasswordText = string.Empty;
+      SelectedUserGroup = userData.UserGroup;
+      SelectedUserState = userData.UserState;
+      //通知は実装省略
     }
 
     public UserSettingControl()
@@ -94,14 +108,45 @@ namespace ShiftManager.Controls
 
     private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
     {
-      if(sender is PasswordBox pb)
+      if (sender is PasswordBox pb)
         PasswordText = pb.Password;
     }
 
-    private void GeneratePW(object sender, RoutedEventArgs e)
+    private void GeneratePW(object sender, RoutedEventArgs e) => GeneratePW();
+    private void GeneratePW()
     {
-      PasswordText = "123456789-123456789-123456789-1";//仮実装
+      var r = new RNGCryptoServiceProvider();
+      byte[] ba = new byte[32];//生成先のバッファ
+
+      for (int trycount = 0; trycount < 10; trycount++)//さすがに10回もやれば大丈夫なはず
+      {
+        r.GetNonZeroBytes(ba);//1~255の乱数を32個生成する
+        List<char> GeneratedPW = new();//生成されたパスワードを一時的に保管するバッファ
+
+        foreach (var b in ba)
+        {
+          char c = (char)(b / 2);//ASCII範囲内のみを使用するため (0 ~ 127)
+          if (char.IsLetterOrDigit(c) || char.IsSymbol(c))//文字 OR 数字 OR 記号の場合のみ
+            GeneratedPW.Add(c);//パスワード候補バッファに追加
+        }
+
+        //生成パスワードの文字数は16文字とする
+        if (GeneratedPW.Count < 16)
+          continue;//16文字未満は再試行
+
+        string generatedPWStr = new(GeneratedPW.GetRange(0, 16).ToArray());//パスワード文字列生成
+        if (PasswordStrengthVisualizerControl.GetPasswordStrength(generatedPWStr) < 1.0)
+          continue;//強度不足なら再試行
+
+        PasswordText = generatedPWStr;//生成したパスワードを設定
+        MessageBox.Show("パスワードを生成しました.  生成されたパスワードは, 以下の通りです.\n\n" + PasswordText, "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Information);
+        return;//生成終了
+      }
+
+      if (MessageBox.Show("パスワードの生成に失敗しました.  再試行しますか?", "ShiftManager", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+        GeneratePW();//再試行
     }
+
     private void PrintClicked(object sender, RoutedEventArgs e)
     {
       throw new NotImplementedException();
@@ -109,12 +154,20 @@ namespace ShiftManager.Controls
 
     private void DiscardChanges(object sender, RoutedEventArgs e)
     {
-
+      if (MessageBox.Show("変更内容が破棄されます.  よろしいですか?", "ShiftManager", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
+        SetData(InitialUserData);
     }
 
     private void SaveChanges(object sender, RoutedEventArgs e)
     {
+      if (!string.IsNullOrWhiteSpace(PasswordText) && PWStrengthVisualizer.PasswordStrength < PasswordStrengthVisualizerControl.PWStrength_Least)
+      {
+        MessageBox.Show("パスワードの強度が低いです.", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+        (IsPasswordVisible ? PWVisibleBox as UIElement : PWBox).Focus();//パスワードを変更させるため, PWBoxにフォーカスを当てる
+        return;
+      }
 
+      //TODO: APIを使用して設定を登録する
     }
   }
 }

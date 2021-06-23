@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ShiftManager.Controls"
+             xmlns:root="clr-namespace:ShiftManager"
              mc:Ignorable="d" 
              FontSize="14"
              MaxWidth="800"
@@ -11,6 +12,15 @@
              d:DesignHeight="480" d:DesignWidth="560">
   <UserControl.Resources>
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConv"/>
+    <root:IntEquallyCheckConverter x:Key="IntEquallyCheckConv"/>
+    <root:ValueConverterGroup x:Key="IntToVisibility_VisibleWhenNotEqConv">
+      <root:ValueConverterGroup.Converters>
+        <root:IntEquallyCheckConverter/>
+        <root:BooleanReverseConverter/>
+        <BooleanToVisibilityConverter/>
+      </root:ValueConverterGroup.Converters>
+    </root:ValueConverterGroup>
+
 
     <Style TargetType="TextBlock">
       <Setter Property="TextAlignment" Value="Right"/>
@@ -120,8 +130,9 @@
         MaxLength="{Binding PasswordMaxLength, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}, Mode=OneTime}"/>
       <TextBox
         Grid.Row="1"
+        x:Name="PWVisibleBox"
         Visibility="{Binding IsPasswordVisible, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}, Converter={StaticResource BooleanToVisibilityConv}, Mode=OneWay}"
-        Text="{Binding PasswordText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"/>
+        Text="{Binding PasswordText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}, UpdateSourceTrigger=PropertyChanged}"/>
 
       <CheckBox
         Grid.Row="2"
@@ -140,6 +151,9 @@
         Content="パスワード自動生成"/>
       <local:PasswordStrengthVisualizerControl
         x:Name="PWStrengthVisualizer"
+        Margin="4"
+        HorizontalAlignment="Stretch"
+        Height="20"
         PasswordText="{Binding PasswordText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}, Mode=OneWay}"/>
     </StackPanel>
 
@@ -163,12 +177,18 @@
       Grid.Column="1"
       Grid.Row="4"/>
 
-    <Button
+    <!--<Button
       IsEnabled="{Binding CanEditNotificationSetting, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
       Content="通知設定"
       Grid.Column="1"
+      Grid.Row="5"/>-->
+    <Button
+      IsEnabled="False"
+      Content="通知設定(未対応)"
+      Grid.Column="1"
       Grid.Row="5"/>
     <TextBlock
+      Visibility="{Binding NotificationSetting, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}, Converter={StaticResource IntToVisibility_VisibleWhenNotEqConv}, ConverterParameter=0}"
       HorizontalAlignment="Left"
       Grid.Column="2"
       Grid.ColumnSpan="2"
