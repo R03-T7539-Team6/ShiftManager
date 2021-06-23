@@ -54,10 +54,7 @@
       <RowDefinition Height="*"/>
       
       <!--Password-->
-      <RowDefinition Height="*"/>
-      
-      <!--Password Check-->
-      <RowDefinition Height="*"/>
+      <RowDefinition Height="1.5*"/>
       
       <!--UserGroup-->
       <RowDefinition Height="*"/>
@@ -105,16 +102,35 @@
       Grid.Column="0"
       Grid.Row="2"
       Text="パスワード"/>
-    <!--MaxLengthは適宜変更すること-->
-    <PasswordBox
-      x:Name="PWBox"
+    <Grid
       IsEnabled="{Binding CanEditPassword, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
-      PasswordChanged="PasswordBox_PasswordChanged"
-      MaxLength="32"
       Grid.Row="2"
       Grid.Column="1"
-      Grid.ColumnSpan="2"/>
+      Grid.ColumnSpan="2">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <PasswordBox
+        Grid.Row="1"
+        x:Name="PWBox"
+        PasswordChar="*"
+        PasswordChanged="PasswordBox_PasswordChanged"
+        MaxLength="{Binding PasswordMaxLength, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}, Mode=OneTime}"/>
+      <TextBox
+        Grid.Row="1"
+        Visibility="{Binding IsPasswordVisible, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}, Converter={StaticResource BooleanToVisibilityConv}, Mode=OneWay}"
+        Text="{Binding PasswordText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"/>
+
+      <CheckBox
+        Grid.Row="2"
+        IsChecked="{Binding IsPasswordVisible, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+        Content="パスワードを表示する"/>
+    </Grid>
     <StackPanel
+      IsEnabled="{Binding CanEditPassword, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      VerticalAlignment="Center"
       Grid.Row="2"
       Grid.Column="3">
       <Button
@@ -123,78 +139,61 @@
         Padding="4"
         Content="パスワード自動生成"/>
       <local:PasswordStrengthVisualizerControl
-        x:Name="PWStrengthVisualizer"/>
+        x:Name="PWStrengthVisualizer"
+        PasswordText="{Binding PasswordText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}, Mode=OneWay}"/>
     </StackPanel>
-    
-    <TextBlock
-      Grid.Column="0"
-      Grid.Row="3"
-      Text="パスワード&#xa;再入力"/>
-    <!--MaxLengthは適宜変更すること-->
-    <PasswordBox
-      x:Name="PWBoxToReType"
-      IsEnabled="{Binding CanEditPassword, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
-      PasswordChanged="PasswordBox_PasswordChanged"
-      MaxLength="32"
-      Grid.Row="3"
-      Grid.Column="1"
-      Grid.ColumnSpan="2"/>
-    <TextBlock
-      Visibility="{Binding IsReTypedPasswordNotSame, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}, Converter={StaticResource BooleanToVisibilityConv}}"
-      Foreground="Red"
-      HorizontalAlignment="Left"
-      TextAlignment="Left"
-      Grid.Column="3"
-      Grid.Row="3"
-      Text="パスワードが&#xa;一致しません"/>
-
 
     <TextBlock
       Grid.Column="0"
-      Grid.Row="4"
+      Grid.Row="3"
       Text="UserGroup"/>
     <ComboBox
       IsEnabled="{Binding CanEditUserGroup, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      SelectedItem="{Binding SelectedUserGroup, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
       Grid.Column="1"
-      Grid.Row="4"/>
+      Grid.Row="3"/>
     
     <TextBlock
       Grid.Column="0"
-      Grid.Row="5"
+      Grid.Row="4"
       Text="UserState"/>
     <ComboBox
       IsEnabled="{Binding CanEditUserState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
+      SelectedItem="{Binding SelectedUserState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
       Grid.Column="1"
-      Grid.Row="5"/>
+      Grid.Row="4"/>
 
     <Button
       IsEnabled="{Binding CanEditNotificationSetting, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
       Content="通知設定"
       Grid.Column="1"
-      Grid.Row="6"/>
+      Grid.Row="5"/>
     <TextBlock
       HorizontalAlignment="Left"
       Grid.Column="2"
       Grid.ColumnSpan="2"
-      Grid.Row="6"
+      Grid.Row="5"
       Text="設定されています"/>
 
     <Button
+      Click="PrintClicked"
       IsEnabled="{Binding CanPrintSettings, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
       Content="印刷"
       Grid.Column="0"
-      Grid.Row="7"/>
+      Grid.Row="6"/>
     <Button
+      Click="DiscardChanges"
       Content="変更破棄"
       IsCancel="True"
       Grid.Column="2"
-      Grid.Row="7"/>
+      Grid.Row="6"/>
     <Button
+      Click="SaveChanges"
       IsEnabled="{Binding CanSaveSettings, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
       Content="保存"
       IsDefault="True"
       Grid.Column="3"
-      Grid.Row="7"/>
+      Grid.Row="6"/>
 
     <Grid.BitmapEffect>
       <DropShadowBitmapEffect/>
