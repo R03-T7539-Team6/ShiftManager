@@ -9,6 +9,14 @@
       Title="UserSettingPage">
 
   <Grid>
-    <MyCtrls:UserSettingControl/>
+    <MyCtrls:UserSettingControl
+      CanEditNotificationSetting="True"
+      CanEditPassword="True"
+      CanEditUserGroup="True"
+      CanEditUserID="True"
+      CanEditUserName="True"
+      CanEditUserState="True"
+      CanPrintSettings="False"
+      CanSaveSettings="True"/>
   </Grid>
 </Page>
