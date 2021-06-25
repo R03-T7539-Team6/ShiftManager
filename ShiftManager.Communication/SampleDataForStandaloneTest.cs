@@ -8,22 +8,26 @@ namespace ShiftManager.Communication
     public StoreData StoreData { get; } =
       new(
         STORE_ID,
+
         new()
         {
           { USER_DATA_ARR[0].UserID, USER_DATA_ARR[0] },
           { USER_DATA_ARR[1].UserID, USER_DATA_ARR[1] }
         },
+
         new()
         {
           { ID0001.UserID, ID0001.ShiftRequest },
           { ID0002.UserID, ID0002.ShiftRequest }
         },
+
         new()
         {
           { SCHEDULED_SHIFT_ARR[0].TargetDate, SCHEDULED_SHIFT_ARR[0] },
           { SCHEDULED_SHIFT_ARR[1].TargetDate, SCHEDULED_SHIFT_ARR[1] },
           { SCHEDULED_SHIFT_ARR[2].TargetDate, SCHEDULED_SHIFT_ARR[2] }
-        });
+        }
+      );
 
     private static StoreID STORE_ID { get; } = new("STORE001");
     private static UserData[] USER_DATA_ARR { get; } =
@@ -35,7 +39,11 @@ namespace ShiftManager.Communication
       new(new(2021, 5, 29), new(2021, 5, 29, 0, 0, 0), new(2021, 5, 30, 0, 0, 0), ShiftSchedulingState.FinalVersion,
         new()
         {
-          { ID0001.UserID, new SingleShiftData(ID0001.UserID, new(2021, 5, 29), false, new(2021, 5, 29, 9, 0, 0), new(2021, 5, 29, 12, 0, 0), new()) },
+          { ID0001.UserID,
+            new SingleShiftData(ID0001.UserID, new(2021, 5, 29), false, new(2021, 5, 29, 9, 0, 0), new(2021, 5, 29, 12, 0, 0),
+              new()
+            )
+          },
           {
             ID0002.UserID,
             new SingleShiftData(ID0002.UserID, new(2021, 5, 29), false, new(2021, 5, 29, 8, 0, 0), new(2021, 5, 29, 18, 30, 0), new()
@@ -47,11 +55,18 @@ namespace ShiftManager.Communication
           }
         },
         new(){1}),
+
       new(new(2021, 5, 30), new(2021, 5, 30, 12, 0, 0), new(2021, 5, 30, 18, 0, 0), ShiftSchedulingState.FinalVersion,
         new()
         {
-          { ID0001.UserID, new SingleShiftData(ID0001.UserID, new(2021, 5, 30), false, new(2021, 5, 30, 12, 0, 0), new(2021, 5, 30, 18, 0, 0), new()) }
+          {
+            ID0001.UserID,
+            new SingleShiftData(ID0001.UserID, new(2021, 5, 30), false, new(2021, 5, 30, 12, 0, 0), new(2021, 5, 30, 18, 0, 0),
+              new()
+            )
+          }
         },
+
         new(){1}),
       new(new(2021, 5, 31), new(2021, 5, 31, 0, 0, 0), new(2021, 6, 1, 0, 0, 0), ShiftSchedulingState.NotStarted, new(), new(){1}),
     };
@@ -76,8 +91,16 @@ namespace ShiftManager.Communication
         new(UserID, new(2021, 6, 11), false, new(2021, 6, 11, 22, 0, 0), new(2021, 6, 12, 0, 0, 0), new()),
         new(UserID, new(2021, 6, 12), false, new(2021, 6, 12,  0, 0, 0), new(2021, 6, 12,  5, 0, 0), new()),
       };
-      public static ShiftRequest ShiftRequest { get; } = new(UserID, new(2021, 5, 31, 12, 50, 39), new() { { SingleShiftDataArr[0].WorkDate, SingleShiftDataArr[0] }, { SingleShiftDataArr[0].WorkDate, SingleShiftDataArr[0] } });
+      public static ShiftRequest ShiftRequest { get; } = new(UserID, new(2021, 5, 31, 12, 50, 39),
+        new() {
+          { SingleShiftDataArr[0].WorkDate, SingleShiftDataArr[0] },
+          { SingleShiftDataArr[1].WorkDate, SingleShiftDataArr[1] },
+          { SingleShiftDataArr[2].WorkDate, SingleShiftDataArr[2] },
+          { SingleShiftDataArr[3].WorkDate, SingleShiftDataArr[3] },
+          { SingleShiftDataArr[4].WorkDate, SingleShiftDataArr[4] },
+        });
     }
+
     private static class ID0002
     {
       public static UserID UserID { get; } = new("ID0002");
@@ -98,7 +121,14 @@ namespace ShiftManager.Communication
         new(UserID, new(2021, 6, 11), false, new(2021, 6, 11, 8, 0, 0), new(2021, 6, 12, 0, 0, 0), new()),
         new(UserID, new(2021, 6, 12), false, new(2021, 6, 12,  0, 0, 0), new(2021, 6, 12,  8, 0, 0), new()),
       };
-      public static ShiftRequest ShiftRequest { get; } = new(UserID, new(2021, 5, 30, 8, 1, 9), new() { { SingleShiftDataArr[0].WorkDate, SingleShiftDataArr[0] }, { SingleShiftDataArr[0].WorkDate, SingleShiftDataArr[0] } });
+      public static ShiftRequest ShiftRequest { get; } = new(UserID, new(2021, 5, 30, 8, 1, 9),
+        new() {
+          { SingleShiftDataArr[0].WorkDate, SingleShiftDataArr[0] },
+          { SingleShiftDataArr[1].WorkDate, SingleShiftDataArr[1] },
+          { SingleShiftDataArr[2].WorkDate, SingleShiftDataArr[2] },
+          { SingleShiftDataArr[3].WorkDate, SingleShiftDataArr[3] },
+          { SingleShiftDataArr[4].WorkDate, SingleShiftDataArr[4] }
+        });
     }
   }
 }
