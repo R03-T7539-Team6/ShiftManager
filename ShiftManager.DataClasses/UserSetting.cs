@@ -6,34 +6,41 @@ using AutoNotify;
 
 namespace ShiftManager.DataClasses
 {
-  public record UserSetting(IUserID UserID, NotificationPublishTimings NotificationPublishTiming, List<IClientData> ClientDataList) : IUserSetting;
+  public record UserSetting(IUserID UserID, NotificationPublishTimings NotificationPublishTiming, List<IClientData> ClientDataList) : IUserSetting
+  {
+    public UserSetting(IUserSetting i) : this(i?.UserID ?? new UserID(), i?.NotificationPublishTiming?? NotificationPublishTimings.None, i?.ClientDataList ?? new()) { }
+  }
 
-  public record ClientData(string Name, string EndPoint, string UserPublicKey, string UserAuthToken) : IClientData;
+  public record ClientData(string Name, string EndPoint, string UserPublicKey, string UserAuthToken) : IClientData
+  {
+    public ClientData() : this(string.Empty, string.Empty, string.Empty, string.Empty) { }
+    public ClientData(IClientData i) : this(i?.Name ?? string.Empty, i?.EndPoint ?? string.Empty, i?.UserPublicKey ?? string.Empty, i?.UserAuthToken ?? string.Empty) { }
+  }
 
   public partial class UserSetting_NotifyPropertyChanged : IUserSetting, INotifyPropertyChanged
   {
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     [AutoNotify]
-    private IUserID _UserID;
+    private IUserID _UserID = new UserID();
     [AutoNotify]
     private NotificationPublishTimings _NotificationPublishTiming;
     [AutoNotify]
-    private List<IClientData> _ClientDataList;
+    private List<IClientData> _ClientDataList = new();
   }
 
   public partial class ClientData_NotifyPropertyChanged : IClientData, INotifyPropertyChanged
   {
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     [AutoNotify]
-    private string _Name;
+    private string _Name = string.Empty;
     [AutoNotify]
-    private string _EndPoint;
+    private string _EndPoint = string.Empty;
     [AutoNotify]
-    private string _UserPublicKey;
+    private string _UserPublicKey = string.Empty;
     [AutoNotify]
-    private string _UserAuthToken;
+    private string _UserAuthToken = string.Empty;
   }
 
   [Flags]
