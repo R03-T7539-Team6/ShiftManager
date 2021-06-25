@@ -6,7 +6,10 @@ using AutoNotify;
 
 namespace ShiftManager.DataClasses
 {
-  public record ShiftRequest(IUserID UserID, DateTime LastUpdate, Dictionary<DateTime, ISingleShiftData> RequestsDictionary) : IShiftRequest;
+  public record ShiftRequest(IUserID UserID, DateTime LastUpdate, Dictionary<DateTime, ISingleShiftData> RequestsDictionary) : IShiftRequest
+  {
+    public ShiftRequest(IShiftRequest i) : this(i.UserID, i.LastUpdate, i.RequestsDictionary) { }
+  }
 
   public partial class ShiftRequest_NotifyPropertuChanged : IShiftRequest, INotifyPropertyChanged
   {

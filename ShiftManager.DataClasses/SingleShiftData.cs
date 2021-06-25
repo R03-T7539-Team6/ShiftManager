@@ -7,7 +7,10 @@ using AutoNotify;
 namespace ShiftManager.DataClasses
 {
   /// <summary>勤務予定/実績用クラス</summary>
-  public record SingleShiftData(IUserID UserID, DateTime WorkDate, bool IsPaidHoliday, DateTime AttendanceTime, DateTime LeavingTime, Dictionary<DateTime, int> BreakTimeDictionary) : ISingleShiftData;
+  public record SingleShiftData(IUserID UserID, DateTime WorkDate, bool IsPaidHoliday, DateTime AttendanceTime, DateTime LeavingTime, Dictionary<DateTime, int> BreakTimeDictionary) : ISingleShiftData
+  {
+    public SingleShiftData(ISingleShiftData i) : this(i.UserID, i.WorkDate, i.IsPaidHoliday, i.AttendanceTime, i.LeavingTime, i.BreakTimeDictionary) { }
+  }
 
   public partial class SingleShiftData_NotifyPropertuChanged : ISingleShiftData, INotifyPropertyChanged
   {

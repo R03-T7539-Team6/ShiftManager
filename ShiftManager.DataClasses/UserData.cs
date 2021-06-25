@@ -4,11 +4,20 @@ using AutoNotify;
 
 namespace ShiftManager.DataClasses
 {
-	#region Records
-	public record UserID(string Value) : IUserID;
-  public record UserData(IUserID UserID, IHashedPassword HashedPassword, INameData FullName, UserGroup UserGroup, UserState UserState, IWorkLog WorkLog, IUserSetting UserSetting) : IUserData;
+  #region Records
+  public record UserID(string Value) : IUserID
+  {
+    public UserID(IUserID i) : this(i.Value) { }
+  }
+  public record UserData(IUserID UserID, IHashedPassword HashedPassword, INameData FullName, UserGroup UserGroup, UserState UserState, IWorkLog WorkLog, IUserSetting UserSetting) : IUserData
+  {
+    public UserData(IUserData i) : this(i.UserID, i.HashedPassword, i.FullName, i.UserGroup, i.UserState, i.WorkLog, i.UserSetting) { }
+  }
 
-  public record HashedPassword(string Hash, string Salt, int StretchCount) : IHashedPassword;
+  public record HashedPassword(string Hash, string Salt, int StretchCount) : IHashedPassword
+  {
+    public HashedPassword(IHashedPassword i) : this(i.Hash, i.Salt, i.StretchCount) { }
+  }
 
   /// <summary>氏名情報 (FirstName:名前, LastName:苗字)</summary>
   public record NameData(string FirstName, string LastName) : INameData;
@@ -104,10 +113,10 @@ namespace ShiftManager.DataClasses
     /// <summary>その他</summary>
     Others
   }
-	#endregion
+  #endregion
 
-	#region interfaces
-	public interface IUserID
+  #region interfaces
+  public interface IUserID
   {
     string Value { get; }
   }
@@ -135,5 +144,5 @@ namespace ShiftManager.DataClasses
     string FirstName { get; }
     string LastName { get; }
   }
-	#endregion
+  #endregion
 }
