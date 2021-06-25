@@ -79,5 +79,63 @@ namespace ShiftManager.Communication.InternalApiTest
 
     [TestCaseSource(nameof(SignInAsyncTest_TestCase))]
     public async Task<ApiResult> SignInAsyncTest(UserID userID, HashedPassword hashedPassword) => await new InternalApi().SignInAsync(userID, hashedPassword);
+
+
+    #region SignInAsyncTest WithIDAndPassword
+    static IEnumerable SignInAsyncTest_WithIDAndPassword_TestCase
+    {
+      get
+      {
+        yield return new TestCaseData("ID0001", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(true, ApiResultCodes.Success)).SetName("SignIn-ID/PW (Valid ID/PW) (ID0001)");
+        yield return new TestCaseData("ID0002", "i1KgfuhDy41yGy8x").Returns(new ApiResult(true, ApiResultCodes.Success)).SetName("SignIn-ID/PW (Valid ID/PW) (ID0002)");
+
+        /**********************************************************************/
+        //Invalid Input Tests
+        yield return new TestCaseData("INVALID_ID", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName("SignIn-ID/PW (ID is Inalid)");
+        yield return new TestCaseData("ID0002", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetName("SignIn-ID/PW (PW is Inalid)");
+
+        yield return new TestCaseData(null, "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName("SignIn-ID/PW (ID is NULL)");
+        yield return new TestCaseData("ID0002", null).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetName("SignIn-ID/PW (PW is NULL)");
+        yield return new TestCaseData(string.Empty, "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName("SignIn-ID/PW (ID is Empty)");
+        yield return new TestCaseData("ID0002", string.Empty).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetName("SignIn-ID/PW (PW is Empty)");
+
+        yield return new TestCaseData("              ", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName("SignIn-ID/PW (ID is WhiteSpace(Hankaku))");
+        yield return new TestCaseData("ID0002", "              ").Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetName("SignIn-ID/PW (PW is WhiteSpace(Hankaku))");
+        yield return new TestCaseData("　　　　　　　　　　　　", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName("SignIn-ID/PW (ID is WhiteSpace(Zenkaku))");
+        yield return new TestCaseData("ID0002", "　　　　　　　　　　").Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetName("SignIn-ID/PW (PW is WhiteSpace(Zenkaku))");
+      }
+    }
+
+    /// <summary>IDと生パスワードを用いたログインの流れをテストします</summary>
+    /// <param name="userID">入力ID</param>
+    /// <param name="rawPassword">入力パスワード</param>
+    /// <returns>APIからの返り値</returns>
+    [TestCaseSource(nameof(SignInAsyncTest_WithIDAndPassword_TestCase))]
+    public async Task<ApiResult> SignInAsyncTest_WithIDAndPassword(string userID, string rawPassword)
+    {
+      //テスト用にInternalApiのインスタンスをローカル変数に入れていますが, 実際はインスタンス変数として置きます
+      InternalApi api = new();
+
+      //ユーザID情報をAPIに渡すために, 型を変換します
+      UserID targetUserID = new(userID);
+
+      //パスワードをハッシュ化するために必要な情報を取得します
+      ApiResult<HashedPassword> passwordHashingDataRequestResult = await api.GetPasswordHashingDataAsync(targetUserID);
+
+      //もしもID不一致等で実行に失敗した場合は, IsSuccessプロパティに"false"が入ります.
+      if (!passwordHashingDataRequestResult.IsSuccess)
+        //実行結果の詳細はResultCodeプロパティに入っています
+        return new(false, passwordHashingDataRequestResult.ResultCode);
+
+      //ハッシュ化用情報を取得できていた場合のみ, 次に進みます
+
+      //生パスワードを, ハッシュ化するために必要な情報と一緒にHashedPasswordGetterに投げます
+      HashedPassword hashedPassword = InternalApi.HashedPasswordGetter(rawPassword, passwordHashingDataRequestResult.ReturnData);
+
+      //ハッシュ化パスワードとともに, サインインを試行します
+      //API側で削られる情報ではありますが, 念のためSaltとStretchCountの情報は削除しておきましょう.  削除せずに渡しても動作に問題はありません.
+      return await api.SignInAsync(targetUserID, hashedPassword with { Salt = string.Empty, StretchCount = 0 });
+    }
+    #endregion
   }
 }
