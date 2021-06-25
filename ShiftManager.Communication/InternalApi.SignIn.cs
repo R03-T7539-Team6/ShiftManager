@@ -23,11 +23,16 @@ namespace ShiftManager.Communication
     /// <returns>試行結果</returns>
     public Task<ApiResult> SignInAsync(IUserID userID, IHashedPassword hashedPassword) => Task.Run<ApiResult>(() =>
     {
+      if(string.IsNullOrWhiteSpace(userID?.Value))
+        return new(false, ApiResultCodes.UserID_Not_Found);
+      if(string.IsNullOrWhiteSpace(hashedPassword?.Hash))
+        return new(false, ApiResultCodes.Password_Not_Match);
+
       if (!TestD.UserDataDictionary.TryGetValue(userID, out IUserData? userD))
         return new(false, ApiResultCodes.UserID_Not_Found);
 
       if (userD.HashedPassword.Hash == hashedPassword.Hash)
-        return new(true, ApiResultCodes.Success);
+        return new(true, ApiResultCodes.Success);//実際はここでトークンをキャッシュする
       else
         return new(false, ApiResultCodes.Password_Not_Match);
     });
