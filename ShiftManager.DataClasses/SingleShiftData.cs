@@ -21,7 +21,7 @@ namespace ShiftManager.DataClasses
     [AutoNotify]
     private DateTime _WorkDate = new();
     [AutoNotify]
-    private bool _IsPaidHoliday = false;;
+    private bool _IsPaidHoliday = false;
     [AutoNotify]
     private DateTime _AttendanceTime = new();
     [AutoNotify]
