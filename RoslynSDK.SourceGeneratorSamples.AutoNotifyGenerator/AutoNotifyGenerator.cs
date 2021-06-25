@@ -22,6 +22,7 @@ namespace SourceGeneratorSamples
     public class AutoNotifyGenerator : ISourceGenerator
     {
         private const string attributeText = @"
+#nullable disable
 using System;
 namespace AutoNotify
 {
