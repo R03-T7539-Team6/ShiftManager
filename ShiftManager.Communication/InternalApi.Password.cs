@@ -22,13 +22,21 @@ namespace ShiftManager.Communication
     /// <param name="hashedPasswordInfo">パスワードのハッシュ化に使用する</param>
     /// <returns>ハッシュ化されたパスワード</returns>
     static public HashedPassword HashedPasswordGetter(in string rawPassword, in IHashedPassword hashedPasswordInfo)
-      => (hashedPasswordInfo is HashedPassword recordHashedPW ? recordHashedPW : new HashedPassword(hashedPasswordInfo))//引数で渡されたのがrecordならrecordで, そうでないならrecordに変換してから使用する
-      with //recordの中身を変更する
-      {
-        Hash = Convert.ToBase64String(//Hashを変更する
-          KeyDerivation.Pbkdf2(rawPassword, Convert.FromBase64String(hashedPasswordInfo.Salt), KeyDerivationPrf.HMACSHA256, hashedPasswordInfo.StretchCount, HASH_SIZE)
-          )
-      };
+    {
+      if (hashedPasswordInfo is null)
+        return new(string.Empty, string.Empty, 0);//nullなら計算するまでもなく無効値を返す
+
+      if (string.IsNullOrWhiteSpace(rawPassword) || string.IsNullOrWhiteSpace(hashedPasswordInfo.Salt) || hashedPasswordInfo.StretchCount <= 0)
+        return new HashedPassword(hashedPasswordInfo) with { Hash = string.Empty };//ハッシュ化に必要な情報が不足しているのであれば, ハッシュに無効値を代入して返す
+
+      return (hashedPasswordInfo is HashedPassword recordHashedPW ? recordHashedPW : new HashedPassword(hashedPasswordInfo))//引数で渡されたのがrecordならrecordで, そうでないならrecordに変換してから使用する
+        with //recordの中身を変更する
+        {
+          Hash = Convert.ToBase64String(//Hashを変更する
+            KeyDerivation.Pbkdf2(rawPassword, Convert.FromBase64String(hashedPasswordInfo.Salt), KeyDerivationPrf.HMACSHA256, hashedPasswordInfo.StretchCount, HASH_SIZE)
+            )
+        };
+    }
 
 
     /// <summary>パスワードのハッシュ化に必要な情報を取得します</summary>
