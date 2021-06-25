@@ -14,7 +14,7 @@ namespace ShiftManager.Communication.InternalApiTest
       for (int i = 0; i < PasswordHashingTest_TestCasesCount; i++)
         PasswordHashingTest_TestCases[i] = new object[] { Password_Samples[i], Salt_Samples[i], STRETCH_COUNT, HashedPasswordExpectedResults[i] };
     }
-    InternalApi TestTarget { get; } = new();
+    IInternalApi_Password TestTarget { get; } = new InternalApi();
 
     [SetUp]
     public void Setup()

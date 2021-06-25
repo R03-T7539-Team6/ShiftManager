@@ -8,7 +8,7 @@ namespace ShiftManager.Communication.InternalApiTest
 {
   public class SignInTests
   {
-    InternalApi TestTarget { get; } = new();
+    IInternalApi_SignIn TestTarget { get; } = new InternalApi();
 
     [SetUp]
     public void Setup()
