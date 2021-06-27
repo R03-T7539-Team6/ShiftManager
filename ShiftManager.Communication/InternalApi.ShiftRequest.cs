@@ -20,7 +20,7 @@ namespace ShiftManager.Communication
     /// <returns>実行結果</returns>
     public ApiResult AddShiftRequest(ISingleShiftData singleShiftData)
     {
-      IUserID targetUserID = singleShiftData.UserID;
+      UserID targetUserID = new(singleShiftData.UserID);
       if (!TestD.ShiftRequestsDictionary.TryGetValue(targetUserID, out IShiftRequest? shiftRequest) || shiftRequest is null)
       {
         TestD.ShiftRequestsDictionary.Add(targetUserID, new ShiftRequest(targetUserID, DateTime.Now, new() { { singleShiftData.WorkDate, singleShiftData } }));
@@ -57,7 +57,7 @@ namespace ShiftManager.Communication
       if (CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In, null);//ログイン中しか使用できない
 
-      if (TestD.ShiftRequestsDictionary.TryGetValue(CurrentUserData.UserID, out IShiftRequest? shiftRequest) || shiftRequest is null)
+      if (TestD.ShiftRequestsDictionary.TryGetValue(new(CurrentUserData.UserID), out IShiftRequest? shiftRequest) || shiftRequest is null)
         return new(false, ApiResultCodes.UserID_Not_Found, null);
 
       if (shiftRequest.RequestsDictionary.TryGetValue(date, out ISingleShiftData? singleShiftData) || singleShiftData is null)

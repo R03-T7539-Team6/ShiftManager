@@ -28,7 +28,7 @@ namespace ShiftManager.Communication
       if(string.IsNullOrWhiteSpace(hashedPassword?.Hash))
         return new(false, ApiResultCodes.Password_Not_Match);
 
-      if (!TestD.UserDataDictionary.TryGetValue(userID, out IUserData? userD))
+      if (!TestD.UserDataDictionary.TryGetValue(new(userID), out IUserData? userD))
         return new(false, ApiResultCodes.UserID_Not_Found);
 
       if (userD.HashedPassword.Hash == hashedPassword.Hash)

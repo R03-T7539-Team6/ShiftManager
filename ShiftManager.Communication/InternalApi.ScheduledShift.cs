@@ -26,7 +26,7 @@ namespace ShiftManager.Communication
       if (!TestD.ScheduledShiftDictionary.TryGetValue(targetDate, out IScheduledShift? scheduledShift) || scheduledShift is null)
         return new(false, ApiResultCodes.Target_Date_Not_Found, null);
 
-      if (!scheduledShift.ShiftDictionary.TryGetValue(userID, out ISingleShiftData? singleShiftData) || singleShiftData is null)
+      if (!scheduledShift.ShiftDictionary.TryGetValue(new(userID), out ISingleShiftData? singleShiftData) || singleShiftData is null)
         return new(false, ApiResultCodes.UserID_Not_Found, null);
       else
       {
@@ -48,7 +48,7 @@ namespace ShiftManager.Communication
       => Task.Run(() => UpdateScheduledShift(targetDate, (i) => new ScheduledShift(i) with { SchedulingState = shiftSchedulingState }));
 
     public Task<ApiResult> UpdateSingleScheduledShiftListAsync(DateTime targetDate, IReadOnlyCollection<ISingleShiftData> singleShiftDatas)
-      => Task.Run(() => UpdateScheduledShift(targetDate, (i) => new ScheduledShift(i) with { ShiftDictionary = singleShiftDatas.ToDictionary(i => i.UserID) }));
+      => Task.Run(() => UpdateScheduledShift(targetDate, (i) => new ScheduledShift(i) with { ShiftDictionary = singleShiftDatas.ToDictionary(i => new UserID(i.UserID)) }));
 
 
     private ApiResult UpdateScheduledShift(DateTime targetDate, Func<IScheduledShift, ScheduledShift> DataUpdater)

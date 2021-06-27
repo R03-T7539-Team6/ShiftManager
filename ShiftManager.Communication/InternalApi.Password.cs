@@ -44,7 +44,7 @@ namespace ShiftManager.Communication
     /// <returns>パスワードのハッシュ化に必要な情報</returns>
     public Task<ApiResult<HashedPassword>> GetPasswordHashingDataAsync(IUserID userID) => Task.Run<ApiResult<HashedPassword>>(() =>
     {
-      if (!TestD.UserDataDictionary.TryGetValue(userID, out IUserData? userD) || userD is null)
+      if (!TestD.UserDataDictionary.TryGetValue(new(userID), out IUserData? userD) || userD is null)
         return new(false, ApiResultCodes.UserID_Not_Found, null);
       else
         return new(true, ApiResultCodes.Success, new HashedPassword(userD.HashedPassword) with { Hash = string.Empty });

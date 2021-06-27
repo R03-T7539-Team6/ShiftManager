@@ -11,8 +11,8 @@ namespace ShiftManager.Communication
 
         new()
         {
-          { USER_DATA_ARR[0].UserID, USER_DATA_ARR[0] },
-          { USER_DATA_ARR[1].UserID, USER_DATA_ARR[1] }
+          { new(USER_DATA_ARR[0].UserID), USER_DATA_ARR[0] },
+          { new(USER_DATA_ARR[1].UserID), USER_DATA_ARR[1] }
         },
 
         new()
