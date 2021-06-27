@@ -30,7 +30,7 @@ namespace ShiftManager.Communication
   {
     public Task<ApiResult> DeleteUserDataAsync(IUserID userID) => DeleteUserDataAsync(new(userID));//NULLが渡されるとぶっ壊れるので注意
     public Task<ApiResult> DeleteUserDataAsync(UserID userID)
-      => Task.Run<ApiResult>(() => string.IsNullOrWhiteSpace(userID?.Value) && TestD.UserDataDictionary.Remove(userID) //UserIDが指定されていた場合のみ実行
+      => Task.Run<ApiResult>(() => !string.IsNullOrWhiteSpace(userID?.Value) && TestD.UserDataDictionary.Remove(userID) //UserIDが指定されていた場合のみ実行
       ? new(true, ApiResultCodes.Success) : new(false, ApiResultCodes.UserID_Not_Found));
 
     public Task<ApiResult<ScheduledShift>> GenerateScheduledShiftAsync(DateTime dateTime) => Task.Run<ApiResult<ScheduledShift>>(() =>
