@@ -8,6 +8,7 @@ namespace ShiftManager.Communication
   public interface IInternalApi_UserData
   {
     Task<ApiResult> UpdatePasswordAsync(IHashedPassword hashedPassword);
+    Task<ApiResult> UpdatePasswordAsync(IUserID userID, INameData nameData, IHashedPassword hashedPassword);
 
     Task<ApiResult<WorkLog>> GetWorkLogAsync();
     Task<ApiResult<UserSetting>> GetUserSettingAsync();
@@ -34,11 +35,27 @@ namespace ShiftManager.Communication
       if (CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In);
 
-      if (string.IsNullOrWhiteSpace(hashedPassword.Hash) || string.IsNullOrWhiteSpace(hashedPassword.Salt) || hashedPassword.StretchCount <= 0)
-        return new(false, ApiResultCodes.Invalid_Input);
+      return UpdatePasswordAsync(CurrentUserData.UserID, CurrentUserData.FullName, hashedPassword).Result;
+    });
 
-      CurrentUserData = new UserData(CurrentUserData) with { HashedPassword = new HashedPassword(hashedPassword) };
-      return new(true, ApiResultCodes.Success);
+    public Task<ApiResult> UpdatePasswordAsync(IUserID userID, INameData nameData, IHashedPassword hashedPassword) => Task.Run<ApiResult>(() =>
+    {
+      if (userID is null || nameData is null || hashedPassword is null)
+        return new(false, ApiResultCodes.Invalid_Input); //引数NULLは許容できない
+
+      if (string.IsNullOrWhiteSpace(hashedPassword.Hash) || string.IsNullOrWhiteSpace(hashedPassword.Salt) || hashedPassword.StretchCount <= 0)
+        return new(false, ApiResultCodes.Invalid_Input); //ハッシュ情報の不足も許容できない
+
+      if (!TestD.UserDataDictionary.TryGetValue(new(userID), out IUserData? userData) || userData is null)
+        return new(false, ApiResultCodes.UserID_Not_Found);
+
+      if (new NameData(userData.FullName) != new NameData(nameData))
+        return new(false, ApiResultCodes.FullName_Not_Match);
+
+      UserData newUserData = new UserData(userData) with { HashedPassword = new HashedPassword(hashedPassword) };
+      TestD.UserDataDictionary[new(userData.UserID)] = newUserData;
+
+      return SignInAsync(userID, hashedPassword).Result;
     });
   }
 }
