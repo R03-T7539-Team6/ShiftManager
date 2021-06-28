@@ -84,6 +84,9 @@
     Work_Not_Ended,
 
     /// <summary>休憩時間が0分以下 (休憩時間は1分以上という制約がある)</summary>
-    BreakTimeLen_Zero_Or_Less
+    BreakTimeLen_Zero_Or_Less,
+
+    /// <summary>氏名が一致しない</summary>
+    FullName_Not_Match
   }
 }
