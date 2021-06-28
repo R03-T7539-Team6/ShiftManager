@@ -1,4 +1,8 @@
-﻿using ShiftManager.DataClasses;
+﻿using System.Runtime.CompilerServices;
+
+using ShiftManager.DataClasses;
+
+[assembly: InternalsVisibleTo("ShiftManager.Communication.Test")]
 
 namespace ShiftManager.Communication
 {
