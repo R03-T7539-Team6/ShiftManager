@@ -7,33 +7,38 @@ namespace ShiftManager.Communication
 {
   public interface IInternalApi_UserData
   {
-    Task<ApiResult> CheckPasswordValidAsync(IHashedPassword hashedPassword);
     Task<ApiResult> UpdatePasswordAsync(IHashedPassword hashedPassword);
 
-    Task<ApiResult<IWorkLog>> GetWorkLogAsync();
-    Task<ApiResult<IUserSetting>> GetUserSettingAsync();
+    Task<ApiResult<WorkLog>> GetWorkLogAsync();
+    Task<ApiResult<UserSetting>> GetUserSettingAsync();
   }
 
   public partial class InternalApi : IInternalApi_UserData
   {
-    public Task<ApiResult> CheckPasswordValidAsync(IHashedPassword hashedPassword)
+    public Task<ApiResult<UserSetting>> GetUserSettingAsync() => Task.Run(() =>
     {
-      throw new NotImplementedException();
-    }
+      return CurrentUserData is null
+      ? new ApiResult<UserSetting>(false, ApiResultCodes.Not_Logged_In, null)
+      : new ApiResult<UserSetting>(true, ApiResultCodes.Success, new(CurrentUserData.UserSetting));
+    });
 
-    public Task<ApiResult<IUserSetting>> GetUserSettingAsync()
+    public Task<ApiResult<WorkLog>> GetWorkLogAsync() => Task.Run(() =>
     {
-      throw new NotImplementedException();
-    }
+      return CurrentUserData is null
+      ? new ApiResult<WorkLog>(false, ApiResultCodes.Not_Logged_In, null)
+      : new ApiResult<WorkLog>(true, ApiResultCodes.Success, new(CurrentUserData.WorkLog));
+    });
 
-    public Task<ApiResult<IWorkLog>> GetWorkLogAsync()
+    public Task<ApiResult> UpdatePasswordAsync(IHashedPassword hashedPassword) => Task.Run<ApiResult>(() =>
     {
-      throw new NotImplementedException();
-    }
+      if (CurrentUserData is null)
+        return new(false, ApiResultCodes.Not_Logged_In);
 
-    public Task<ApiResult> UpdatePasswordAsync(IHashedPassword hashedPassword)
-    {
-      throw new NotImplementedException();
-    }
+      if (string.IsNullOrWhiteSpace(hashedPassword.Hash) || string.IsNullOrWhiteSpace(hashedPassword.Salt) || hashedPassword.StretchCount <= 0)
+        return new(false, ApiResultCodes.Invalid_Input);
+
+      CurrentUserData = new UserData(CurrentUserData) with { HashedPassword = new HashedPassword(hashedPassword) };
+      return new(true, ApiResultCodes.Success);
+    });
   }
 }
