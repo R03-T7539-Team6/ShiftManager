@@ -17,6 +17,9 @@ namespace ShiftManager.Communication
 
   public partial class InternalApi : InternalApi_WorkLog
   {
+    /// <summary>指定のユーザについて, 休憩終了の打刻を行います</summary>
+    /// <param name="userID">ユーザID</param>
+    /// <returns>実行結果と, 処理した時刻</returns>
     public Task<ApiResult<DateTime>> DoBreakTimeEndLoggingAsync(IUserID userID) => Task.Run<ApiResult<DateTime>>(() =>
     {
       DateTime CurrentTime = DateTime.Now;
@@ -29,7 +32,7 @@ namespace ShiftManager.Communication
       if (workLogDic.Count <= 0) //勤務記録がない == 出勤打刻をしたことがない
         return new(false, ApiResultCodes.Work_Not_Started, CurrentTime);
 
-      ISingleWorkLog lastWorkLog = userData.WorkLog.WorkLogDictionary.Values.Last();
+      ISingleWorkLog lastWorkLog = workLogDic.Values.Last();
 
       //最後の要素に出勤打刻が行われていない || 最後の要素に退勤打刻が終わっている
       if (lastWorkLog.AttendanceTime == default || lastWorkLog.LeavingTime != default)
@@ -48,6 +51,10 @@ namespace ShiftManager.Communication
       return new(true, ApiResultCodes.Success, CurrentTime);
     });
 
+    /// <summary>休憩時刻の長さを計算します</summary>
+    /// <param name="start">休憩開始時刻</param>
+    /// <param name="end">休憩終了時刻</param>
+    /// <returns>休憩時間長 [min]</returns>
     static internal int GetBreakTimeLength(in DateTime start, in DateTime end)
       => (int)(new DateTime(end.Year, end.Month, end.Day, end.Hour, end.Minute, 0) - new DateTime(start.Year, start.Month, start.Day, start.Hour, start.Minute, 0)).TotalMinutes;
 
