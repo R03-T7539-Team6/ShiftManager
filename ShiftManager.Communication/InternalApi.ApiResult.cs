@@ -68,5 +68,7 @@
     /// <summary>シフト組みが完了していない</summary>
     Scheduling_Is_Not_Started,
 
+    /// <summary>不正な入力</summary>
+    Invalid_Input,
   }
 }
