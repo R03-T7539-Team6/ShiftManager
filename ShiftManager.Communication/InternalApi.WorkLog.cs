@@ -36,7 +36,7 @@ namespace ShiftManager.Communication
         return new(false, ApiResultCodes.Work_Not_Started, CurrentTime);
 
       KeyValuePair<DateTime, int> lastBreakLog = lastWorkLog.BreakTimeDictionary.LastOrDefault();
-      if (lastBreakLog.Key == default || lastBreakLog.Value <= 0) //休憩開始時刻の記録がない || 休憩終了時刻の記録がある
+      if (lastBreakLog.Key == default || lastBreakLog.Value > 0) //休憩開始時刻の記録がない || 休憩終了時刻の記録がある
         return new(false, ApiResultCodes.BreakTime_Not_Started, CurrentTime);
 
       int breakTimeLen = GetBreakTimeLength(lastBreakLog.Key, CurrentTime);
