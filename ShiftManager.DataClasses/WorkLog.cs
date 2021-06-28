@@ -6,30 +6,36 @@ using AutoNotify;
 
 namespace ShiftManager.DataClasses
 {
-  public record WorkLog(IUserID UserID, SortedDictionary<DateTime, ISingleWorkLog> WorkLogDictionary) : IWorkLog;
+  public record WorkLog(IUserID UserID, SortedDictionary<DateTime, ISingleWorkLog> WorkLogDictionary) : IWorkLog
+  {
+    public WorkLog(IWorkLog i) : this(i?.UserID ?? new UserID(), i?.WorkLogDictionary ?? new()) { }
+  }
 
-  public record SingleWorkLog(DateTime AttendanceTime, DateTime LeavingTime, Dictionary<DateTime, int> BreakTimeDictionary) : ISingleWorkLog;
+  public record SingleWorkLog(DateTime AttendanceTime, DateTime LeavingTime, Dictionary<DateTime, int> BreakTimeDictionary) : ISingleWorkLog
+  {
+    public SingleWorkLog(ISingleWorkLog i) : this(i?.AttendanceTime ?? new(), i?.LeavingTime ?? new(), i?.BreakTimeDictionary ?? new()) { }
+  }
 
   public partial class WorkLog_NotifyPropertyChanged : IWorkLog, INotifyPropertyChanged
   {
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     [AutoNotify]
-    private IUserID _UserID;
+    private IUserID _UserID = new UserID(string.Empty);
     [AutoNotify]
-    private SortedDictionary<DateTime, ISingleWorkLog> _WorkLogDictionary;
+    private SortedDictionary<DateTime, ISingleWorkLog> _WorkLogDictionary = new();
   }
 
   public partial class SingleWorkLog_NoifyPropertyChanged : ISingleWorkLog, INotifyPropertyChanged
   {
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     [AutoNotify]
     private DateTime _AttendanceTime;
     [AutoNotify]
     private DateTime _LeavingTime;
     [AutoNotify]
-    private Dictionary<DateTime, int> _BreakTimeDictionary;
+    private Dictionary<DateTime, int> _BreakTimeDictionary = new();
   }
 
   public interface IWorkLog

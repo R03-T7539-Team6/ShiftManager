@@ -1,7 +1,12 @@
-﻿using System;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,6 +22,7 @@ namespace SourceGeneratorSamples
     public class AutoNotifyGenerator : ISourceGenerator
     {
         private const string attributeText = @"
+#nullable disable
 using System;
 namespace AutoNotify
 {
@@ -79,7 +85,7 @@ namespace AutoNotify
             foreach (IGrouping<INamedTypeSymbol, IFieldSymbol> group in receiver.Fields.GroupBy(f => f.ContainingType))
             {
                 string classSource = ProcessClass(group.Key, group.ToList(), attributeSymbol, notifySymbol, context);
-               context.AddSource($"{group.Key.Name}_autoNotify.cs", SourceText.From(classSource, Encoding.UTF8));
+                context.AddSource($"{group.Key.Name}_autoNotify.cs", SourceText.From(classSource, Encoding.UTF8));
             }
         }
 

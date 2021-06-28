@@ -7,24 +7,27 @@ using AutoNotify;
 namespace ShiftManager.DataClasses
 {
   /// <summary>勤務予定/実績用クラス</summary>
-  public record SingleShiftData(IUserID UserID, DateTime WorkDate, bool IsPaidHoliday, DateTime AttendanceTime, DateTime LeavingTime, Dictionary<DateTime, int> BreakTimeDictionary) : ISingleShiftData;
+  public record SingleShiftData(IUserID UserID, DateTime WorkDate, bool IsPaidHoliday, DateTime AttendanceTime, DateTime LeavingTime, Dictionary<DateTime, int> BreakTimeDictionary) : ISingleShiftData
+  {
+    public SingleShiftData(ISingleShiftData i) : this(i?.UserID ?? new UserID(), i?.WorkDate ?? new(), i?.IsPaidHoliday ?? false, i?.AttendanceTime ?? new(), i?.LeavingTime ?? new(), i?.BreakTimeDictionary ?? new()) { }
+  }
 
   public partial class SingleShiftData_NotifyPropertuChanged : ISingleShiftData, INotifyPropertyChanged
   {
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     [AutoNotify]
-    private IUserID _UserID;
+    private IUserID _UserID = new UserID();
     [AutoNotify]
-    private DateTime _WorkDate;
+    private DateTime _WorkDate = new();
     [AutoNotify]
-    private bool _IsPaidHoliday;
+    private bool _IsPaidHoliday = false;
     [AutoNotify]
-    private DateTime _AttendanceTime;
+    private DateTime _AttendanceTime = new();
     [AutoNotify]
-    private DateTime _LeavingTime;
+    private DateTime _LeavingTime = new();
     [AutoNotify]
-    private Dictionary<DateTime, int> _BreakTimeDictionary;
+    private Dictionary<DateTime, int> _BreakTimeDictionary = new();
   }
 
   public interface ISingleShiftData
