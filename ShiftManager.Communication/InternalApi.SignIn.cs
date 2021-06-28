@@ -13,6 +13,10 @@ namespace ShiftManager.Communication
     /// <param name="HashedPasswordGetter">パスワードのハッシュ化に関する情報を受けてハッシュ化パスワードを返す関数</param>
     /// <returns>試行結果</returns>
     Task<ApiResult> SignInAsync(IUserID userID, IHashedPassword hashedPassword);
+
+    /// <summary>サインアウトを実行します</summary>
+    /// <returns>実行結果</returns>
+    Task<ApiResult> SignOutAsync();
   }
 
   public partial class InternalApi : IInternalApi_SignIn
@@ -37,5 +41,15 @@ namespace ShiftManager.Communication
         return new(false, ApiResultCodes.Password_Not_Match);
     });
 
+    /// <summary>サインアウトを実行します</summary>
+    /// <returns>実行結果</returns>
+    public Task<ApiResult> SignOutAsync() => Task.Run<ApiResult>(() =>
+    {
+      if (CurrentUserData is null)
+        return new(false, ApiResultCodes.Not_Logged_In);
+
+      CurrentUserData = null;
+      return new(true, ApiResultCodes.Success);
+    });
   }
 }
