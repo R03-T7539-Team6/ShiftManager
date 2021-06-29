@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 using ShiftManager.DataClasses;
@@ -10,6 +12,7 @@ namespace ShiftManager.Controls
 {
   public class ShiftEditorControl : ContentControl, ISingleShiftData
   {
+    #region Properties
     public Elements VisibleElements { get => (Elements)GetValue(VisibleElementsProperty); set => SetValue(VisibleElementsProperty, value); }
     public static readonly DependencyProperty VisibleElementsProperty = DependencyProperty.Register(nameof(VisibleElements), typeof(Elements), typeof(ShiftEditorControl));
 
@@ -36,10 +39,15 @@ namespace ShiftManager.Controls
     public double ShiftEditBarScale { get => (double)GetValue(ShiftEditBarScaleProperty); set => SetValue(ShiftEditBarScaleProperty, value); }
     public static readonly DependencyProperty ShiftEditBarScaleProperty = DependencyProperty.Register(nameof(ShiftEditBarScale), typeof(double), typeof(ShiftEditorControl));
 
+    public bool BreakTimePopupState { get => (bool)GetValue(BreakTimePopupStateProperty); set => SetValue(BreakTimePopupStateProperty, value); }
+    public static readonly DependencyProperty BreakTimePopupStateProperty = DependencyProperty.Register(nameof(BreakTimePopupState), typeof(bool), typeof(ShiftEditorControl));
+
     public IUserID UserID { get; private set; }
     public bool IsPaidHoliday { get; private set; }
 
+    #endregion
 
+    public static readonly ICommand BreakTimePopupOpenButtonClickedCommand = new CustomCommand<ShiftEditorControl>(i => i.BreakTimePopupOpenButtonClicked());
 
 
     static ShiftEditorControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(ShiftEditorControl), new FrameworkPropertyMetadata(typeof(ShiftEditorControl)));
@@ -61,6 +69,11 @@ namespace ShiftManager.Controls
       }
     }
 
+    private void BreakTimePopupOpenButtonClicked() => BreakTimePopupState //表示 == TRUEにするのは, 
+      = VisibleElements.HasFlag(Elements.BraakTime) //休憩時間コントロールが可視状態で
+      && !BreakTimePopupState; //かつ前回がポップアップ非表示状態である場合のみ
+
+    public static readonly Elements FullBitsOfElements = (Elements)0b01111111;
 
     [Flags]
     public enum Elements
