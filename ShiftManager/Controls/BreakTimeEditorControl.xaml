@@ -22,40 +22,41 @@
                 Grid.Row="0">
                 <Button
                   Command="{x:Static local:BreakTimeEditorControl.AddBreakTimeCommand}"
-                  CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:BreakTimeEditorControl}}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"
                   Content="追加"/>
                 <Button
                   Command="{x:Static local:BreakTimeEditorControl.RemoveBreakTimeCommand}"
-                  CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:BreakTimeEditorControl}}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"
                   Content="削除"/>
               </StackPanel>
 
               <ListView
+                ItemsSource="{TemplateBinding BreakTimeList}"
                 SelectedItem="{TemplateBinding SelectedBreakTime}"
                 Margin="10"
                 Grid.Row="1"
                 MaxHeight="100">
                 <ListView.View>
                   <GridView>
-                    <GridViewColumn Header="No"/>
+                    <GridViewColumn Header="No" DisplayMemberBinding="{Binding Index}"/>
                     <GridViewColumn Header="休入">
                       <GridViewColumn.CellTemplate>
                         <DataTemplate>
-                          <TextBox Text="00:00"/>
+                          <TextBox Text="{Binding StartTime, StringFormat=yyyy/MM/dd HH:MM}"/>
                         </DataTemplate>
                       </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="休出">
                       <GridViewColumn.CellTemplate>
                         <DataTemplate>
-                          <TextBox Text="00:00"/>
+                          <TextBox Text="{Binding EndTime, StringFormat=yyyy/MM/dd HH:MM}"/>
                         </DataTemplate>
                       </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="時間">
                       <GridViewColumn.CellTemplate>
                         <DataTemplate>
-                          <TextBox Text="00:00"/>
+                          <TextBox Text="{Binding TimeLen, StringFormat=hh\\:mm}"/>
                         </DataTemplate>
                       </GridViewColumn.CellTemplate>
                     </GridViewColumn>
