@@ -9,90 +9,98 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="WorkTimeRecordPage">
 
-  <Grid Background="LightGray">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="*"/>
-    </Grid.ColumnDefinitions>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="3*"/>
-      <RowDefinition Height="1*"/>
-      <RowDefinition Height="1*"/>
-    </Grid.RowDefinitions>
+    <Grid Background="LightGray">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="90"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
 
-    <Viewbox
+        <Viewbox
       Margin="10"
       Grid.Row="0"
       Grid.Column="0">
-      <Border
+            <Border
         BorderThickness="1"
         BorderBrush="Black"
         Background="White">
-        <TextBlock Text="23:59:59" Margin="2"/>
-      </Border>
-    </Viewbox>
+                <TextBlock x:Name="time" Text="00:00:00" Margin="2"/>
+            </Border>
+        </Viewbox>
 
-    <Grid
+        <Grid
       Margin="10"
       Grid.Column="0"
       Grid.Row="1">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="160"/>
-        <ColumnDefinition Width="*"/>
-      </Grid.ColumnDefinitions>
-      <TextBlock
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock
         Text="ユーザID&#xa;(従業員番号)"
         Margin="4"
         VerticalAlignment="Center"
         TextAlignment="Right"/>
-      <TextBox
+            <TextBox
         Padding="2,4"
         Grid.Column="1"
         VerticalContentAlignment="Center"
         VerticalAlignment="Center"/>
-    </Grid>
+        </Grid>
 
-    <Grid
+        <Grid
       Margin="10"
       Grid.Column="0"
       Grid.Row="2">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*"/>
-        <ColumnDefinition Width="*"/>
-        <ColumnDefinition Width="*"/>
-        <ColumnDefinition Width="*"/>
-      </Grid.ColumnDefinitions>
-      
-      <!--できればF1とかのキーを使って操作できるようにしたい-->
-      <Button
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--できればF1とかのキーを使って操作できるようにしたい-->
+            <Button
         Margin="10"
         Grid.Column="0"
         Content="出勤"/>
-      <Button
+            <Button
         Margin="10"
         Grid.Column="1"
         Content="休入"/>
-      <Button
+            <Button
         Margin="10"
         Grid.Column="2"
         Content="休出"/>
-      <Button
+            <Button
         Margin="10"
         Grid.Column="3"
         Content="退勤"/>
 
-    </Grid>
-    
-    <StackPanel
+        </Grid>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="19,0,19,10" HorizontalScrollBarVisibility="Auto" Grid.Column="1" Grid.RowSpan="3">
+            <ListView x:Name="ListView"
       Margin="10"
       Background="White"
       Grid.RowSpan="3"
       Grid.Column="1">
-      <!--実際は動的に配置する-->
-      <MyCtrl:ShiftEditorControl/>
-      <MyCtrl:ShiftEditorControl/>
-      <MyCtrl:ShiftEditorControl/>
-      <MyCtrl:ShiftEditorControl/>
-    </StackPanel>
-  </Grid>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="日付" DisplayMemberBinding="{Binding Path=hoge}" Width="130"/>
+                        <GridViewColumn Header="出勤" DisplayMemberBinding="{Binding Path=hoge}" Width="60"/>
+                        <GridViewColumn Header="退勤" DisplayMemberBinding="{Binding Path=hoge}" Width="60"/>
+                        <GridViewColumn Header="休憩" DisplayMemberBinding="{Binding Path=hoge}" Width="140"/>
+                        <GridViewColumn Header="0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24" DisplayMemberBinding="{Binding Path=hoge}" Width="340"/>
+                        <GridViewColumn Header="勤務時間" DisplayMemberBinding="{Binding Path=hoge}" Width="130"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </ScrollViewer>
+        <CheckBox Content="CheckBox" Grid.Column="1" HorizontalAlignment="Left" Margin="435,-66,0,0" VerticalAlignment="Top"/>
+    </Grid>
 </Page>

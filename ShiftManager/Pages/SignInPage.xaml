@@ -8,7 +8,14 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SignInPage">
 
-  <Grid>
-
-  </Grid>
+    <Grid Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
+        <TextBlock HorizontalAlignment="Left" Margin="173,99,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="38" Width="95" FontSize="24"><Run Language="ja-jp" Text="ログインID"/></TextBlock>
+        <TextBox x:Name="ID" HorizontalAlignment="Left" Height="32" Margin="294,99,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="258"/>
+        <TextBlock HorizontalAlignment="Left" Margin="173,222,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="38" Width="95" FontSize="24"><Run Language="ja-jp" Text="パスワード"/></TextBlock>
+        <TextBox x:Name="Pass" HorizontalAlignment="Left" Height="32" Margin="294,225,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="258"/>
+        <TextBlock HorizontalAlignment="Left" Margin="418,64,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="33" Width="134" FontSize="16" Text="IDが正しくありません" Foreground="#FFFC0303"/>
+        <TextBlock HorizontalAlignment="Left" Margin="375,187,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="33" Width="177" FontSize="16" Foreground="#FFFC0303"><Run Language="ja-jp" Text="パスワード"/><Run Text="が正しくありません"/></TextBlock>
+        <Button x:Name="In" Content="ログイン" HorizontalAlignment="Left" Height="47" Margin="307,352,0,0" VerticalAlignment="Top" Width="150" FontFamily="Yu Gothic UI" FontSize="24" Click="ln_Click_2" ClickMode="Press"/>
+        <Button Content="パスワードを忘れた場合" HorizontalAlignment="Left" Height="30" Margin="307,285,0,0" VerticalAlignment="Top" Width="150" FontFamily="Yu Gothic UI" FontSize="16" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}"/>
+    </Grid>
 </Page>
