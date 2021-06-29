@@ -68,5 +68,25 @@
     /// <summary>シフト組みが完了していない</summary>
     Scheduling_Is_Not_Started,
 
+    /// <summary>不正な入力</summary>
+    Invalid_Input,
+
+    /// <summary>休憩開始打刻がされていない</summary>
+    BreakTime_Not_Started,
+
+    /// <summary>休憩終了打刻がされていない</summary>
+    BreakTime_Not_Ended,
+
+    /// <summary>勤務開始(出勤)打刻がされていない</summary>
+    Work_Not_Started,
+
+    /// <summary>勤務終了(退勤)打刻がされていない</summary>
+    Work_Not_Ended,
+
+    /// <summary>休憩時間が0分以下 (休憩時間は1分以上という制約がある)</summary>
+    BreakTimeLen_Zero_Or_Less,
+
+    /// <summary>氏名が一致しない</summary>
+    FullName_Not_Match
   }
 }
