@@ -51,58 +51,7 @@
               PopupAnimation="Fade"
               StaysOpen="False"
               PlacementTarget="{Binding ElementName=BreakTimePopupOpenButton}">
-              <Border
-                BorderThickness="1"
-                BorderBrush="Black">
-                <Grid Background="White">
-                  <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                  </Grid.RowDefinitions>
-                  <StackPanel
-                    Margin="4"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Grid.Row="0">
-                    <Button
-                      Content="追加"/>
-                    <Button
-                      Content="削除"/>
-                  </StackPanel>
-
-                  <ListView
-                    Margin="10"
-                    Grid.Row="1"
-                    MaxHeight="100">
-                    <ListView.View>
-                      <GridView>
-                        <GridViewColumn Header="No"/>
-                        <GridViewColumn Header="休入">
-                          <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                              <TextBox Text="00:00"/>
-                            </DataTemplate>
-                          </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="休出">
-                          <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                              <TextBox Text="00:00"/>
-                            </DataTemplate>
-                          </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="時間">
-                          <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                              <TextBox Text="00:00"/>
-                            </DataTemplate>
-                          </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                      </GridView>
-                    </ListView.View>
-                  </ListView>
-                </Grid>
-              </Border>
+              <local:BreakTimeEditorControl/>
             </Popup>
             
             <Rectangle
