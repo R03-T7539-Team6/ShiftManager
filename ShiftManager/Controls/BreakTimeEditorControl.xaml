@@ -21,12 +21,17 @@
                 HorizontalAlignment="Right"
                 Grid.Row="0">
                 <Button
+                  Command="{x:Static local:BreakTimeEditorControl.AddBreakTimeCommand}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:BreakTimeEditorControl}}"
                   Content="追加"/>
                 <Button
+                  Command="{x:Static local:BreakTimeEditorControl.RemoveBreakTimeCommand}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:BreakTimeEditorControl}}"
                   Content="削除"/>
               </StackPanel>
 
               <ListView
+                SelectedItem="{TemplateBinding SelectedBreakTime}"
                 Margin="10"
                 Grid.Row="1"
                 MaxHeight="100">
