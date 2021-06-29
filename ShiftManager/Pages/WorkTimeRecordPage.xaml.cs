@@ -7,8 +7,9 @@ namespace ShiftManager.Pages
   /// <summary>
   /// Interaction logic for WorkTimeRecordPage.xaml
   /// </summary>
-  public partial class WorkTimeRecordPage : Page
+  public partial class WorkTimeRecordPage : Page, IContainsApiHolder
   {
+    public IApiHolder ApiHolder { get; set; }
     public WorkTimeRecordPage()
     {
       InitializeComponent();

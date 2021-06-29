@@ -8,9 +8,9 @@ namespace ShiftManager.Pages
   /// <summary>
   /// Interaction logic for LoginPage.xaml
   /// </summary>
-  public partial class SignInPage : Page
+  public partial class SignInPage : Page, IContainsApiHolder
   {
-    ShiftManager.Communication.InternalApi api { get; } = new();
+    public IApiHolder ApiHolder { get; set; }
 
     public SignInPage()
     {
@@ -28,7 +28,7 @@ namespace ShiftManager.Pages
       UserID targetUserID = new(userID);
 
       //パスワードをハッシュ化するために必要な情報を取得します
-      ApiResult<HashedPassword> passwordHashingDataRequestResult = await api.GetPasswordHashingDataAsync(targetUserID);
+      ApiResult<HashedPassword> passwordHashingDataRequestResult = await ApiHolder.Api.GetPasswordHashingDataAsync(targetUserID);
 
       //もしもID不一致等で実行に失敗した場合は, IsSuccessプロパティに"false"が入ります.
       if (!passwordHashingDataRequestResult.IsSuccess)
@@ -42,7 +42,7 @@ namespace ShiftManager.Pages
 
       //ハッシュ化パスワードとともに, サインインを試行します
       //API側で削られる情報ではありますが, 念のためSaltとStretchCountの情報は削除しておきましょう.  削除せずに渡しても動作に問題はありません.
-      return await api.SignInAsync(targetUserID, hashedPassword with { Salt = string.Empty, StretchCount = 0 });
+      return await ApiHolder.Api.SignInAsync(targetUserID, hashedPassword with { Salt = string.Empty, StretchCount = 0 });
     }
 
     private void ln_Click_2(object sender, System.Windows.RoutedEventArgs e)

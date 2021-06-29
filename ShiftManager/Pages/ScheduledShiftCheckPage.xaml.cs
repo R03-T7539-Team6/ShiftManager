@@ -8,8 +8,9 @@ namespace ShiftManager.Pages
   /// Interaction logic for ScheduledShiftCheckPage.xaml
   /// </summary>
 
-  public partial class ScheduledShiftCheckPage : Page
+  public partial class ScheduledShiftCheckPage : Page, IContainsApiHolder
   {
+    public IApiHolder ApiHolder { get; set; }
     public ScheduledShiftCheckPage()
     {
       InitializeComponent();
