@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ShiftManager.Communication\ShiftManager.Communication.csproj" />
     <ProjectReference Include="..\ShiftManager.DataClasses\ShiftManager.DataClasses.csproj" />
   </ItemGroup>
 
