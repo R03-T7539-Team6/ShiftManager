@@ -70,8 +70,7 @@ namespace ShiftManager.Controls
     }
 
     private void BreakTimePopupOpenButtonClicked() => BreakTimePopupState //表示 == TRUEにするのは, 
-      = VisibleElements.HasFlag(Elements.BraakTime) //休憩時間コントロールが可視状態で
-      && !BreakTimePopupState; //かつ前回がポップアップ非表示状態である場合のみ
+      = VisibleElements.HasFlag(Elements.BraakTime); //休憩時間コントロールが可視状態である場合のみ
 
     public static readonly Elements FullBitsOfElements = (Elements)0b01111111;
 
