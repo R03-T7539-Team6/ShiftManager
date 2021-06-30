@@ -1,7 +1,16 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:local="clr-namespace:ShiftManager.Controls">
+  xmlns:local="clr-namespace:ShiftManager.Controls"
+  xmlns:root="clr-namespace:ShiftManager">
+
+  <root:HasFlagConverter x:Key="HasFlagConv"/>
+  <root:ValueConverterGroup x:Key="ENumFlagToVisibilityConv">
+    <root:ValueConverterGroup.Converters>
+      <root:HasFlagConverter/>
+      <BooleanToVisibilityConverter/>
+    </root:ValueConverterGroup.Converters>
+  </root:ValueConverterGroup>
 
   <Style TargetType="Button">
     <Setter Property="Margin" Value="4"/>
@@ -11,6 +20,7 @@
   <Style TargetType="{x:Type local:ShiftEditorControl}">
     <Setter Property="VisibleElements" Value="{x:Static local:ShiftEditorControl.FullBitsOfElements}"/>
     <Setter Property="EditableElements" Value="{x:Static local:ShiftEditorControl.FullBitsOfElements}"/>
+    
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type local:ShiftEditorControl}">
@@ -23,35 +33,49 @@
               <ColumnDefinition Width="*"/>
               <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock
+
+            <ContentControl
+              Content="{TemplateBinding Content}"
+              IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.Text}}"
+              Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.Text}}"
               Grid.Column="0"
               Margin="4"
-              Padding="4"
-              Text="文字列表示"/>
+              Padding="4"/>
 
             <!--出勤時刻-->
             <TextBox
+              IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.AttendTime}}"
+              Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.AttendTime}}"
               Grid.Column="1"
               Margin="4"
               Padding="4"
-              Text="00:00"/>
+              Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=AttendanceTime, StringFormat=HH:MM}"/>
 
             <!--退勤時刻-->
             <TextBox
+              IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.LeaveTime}}"
+              Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.LeaveTime}}"
               Grid.Column="2"
               Margin="4"
               Padding="4"
-              Text="23:59"/>
+              Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=LeavingTime, StringFormat=HH:MM}"/>
 
             <!--休憩時刻-->
             <Button
               x:Name="BreakTimePopupOpenButton"
+              IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.BreakTime}}"
+              Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.BreakTime}}"
+              Margin="4"
+              Padding="4"
+              HorizontalAlignment="Stretch"
               Command="{x:Static local:ShiftEditorControl.BreakTimePopupOpenButtonClickedCommand}"
               CommandParameter="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"
               Grid.Column="3"
               Content="{Binding ElementName=BreakTimeEditor, Path=SelectionText}"/>
             <Popup
               x:Name="BreakTimePopup"
+              IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.BreakTime}}"
+              Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.BreakTime}}"
               IsOpen="{TemplateBinding BreakTimePopupState}"
               AllowsTransparency="True"
               PopupAnimation="Fade"
@@ -64,15 +88,27 @@
             </Popup>
             
             <Rectangle
+              IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.ShiftBar}}"
+              Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.ShiftBar}}"
               Grid.Column="4"
               Margin="4"
               Fill="Aqua"/>
-            
+
             <TextBlock
+              IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.WorkTimeLen}}"
+              Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.WorkTimeLen}}"
               Grid.Column="5"
               Margin="4"
+              Padding="4">
+            </TextBlock>
+
+            <Button
+              IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.DeleteButton}}"
+              Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.DeleteButton}}"
+              Grid.Column="6"
+              Margin="4"
               Padding="4"
-              Text="12:48"/>
+              Content="Delete"/>
           </Grid>
         </ControlTemplate>
       </Setter.Value>
