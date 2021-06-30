@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,11 +12,11 @@ namespace ShiftManager.Controls
   public class ShiftEditorControl : ContentControl, ISingleShiftData
   {
     #region Properties
-    public Elements VisibleElements { get => (Elements)GetValue(VisibleElementsProperty); set => SetValue(VisibleElementsProperty, value); }
-    public static readonly DependencyProperty VisibleElementsProperty = DependencyProperty.Register(nameof(VisibleElements), typeof(Elements), typeof(ShiftEditorControl));
+    public ShiftEditorElements VisibleElements { get => (ShiftEditorElements)GetValue(VisibleElementsProperty); set => SetValue(VisibleElementsProperty, value); }
+    public static readonly DependencyProperty VisibleElementsProperty = DependencyProperty.Register(nameof(VisibleElements), typeof(ShiftEditorElements), typeof(ShiftEditorControl));
 
-    public Elements EditableElements { get => (Elements)GetValue(EditableElementsProperty); set => SetValue(EditableElementsProperty, value); }
-    public static readonly DependencyProperty EditableElementsProperty = DependencyProperty.Register(nameof(EditableElements), typeof(Elements), typeof(ShiftEditorControl));
+    public ShiftEditorElements EditableElements { get => (ShiftEditorElements)GetValue(EditableElementsProperty); set => SetValue(EditableElementsProperty, value); }
+    public static readonly DependencyProperty EditableElementsProperty = DependencyProperty.Register(nameof(EditableElements), typeof(ShiftEditorElements), typeof(ShiftEditorControl));
 
     public DateTime WorkDate { get => (DateTime)GetValue(WorkDateProperty); set => SetValue(WorkDateProperty, value); }
     public static readonly DependencyProperty WorkDateProperty = DependencyProperty.Register(nameof(WorkDate), typeof(DateTime), typeof(ShiftEditorControl));
@@ -42,8 +41,8 @@ namespace ShiftManager.Controls
     public bool BreakTimePopupState { get => (bool)GetValue(BreakTimePopupStateProperty); set => SetValue(BreakTimePopupStateProperty, value); }
     public static readonly DependencyProperty BreakTimePopupStateProperty = DependencyProperty.Register(nameof(BreakTimePopupState), typeof(bool), typeof(ShiftEditorControl));
 
-    public IUserID UserID { get; private set; }
-    public bool IsPaidHoliday { get; private set; }
+    public IUserID UserID { get; private set; } //使わない
+    public bool IsPaidHoliday { get; private set; } //使わない
 
     #endregion
 
@@ -70,34 +69,34 @@ namespace ShiftManager.Controls
     }
 
     private void BreakTimePopupOpenButtonClicked() => BreakTimePopupState //表示 == TRUEにするのは, 
-      = VisibleElements.HasFlag(Elements.BraakTime); //休憩時間コントロールが可視状態である場合のみ
+      = VisibleElements.HasFlag(ShiftEditorElements.BreakTime); //休憩時間コントロールが可視状態である場合のみ
 
-    public static readonly Elements FullBitsOfElements = (Elements)0b01111111;
+    public static readonly ShiftEditorElements FullBitsOfElements = (ShiftEditorElements)0b01111111;
+  }
 
-    [Flags]
-    public enum Elements
-    {
-      None = 0,
-      /// <summary>テキスト</summary>
-      Text = 1 << 1,
+  [Flags]
+  public enum ShiftEditorElements
+  {
+    None = 0,
+    /// <summary>テキスト</summary>
+    Text = 1 << 0,
 
-      /// <summary>出勤時刻</summary>
-      AttendTime = 1 << 2,
+    /// <summary>出勤時刻</summary>
+    AttendTime = 1 << 1,
 
-      /// <summary>退勤時刻</summary>
-      LeaveTime = 1 << 3,
+    /// <summary>退勤時刻</summary>
+    LeaveTime = 1 << 2,
 
-      /// <summary>休憩時分</summary>
-      BraakTime = 1 << 4,
+    /// <summary>休憩時分</summary>
+    BreakTime = 1 << 3,
 
-      /// <summary>シフト表示UI (バー型シフト視覚化要素)</summary>
-      ShiftBar = 1 << 5,
+    /// <summary>シフト表示UI (バー型シフト視覚化要素)</summary>
+    ShiftBar = 1 << 4,
 
-      /// <summary>勤務時間長</summary>
-      WorkTimeLen = 1 << 6,
+    /// <summary>勤務時間長</summary>
+    WorkTimeLen = 1 << 5,
 
-      /// <summary>削除ボタン</summary>
-      DeleteButton = 1 << 7
-    }
+    /// <summary>削除ボタン</summary>
+    DeleteButton = 1 << 6
   }
 }
