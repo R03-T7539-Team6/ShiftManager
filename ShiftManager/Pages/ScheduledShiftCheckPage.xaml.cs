@@ -1,14 +1,16 @@
 ﻿using System.Windows.Controls;
 using System;
 using System.Collections.Generic;
+using ShiftManager.DataClasses;
+using ShiftManager.Communication;
+using System.Threading.Tasks;
 
 namespace ShiftManager.Pages
 {
   /// <summary>
   /// Interaction logic for ScheduledShiftCheckPage.xaml
   /// </summary>
-
-  public partial class ScheduledShiftCheckPage : Page, IContainsApiHolder
+  public partial class ScheduledShiftCheckPage : Page
   {
     public IApiHolder ApiHolder { get; set; }
     public ScheduledShiftCheckPage()
@@ -27,7 +29,11 @@ namespace ShiftManager.Pages
       Datelist.Add(today.AddDays(7));
 
       ComboBox.ItemsSource = Datelist;
+      ComboBox.SelectedIndex = 1;
 
+  
     }
+
+    
   }
 }
