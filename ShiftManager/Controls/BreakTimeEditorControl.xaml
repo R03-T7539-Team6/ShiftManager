@@ -31,8 +31,9 @@
               </StackPanel>
 
               <ListView
+                x:Name="BreakTimeListView"
                 ItemsSource="{TemplateBinding BreakTimeList}"
-                SelectedItem="{TemplateBinding SelectedBreakTime}"
+                SelectionMode="Extended"
                 Margin="10"
                 Grid.Row="1"
                 MaxHeight="100">
@@ -42,21 +43,21 @@
                     <GridViewColumn Header="休入">
                       <GridViewColumn.CellTemplate>
                         <DataTemplate>
-                          <TextBox Text="{Binding StartTime, StringFormat=yyyy/MM/dd HH:MM}"/>
+                          <TextBox Text="{Binding StartTime, UpdateSourceTrigger=PropertyChanged, StringFormat=yyyy/MM/dd HH:MM}"/>
                         </DataTemplate>
                       </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="休出">
                       <GridViewColumn.CellTemplate>
                         <DataTemplate>
-                          <TextBox Text="{Binding EndTime, StringFormat=yyyy/MM/dd HH:MM}"/>
+                          <TextBox Text="{Binding EndTime, UpdateSourceTrigger=PropertyChanged, StringFormat=yyyy/MM/dd HH:MM}"/>
                         </DataTemplate>
                       </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="時間">
                       <GridViewColumn.CellTemplate>
                         <DataTemplate>
-                          <TextBox Text="{Binding TimeLen, StringFormat=hh\\:mm}"/>
+                          <TextBox Text="{Binding TimeLen, UpdateSourceTrigger=PropertyChanged, StringFormat=hh\\:mm}"/>
                         </DataTemplate>
                       </GridViewColumn.CellTemplate>
                     </GridViewColumn>

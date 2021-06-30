@@ -19,8 +19,7 @@ namespace ShiftManager.Controls
     public Dictionary<DateTime, int> BreakTimeDictionary { get => (Dictionary<DateTime, int>)GetValue(BreakTimeDictionaryProperty); set => SetValue(BreakTimeDictionaryProperty, value); }
     public static readonly DependencyProperty BreakTimeDictionaryProperty = DependencyProperty.Register(nameof(BreakTimeDictionary), typeof(Dictionary<DateTime, int>), typeof(BreakTimeEditorControl), new((i, _) => (i as BreakTimeEditorControl)?.BreakTimeDictionaryUpdated()));
 
-    public BreakTimeDataSource SelectedBreakTime { get => (BreakTimeDataSource)GetValue(SelectedBreakTimeProperty); set => SetValue(SelectedBreakTimeProperty, value); }
-    public static readonly DependencyProperty SelectedBreakTimeProperty = DependencyProperty.Register(nameof(SelectedBreakTime), typeof(BreakTimeDataSource), typeof(BreakTimeEditorControl), new((s, e) => (s as BreakTimeEditorControl)?.SelectionChanged(e)));
+    private List<BreakTimeDataSource> SelectedBreakTime { get; } = new();
 
     public static readonly ICommand AddBreakTimeCommand = new CustomCommand<BreakTimeEditorControl>(i => i.AddBreakTime());
     public static readonly ICommand RemoveBreakTimeCommand = new CustomCommand<BreakTimeEditorControl>(i => i.RemoveBreakTime());
@@ -39,12 +38,67 @@ namespace ShiftManager.Controls
     }
     private string _SelectionText = "[--/--] --:-- ~ --:--";
 
+    private BreakTimeDataSource LastSelectionTextObject;
+
+    private void _OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+      foreach (var r in e.RemovedItems)
+      {
+        if (r is BreakTimeDataSource d)
+          _ = SelectedBreakTime.Remove(d);
+      }
+
+      foreach (var a in e.AddedItems)
+      {
+        if (a is BreakTimeDataSource d)
+          SelectedBreakTime.Add(d);
+      }
+
+      if (BreakTimeDictionary is null)
+      {
+        SelectionText = "[--/--] --:-- ~ --:--";
+        return;
+      }
+
+      BreakTimeDataSource firstSelectedItem = SelectedBreakTime.FirstOrDefault();
+
+      if (firstSelectedItem != LastSelectionTextObject)
+      {
+        if (LastSelectionTextObject is not null)
+          LastSelectionTextObject.PropertyChanged -= LastSelectionTextObject_PropertyChanged;
+
+        if (firstSelectedItem is not null)
+        {
+          firstSelectedItem.PropertyChanged += LastSelectionTextObject_PropertyChanged;
+          LastSelectionTextObject_PropertyChanged(firstSelectedItem, null);
+        }
+        else
+        {
+          SelectionText = $"[--/{BreakTimeDictionary.Count:D2}] --:-- ~ --:--";
+        }
+
+        LastSelectionTextObject = firstSelectedItem;
+      }
+    }
+
+    private void LastSelectionTextObject_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+      if (sender is BreakTimeDataSource newV)
+        SelectionText = $"[{newV.Index:D2}/{BreakTimeDictionary.Count:D2}] {newV.StartTime:HH:mm} ~ {newV.EndTime:HH:mm}";
+    }
 
     static BreakTimeEditorControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(BreakTimeEditorControl), new FrameworkPropertyMetadata(typeof(BreakTimeEditorControl)));
-    
+
+    public override void OnApplyTemplate()
+    {
+      base.OnApplyTemplate();
+
+      if (Template.FindName("BreakTimeListView", this) is ListView lv)
+        lv.SelectionChanged += _OnSelectionChanged;
+    }
+
     private void BreakTimeDictionaryUpdated()
     {
-      SelectedBreakTime = null;
       BreakTimeList = new();
       foreach (var i in BreakTimeDictionary)
         BreakTimeList.Add(new(i, BreakTimeDictionary));
@@ -60,60 +114,34 @@ namespace ShiftManager.Controls
         BreakTimeDictionary.Add(kvp.Key, kvp.Value);
         BreakTimeList.Add(new(kvp, BreakTimeDictionary));
       }
-    }
-
-    private void RemoveBreakTime()
-    {
-      if (SelectedBreakTime is null)
-        return;
-
-      var tmp = SelectedBreakTime;
-      SelectedBreakTime = null; //先に選択を解除する
-
-      BreakTimeDictionary.Remove(tmp.StartTime); //Keyが存在しなかったときはfalseが返るだけ
-      BreakTimeList.Remove(tmp); //tmpが存在しなかったときはfalseが返るだけ
 
       foreach (var i in BreakTimeList)
         i.UpdateIndex();
     }
 
-    private BreakTimeDataSource lastSelectedItem;
-    private void SelectionChanged(in DependencyPropertyChangedEventArgs? e)
+    private void RemoveBreakTime()
     {
-      if(BreakTimeDictionary is null)
-      {
-        SelectionText = "[--/--] --:-- ~ --:--";
+      if (SelectedBreakTime is null || SelectedBreakTime.Count <= 0)
         return;
-      }
 
-      if (e?.OldValue is BreakTimeDataSource v)
-        v.PropertyChanged -= SelectedItemPropertyChanged;
-
-      BreakTimeDataSource newV = e?.NewValue as BreakTimeDataSource ?? SelectedBreakTime;
-
-      if (newV is not null) //選択されてる場合のみ更新
+      foreach (var i in new List<BreakTimeDataSource>(SelectedBreakTime))
       {
-        if (lastSelectedItem != newV) //選択要素の更新があればイベントの購読/解除も行う
-        {
-          if (lastSelectedItem is not null)
-            lastSelectedItem.PropertyChanged -= SelectedItemPropertyChanged;
-
-          newV.PropertyChanged += SelectedItemPropertyChanged;
-          lastSelectedItem = newV;
-        }
-
-        SelectionText = $"[{newV.Index:D2}/{BreakTimeDictionary.Count:D2}] {newV.StartTime:HH:mm} ~ {newV.EndTime:HH:mm}";
+        _ = BreakTimeDictionary.Remove(i.StartTime); //Keyが存在しなかったときはfalseが返るだけ
+        _ = BreakTimeList.Remove(i); //tmpが存在しなかったときはfalseが返るだけ
       }
 
+      SelectedBreakTime.Clear();
+
+      foreach (var i in BreakTimeList)
+        i.UpdateIndex();
     }
-    private void SelectedItemPropertyChanged(object s, PropertyChangedEventArgs e) => SelectionChanged(null);
   }
   public partial class BreakTimeDataSource : INotifyPropertyChanged
   {
     public event PropertyChangedEventHandler PropertyChanged;
     private void OnPropertyChanged(in string propName) => PropertyChanged?.Invoke(this, new(propName));
     public Dictionary<DateTime, int> BreakTimeDictionary { get; }
-    public BreakTimeDataSource(in KeyValuePair<DateTime,int> keyValuePair ,Dictionary<DateTime, int> breakTimeDic)
+    public BreakTimeDataSource(in KeyValuePair<DateTime, int> keyValuePair, Dictionary<DateTime, int> breakTimeDic)
     {
       BreakTimeDictionary = breakTimeDic;
 
@@ -147,7 +175,7 @@ namespace ShiftManager.Controls
           return;
 
         if (BreakTimeDictionary.TryGetValue(StartTime, out int timeLen))
-          BreakTimeDictionary.Remove(StartTime);
+          _ = BreakTimeDictionary.Remove(StartTime);
 
         _StartTime = new(value.Year, value.Month, value.Day, value.Hour, value.Minute, 0);
 
