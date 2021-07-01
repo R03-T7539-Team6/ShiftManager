@@ -13,7 +13,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.PrintHelper", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator", "RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator\RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator.csproj", "{E032B77C-2AE3-43D5-AF20-18D411A4FFEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShiftManager.Communication.Test", "ShiftManager.Communication.Test\ShiftManager.Communication.Test.csproj", "{B7845FED-D7F2-4B63-9965-60BAB9F3AF8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.Communication.Test", "ShiftManager.Communication.Test\ShiftManager.Communication.Test.csproj", "{B7845FED-D7F2-4B63-9965-60BAB9F3AF8A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6A1E5DE2-ED7F-4DDE-8530-31BA6AB7AAB6}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
