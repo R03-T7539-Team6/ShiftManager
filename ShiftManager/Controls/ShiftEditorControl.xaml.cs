@@ -21,9 +21,11 @@ namespace ShiftManager.Controls
     public DateTime WorkDate { get => (DateTime)GetValue(WorkDateProperty); set => SetValue(WorkDateProperty, value); }
     public static readonly DependencyProperty WorkDateProperty = DependencyProperty.Register(nameof(WorkDate), typeof(DateTime), typeof(ShiftEditorControl));
     public DateTime AttendanceTime { get => (DateTime)GetValue(AttendanceTimeProperty); set => SetValue(AttendanceTimeProperty, value); }
-    public static readonly DependencyProperty AttendanceTimeProperty = DependencyProperty.Register(nameof(AttendanceTime), typeof(DateTime), typeof(ShiftEditorControl));
+    public static readonly DependencyProperty AttendanceTimeProperty = DependencyProperty.Register(nameof(AttendanceTime), typeof(DateTime), typeof(ShiftEditorControl), new((s, _) => (s as ShiftEditorControl)?.ChangeWorkTimeLen()));
     public DateTime LeavingTime { get => (DateTime)GetValue(LeavingTimeProperty); set => SetValue(LeavingTimeProperty, value); }
-    public static readonly DependencyProperty LeavingTimeProperty = DependencyProperty.Register(nameof(LeavingTime), typeof(DateTime), typeof(ShiftEditorControl));
+    public static readonly DependencyProperty LeavingTimeProperty = DependencyProperty.Register(nameof(LeavingTime), typeof(DateTime), typeof(ShiftEditorControl), new((s, _) => (s as ShiftEditorControl)?.ChangeWorkTimeLen()));
+    public TimeSpan WorkTimeLength { get => (TimeSpan)GetValue(WorkTimeLengthProperty); set => SetValue(WorkTimeLengthProperty, value); }
+    public static readonly DependencyProperty WorkTimeLengthProperty = DependencyProperty.Register(nameof(WorkTimeLength), typeof(TimeSpan), typeof(ShiftEditorControl), new((s, _) => (s as ShiftEditorControl)?.OnWorkTimeLenChanged()));
 
     public Dictionary<DateTime, int> BreakTimeDictionary { get => (Dictionary<DateTime, int>)GetValue(BreakTimeDictionaryProperty); set => SetValue(BreakTimeDictionaryProperty, value); }
     public static readonly DependencyProperty BreakTimeDictionaryProperty = DependencyProperty.Register(nameof(BreakTimeDictionary), typeof(Dictionary<DateTime, int>), typeof(ShiftEditorControl));
@@ -70,6 +72,14 @@ namespace ShiftManager.Controls
 
     private void BreakTimePopupOpenButtonClicked() => BreakTimePopupState //表示 == TRUEにするのは, 
       = VisibleElements.HasFlag(ShiftEditorElements.BreakTime); //休憩時間コントロールが可視状態である場合のみ
+
+    private void ChangeWorkTimeLen() => WorkTimeLength = LeavingTime - AttendanceTime;
+
+    private void OnWorkTimeLenChanged()
+    {
+      if (WorkTimeLength != (LeavingTime - AttendanceTime))
+        LeavingTime = AttendanceTime + WorkTimeLength;
+    }
 
     public static readonly ShiftEditorElements FullBitsOfElements = (ShiftEditorElements)0b01111111;
   }

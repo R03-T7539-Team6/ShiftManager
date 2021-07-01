@@ -50,7 +50,7 @@
               Grid.Column="1"
               Margin="4"
               Padding="4"
-              Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=AttendanceTime, StringFormat=HH:MM}"/>
+              Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Path=AttendanceTime, StringFormat=HH:MM}"/>
 
             <!--退勤時刻-->
             <TextBox
@@ -59,7 +59,7 @@
               Grid.Column="2"
               Margin="4"
               Padding="4"
-              Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=LeavingTime, StringFormat=HH:MM}"/>
+              Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Path=LeavingTime, StringFormat=HH:MM}"/>
 
             <!--休憩時刻-->
             <Button
@@ -95,13 +95,14 @@
               Margin="4"
               Fill="Aqua"/>
 
-            <TextBlock
+            <TextBox
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.WorkTimeLen}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.WorkTimeLen}}"
               Grid.Column="5"
               Margin="4"
-              Padding="4">
-            </TextBlock>
+              Padding="4"
+              Text="{Binding WorkTimeLength, RelativeSource={RelativeSource Mode=TemplatedParent}, UpdateSourceTrigger=PropertyChanged, StringFormat=hh\\:mm}"/>
+
 
             <Button
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.DeleteButton}}"
