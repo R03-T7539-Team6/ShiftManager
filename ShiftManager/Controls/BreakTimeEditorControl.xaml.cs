@@ -84,7 +84,7 @@ namespace ShiftManager.Controls
     private void LastSelectionTextObject_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
       if (sender is BreakTimeDataSource newV)
-        SelectionText = $"[{newV.Index:D2}/{BreakTimeDictionary.Count:D2}] {newV.StartTime:HH:mm} ~ {newV.EndTime:HH:mm}";
+        SelectionText = $"[{newV.Index + 1:D2}/{BreakTimeDictionary.Count:D2}] {newV.StartTime:HH:mm} ~ {newV.EndTime:HH:mm}";
     }
 
     static BreakTimeEditorControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(BreakTimeEditorControl), new FrameworkPropertyMetadata(typeof(BreakTimeEditorControl)));
