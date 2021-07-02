@@ -11,10 +11,11 @@
 
   <Grid>
         <MyCtrls:UserSettingControl
+        x:Name="USC"
       CanEditNotificationSetting="True"
       CanEditPassword="True"
       CanEditUserGroup="True"
-      CanEditUserID="False"
+      CanEditUserID="True"
       CanEditUserName="True"
       CanEditUserState="True"
       CanPrintSettings="False"

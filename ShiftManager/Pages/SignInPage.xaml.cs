@@ -12,7 +12,7 @@ namespace ShiftManager.Pages
   /// </summary>
   public partial class SignInPage : Page, IContainsApiHolder
   {
-    public IApiHolder ApiHolder { get; set; } = new();
+    public IApiHolder ApiHolder { get; set; } = new ApiHolder();
 
     public event EventHandler Login;
 
