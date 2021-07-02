@@ -53,6 +53,7 @@ namespace ShiftManager.Controls
     #endregion
 
     public static readonly ICommand BreakTimePopupOpenButtonClickedCommand = new CustomCommand<ShiftEditorControl>(i => i.BreakTimePopupOpenButtonClicked());
+    public static readonly ICommand DeleteButtonClickedCommand = new CustomCommand<ShiftEditorControl>(i => i.DeleteButtonClicked());
 
     static ShiftEditorControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(ShiftEditorControl), new FrameworkPropertyMetadata(typeof(ShiftEditorControl)));
 
@@ -81,6 +82,7 @@ namespace ShiftManager.Controls
       BreakTimePopupState //表示 == TRUEにするのは, 
         = VisibleElements.HasFlag(ShiftEditorElements.BreakTime); //休憩時間コントロールが可視状態である場合のみ
     }
+    private void DeleteButtonClicked() => SingleShiftData = new SingleShiftData(null);
 
     private void ChangeWorkTimeLen() => WorkTimeLength = LeavingTime - AttendanceTime;
 
