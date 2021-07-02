@@ -110,7 +110,7 @@
               <local:BreakTimeEditorControl
                 x:Name="BreakTimeEditor"
                 TargetDate="{TemplateBinding WorkDate}"
-                BreakTimeDictionary="{TemplateBinding BreakTimeDictionary}"/>
+                BreakTimeDictionary="{Binding BreakTimeDictionary, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>
             </Popup>
             
             <Rectangle
