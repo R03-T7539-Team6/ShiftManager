@@ -5,6 +5,7 @@
   xmlns:root="clr-namespace:ShiftManager">
 
   <root:HasFlagConverter x:Key="HasFlagConv"/>
+  <root:TimeSpanTo24HOverStringConverter x:Key="TimeSpanTo24HOverStringConv"/>
   <root:DateTimeTo24HOverStringConverter x:Key="DateTimeTo24HOverStringConv"/>
   <root:ValueConverterGroup x:Key="ENumFlagToVisibilityConv">
     <root:ValueConverterGroup.Converters>
@@ -136,8 +137,17 @@
               Width="50"
               Grid.Column="5"
               Margin="4"
-              Padding="4"
-              Text="{Binding WorkTimeLength, RelativeSource={RelativeSource Mode=TemplatedParent}, UpdateSourceTrigger=PropertyChanged, StringFormat=hh\\:mm}"/>
+              Padding="4">
+              <Binding
+                Path="WorkTimeLength"
+                RelativeSource="{RelativeSource Mode=TemplatedParent}"
+                Converter="{StaticResource TimeSpanTo24HOverStringConv}"
+                UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                  <root:HHMMValidationRule/>
+                </Binding.ValidationRules>
+              </Binding>
+            </TextBox>
 
 
             <Button
