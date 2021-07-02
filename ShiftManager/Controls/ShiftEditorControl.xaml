@@ -123,6 +123,7 @@
             <TextBox
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.WorkTimeLen}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.WorkTimeLen}}"
+              Foreground="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=WorkTimeLenForeground, Mode=OneWay}"
               Grid.Column="5"
               Margin="4"
               Padding="4"
