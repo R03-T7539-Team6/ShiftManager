@@ -9,7 +9,7 @@ namespace ShiftManager.DataClasses
   /// <summary>勤務予定/実績用クラス</summary>
   public record SingleShiftData(IUserID UserID, DateTime WorkDate, bool IsPaidHoliday, DateTime AttendanceTime, DateTime LeavingTime, Dictionary<DateTime, int> BreakTimeDictionary) : ISingleShiftData
   {
-    public SingleShiftData(ISingleShiftData i) : this(i?.UserID ?? new UserID(), i?.WorkDate ?? new(), i?.IsPaidHoliday ?? false, i?.AttendanceTime ?? new(), i?.LeavingTime ?? new(), i?.BreakTimeDictionary ?? new()) { }
+    public SingleShiftData(ISingleShiftData i) : this(i?.UserID ?? new UserID(), i?.WorkDate ?? new(), i?.IsPaidHoliday ?? false, i?.AttendanceTime ?? new(), i?.LeavingTime ?? new(), new(i?.BreakTimeDictionary ?? new())) { }
   }
 
   public partial class SingleShiftData_NotifyPropertuChanged : ISingleShiftData, INotifyPropertyChanged
