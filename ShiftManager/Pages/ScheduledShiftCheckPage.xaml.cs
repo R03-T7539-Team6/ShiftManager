@@ -31,9 +31,14 @@ namespace ShiftManager.Pages
       ComboBox.ItemsSource = Datelist;
       ComboBox.SelectedIndex = 1;
 
-  
+      hoge();
     }
 
-    
+    public async void hoge()
+    {
+      DateTime selectday = (DateTime)ComboBox.SelectedItem;
+      var re =await ApiHolder.Api.GetScheduledShiftByIDAsync(selectday, ApiHolder.Api.CurrentUserData?.UserID);
+    }
+
   }
 }
