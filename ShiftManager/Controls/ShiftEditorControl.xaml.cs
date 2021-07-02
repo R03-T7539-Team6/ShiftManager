@@ -73,8 +73,14 @@ namespace ShiftManager.Controls
       }
     }
 
-    private void BreakTimePopupOpenButtonClicked() => BreakTimePopupState //表示 == TRUEにするのは, 
-      = VisibleElements.HasFlag(ShiftEditorElements.BreakTime); //休憩時間コントロールが可視状態である場合のみ
+    private void BreakTimePopupOpenButtonClicked()
+    {
+      if (BreakTimePopupState) //既に開いているのであれば
+        BreakTimePopupState = false; //一旦Falseにする
+
+      BreakTimePopupState //表示 == TRUEにするのは, 
+        = VisibleElements.HasFlag(ShiftEditorElements.BreakTime); //休憩時間コントロールが可視状態である場合のみ
+    }
 
     private void ChangeWorkTimeLen() => WorkTimeLength = LeavingTime - AttendanceTime;
 
