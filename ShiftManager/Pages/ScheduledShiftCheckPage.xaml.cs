@@ -12,7 +12,7 @@ namespace ShiftManager.Pages
   /// </summary>
   public partial class ScheduledShiftCheckPage : Page
   {
-    public IApiHolder ApiHolder { get; set; }
+    public IApiHolder ApiHolder { get; set; } = new ApiHolder();
     public ScheduledShiftCheckPage()
     {
       InitializeComponent();
@@ -29,7 +29,7 @@ namespace ShiftManager.Pages
       Datelist.Add(today.AddDays(7));
 
       ComboBox.ItemsSource = Datelist;
-      ComboBox.SelectedIndex = 1;
+      ComboBox.SelectedIndex = 0;
 
       hoge();
     }
