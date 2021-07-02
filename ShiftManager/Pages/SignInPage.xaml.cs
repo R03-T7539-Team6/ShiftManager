@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using ShiftManager.DataClasses;
 using ShiftManager.Communication;
 using System.Windows;
+using System;
 
 namespace ShiftManager.Pages
 {
@@ -18,11 +19,26 @@ namespace ShiftManager.Pages
       InitializeComponent();
     }
 
+    public class Success
+    {
+      public event EventHandler Login;
+
+      public void Start()
+      {
+        Login(this, EventArgs.Empty);
+      }
+    }
+
     private async void ln_Click_2(object sender, System.Windows.RoutedEventArgs e)
     {
+      Success success = new Success();
       string UID = ID.Text;
       string UPass = Pass.Text;
       var re=await SignInAsyncTest_WithIDAndPassword(UID, UPass);
+      if (re.IsSuccess)
+      {
+        success.Start();
+      }
       MessageBox.Show(re.IsSuccess.ToString() + " * " + re.ResultCode.ToString());
     }
 
