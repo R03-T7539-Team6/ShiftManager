@@ -101,7 +101,7 @@ namespace ShiftManager.Controls
     {
       BreakTimeList = new();
       foreach (var i in BreakTimeDictionary)
-        BreakTimeList.Add(new(i, BreakTimeDictionary));
+        BreakTimeList.Add(new(i, BreakTimeDictionary, TargetDate));
     }
 
     private void AddBreakTime()
@@ -112,7 +112,7 @@ namespace ShiftManager.Controls
       {
         KeyValuePair<DateTime, int> kvp = new(new(TargetDate.Year, TargetDate.Month, TargetDate.Day), 0);
         BreakTimeDictionary.Add(kvp.Key, kvp.Value);
-        BreakTimeList.Add(new(kvp, BreakTimeDictionary));
+        BreakTimeList.Add(new(kvp, BreakTimeDictionary, TargetDate));
       }
 
       foreach (var i in BreakTimeList)
@@ -141,15 +141,28 @@ namespace ShiftManager.Controls
     public event PropertyChangedEventHandler PropertyChanged;
     private void OnPropertyChanged(in string propName) => PropertyChanged?.Invoke(this, new(propName));
     public Dictionary<DateTime, int> BreakTimeDictionary { get; }
-    public BreakTimeDataSource(in KeyValuePair<DateTime, int> keyValuePair, Dictionary<DateTime, int> breakTimeDic)
+    public BreakTimeDataSource(in KeyValuePair<DateTime, int> keyValuePair, in Dictionary<DateTime, int> breakTimeDic, in DateTime baseDate)
     {
       BreakTimeDictionary = breakTimeDic;
+      BaseDate = baseDate;
 
       _StartTime = keyValuePair.Key;
       TimeLen = new(0, keyValuePair.Value, 0); //60分以上も入力可
       //EndTimeはTimeLenのsetterで決定される
 
       UpdateIndex();
+    }
+
+    private DateTime _BaseDate;
+    public DateTime BaseDate
+    {
+      get => _BaseDate;
+      set
+      {
+        _BaseDate = value;
+        StartTime = BaseDate + StartTime.TimeOfDay;
+        OnPropertyChanged(nameof(BaseDate));
+      }
     }
 
     public void UpdateIndex() => Index = BreakTimeDictionary.Keys.ToList().IndexOf(StartTime);
