@@ -95,7 +95,6 @@
             <!--休憩時刻-->
             <Button
               x:Name="BreakTimePopupOpenButton"
-              IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.BreakTime}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.BreakTime}}"
               HorizontalContentAlignment="Center"
               Width="140"
@@ -108,7 +107,6 @@
               Content="{Binding ElementName=BreakTimeEditor, Path=SelectionText}"/>
             <Popup
               x:Name="BreakTimePopup"
-              IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.BreakTime}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.BreakTime}}"
               IsOpen="{TemplateBinding BreakTimePopupState}"
               AllowsTransparency="True"
@@ -117,6 +115,7 @@
               PlacementTarget="{Binding ElementName=BreakTimePopupOpenButton}">
               <local:BreakTimeEditorControl
                 x:Name="BreakTimeEditor"
+                IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.BreakTime}}"
                 TargetDate="{TemplateBinding WorkDate}"
                 BreakTimeDictionary="{Binding BreakTimeDictionary, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>
             </Popup>
