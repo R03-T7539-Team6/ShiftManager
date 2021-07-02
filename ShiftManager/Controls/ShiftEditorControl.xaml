@@ -120,13 +120,14 @@
                 TargetDate="{TemplateBinding WorkDate}"
                 BreakTimeDictionary="{Binding BreakTimeDictionary, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>
             </Popup>
-            
-            <Rectangle
+
+            <local:ShiftEditorBarControl
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.ShiftBar}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.ShiftBar}}"
               Grid.Column="4"
               Margin="4"
-              Fill="Aqua"/>
+              Background="Aqua"/>
+              
 
             <TextBox
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.WorkTimeLen}}"
