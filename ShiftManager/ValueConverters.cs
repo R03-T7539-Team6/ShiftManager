@@ -83,4 +83,11 @@ namespace ShiftManager
     }
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => throw new NotImplementedException();
   }
+
+  public class HasFlagConverter : IValueConverter
+  {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => (value as Enum)?.HasFlag((Enum)parameter) ?? false;
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+  }
 }
