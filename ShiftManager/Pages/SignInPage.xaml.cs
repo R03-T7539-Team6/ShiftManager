@@ -10,7 +10,7 @@ namespace ShiftManager.Pages
   /// <summary>
   /// Interaction logic for LoginPage.xaml
   /// </summary>
-  public partial class SignInPage : Page, IContainsApiHolder
+  public partial class SignInPage : UserControl, IContainsApiHolder
   {
     public IApiHolder ApiHolder { get; set; } = new();
 
