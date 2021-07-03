@@ -81,7 +81,7 @@ namespace ShiftManager.Communication
 
 
       KeyValuePair<DateTime, int> lastBreakLog = lastWorkLog.BreakTimeDictionary.LastOrDefault();
-      if (lastBreakLog.Value <= 0) //休憩終了時刻の記録がない
+      if (lastBreakLog.Key != default && lastBreakLog.Value <= 0) //休憩終了時刻の記録がない
         return new(false, ApiResultCodes.BreakTime_Not_Ended, CurrentTime);
 
       if (lastBreakLog.Key == default)
