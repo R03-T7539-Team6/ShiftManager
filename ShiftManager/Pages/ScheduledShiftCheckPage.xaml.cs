@@ -1,8 +1,8 @@
-﻿using System.Windows.Controls;
-using System;
-using ShiftManager.DataClasses;
+﻿using System;
+using System.Windows.Controls;
+
 using ShiftManager.Communication;
-using System.Windows;
+using ShiftManager.DataClasses;
 
 namespace ShiftManager.Pages
 {

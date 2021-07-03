@@ -1,8 +1,9 @@
-﻿using System.Windows.Controls;
-using System;
-using ShiftManager.DataClasses;
-using ShiftManager.Communication;
+﻿using System;
 using System.Windows;
+using System.Windows.Controls;
+
+using ShiftManager.Communication;
+using ShiftManager.DataClasses;
 
 namespace ShiftManager.Pages
 {
@@ -15,10 +16,11 @@ namespace ShiftManager.Pages
     public SignUpPage()
     {
       InitializeComponent();
-      USC.SavePushed+=OnSavePushed;
+      USC.SavePushed += OnSavePushed;
     }
 
-    private void OnSavePushed(object sender, EventArgs e){
+    private void OnSavePushed(object sender, EventArgs e)
+    {
       //TODO: Saveボタンが押されたときの処理を書く.
       if (string.IsNullOrWhiteSpace(USC.UserIDText))
       {

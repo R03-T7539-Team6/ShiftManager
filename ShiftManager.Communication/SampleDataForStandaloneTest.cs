@@ -78,7 +78,7 @@ namespace ShiftManager.Communication
       new(new(2021, 7, 4), new(2021, 7, 4, 0, 0, 0), new(2021, 7, 5, 0, 0, 0), ShiftSchedulingState.Working,
         new()
         {
-					{
+          {
             ID0000.UserID,
             new SingleShiftData(ID0000.UserID, new(2021, 7, 1), false, new(2021, 7, 4, 12, 0, 0), new(2021, 7, 4, 18, 0, 0),
               new()
@@ -110,7 +110,8 @@ namespace ShiftManager.Communication
         new(UserID, new(2021, 6, 12), false, new(2021, 6, 12,  0, 0, 0), new(2021, 6, 12,  5, 0, 0), new()),
       };
       public static ShiftRequest ShiftRequest { get; } = new(UserID, new(2021, 5, 31, 12, 50, 39),
-        new() {
+        new()
+        {
           { SingleShiftDataArr[0].WorkDate, SingleShiftDataArr[0] },
           { SingleShiftDataArr[1].WorkDate, SingleShiftDataArr[1] },
           { SingleShiftDataArr[2].WorkDate, SingleShiftDataArr[2] },
@@ -140,7 +141,8 @@ namespace ShiftManager.Communication
         new(UserID, new(2021, 6, 12), false, new(2021, 6, 12,  0, 0, 0), new(2021, 6, 12,  8, 0, 0), new()),
       };
       public static ShiftRequest ShiftRequest { get; } = new(UserID, new(2021, 5, 30, 8, 1, 9),
-        new() {
+        new()
+        {
           { SingleShiftDataArr[0].WorkDate, SingleShiftDataArr[0] },
           { SingleShiftDataArr[1].WorkDate, SingleShiftDataArr[1] },
           { SingleShiftDataArr[2].WorkDate, SingleShiftDataArr[2] },

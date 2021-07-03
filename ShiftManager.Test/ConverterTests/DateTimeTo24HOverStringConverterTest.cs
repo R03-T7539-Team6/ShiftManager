@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 
 using NUnit.Framework;
 
-using ShiftManager;
-
 namespace ShiftManager.Test
 {
-	public class DateTimeTo24HOverStringConverterTests
+  public class DateTimeTo24HOverStringConverterTests
   {
     DateTimeTo24HOverStringConverter target { get; } = new();
 
     [SetUp]
-		public void Setup()
-		{
-		}
+    public void Setup()
+    {
+    }
 
     public static IEnumerable Convert_TestCases
     {
@@ -67,6 +64,6 @@ namespace ShiftManager.Test
 
     [TestCaseSource(nameof(ConvertBack_InvalidInput_TestCases))]
     public void ConvertBackInvalidInputTest(string value, DateTime parameter, Type exception) => Assert.Throws(exception, () => target.ConvertBack(value, null, null, null));
-    
-	}
+
+  }
 }

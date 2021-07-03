@@ -1,9 +1,10 @@
-﻿using System.Windows.Controls;
-using System;
-using System.Windows.Threading;
-using ShiftManager.DataClasses;
-using ShiftManager.Communication;
+﻿using System;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Threading;
+
+using ShiftManager.Communication;
+using ShiftManager.DataClasses;
 
 namespace ShiftManager.Pages
 {
@@ -70,7 +71,7 @@ namespace ShiftManager.Pages
           VM.ShiftRequestArray.Clear();
           hoge(targetUserID);
         }
-        }
+      }
     }
 
     private async void kyusyutu_Click_1(object sender, System.Windows.RoutedEventArgs e)
@@ -79,8 +80,8 @@ namespace ShiftManager.Pages
       {
         string userID = UID.Text;
         UserID targetUserID = new(userID);
-        ApiResult<DateTime> res =  await ApiHolder.Api.DoBreakTimeEndLoggingAsync(targetUserID);
-        if(res.ResultCode == ApiResultCodes.Work_Not_Started)
+        ApiResult<DateTime> res = await ApiHolder.Api.DoBreakTimeEndLoggingAsync(targetUserID);
+        if (res.ResultCode == ApiResultCodes.Work_Not_Started)
           MessageBox.Show("出勤記録がありません");
         if (res.ResultCode == ApiResultCodes.BreakTime_Not_Started)
           MessageBox.Show("休憩記録がありません");
@@ -123,15 +124,15 @@ namespace ShiftManager.Pages
     {
       DateTime selectday = DateTime.Today;
       ApiResult<SingleShiftData> res = await ApiHolder.Api.GetScheduledShiftByIDAsync(selectday, userID);
-        if (!res.IsSuccess)
-        {
-          MessageBox.Show("データ取得に失敗しました");
-        }
-        else
-        {
-          VM.ShiftRequestArray.Add(res.ReturnData);
-        }
-      
+      if (!res.IsSuccess)
+      {
+        MessageBox.Show("データ取得に失敗しました");
+      }
+      else
+      {
+        VM.ShiftRequestArray.Add(res.ReturnData);
+      }
+
     }
   }
 }
