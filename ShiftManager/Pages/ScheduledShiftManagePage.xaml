@@ -9,35 +9,52 @@
       d:DataContext="{d:DesignInstance Type=local:ScheduledShiftManagePageViewModel}"
       mc:Ignorable="d" 
       Loaded="Page_Loaded"
+      Unloaded="Page_Unloaded"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ScheduledShiftManagePage">
 
   <Page.Resources>
     <root:DoubleValueAddConverter x:Key="DoubleValueAddConv"/>
+    <root:UserIDToNameStringConverter x:Key="UserIDToNameStringConv"/>
   </Page.Resources>
   
   <Grid>
     <Grid.RowDefinitions>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="auto"/>
       <RowDefinition Height="*"/>
-      <RowDefinition Height="2*"/>
       <RowDefinition Height="auto"/>
-      <RowDefinition Height="3*"/>
-      <RowDefinition Height="auto"/>
-      <RowDefinition Height="3*"/>
+      <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
-    <DatePicker
-      Margin="4"
-      HorizontalAlignment="Left"
-      VerticalAlignment="Bottom"
-      SelectedDateChanged="DatePicker_SelectedDateChanged"
-      SelectedDate="{Binding TargetDate}"/>
+    <Grid Grid.Row="0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <DatePicker
+        Grid.Column="0"
+        Margin="4"
+        SelectedDateChanged="DatePicker_SelectedDateChanged"
+        SelectedDate="{Binding TargetDate}"/>
+
+      <ComboBox
+        Grid.Column="3"
+        Margin="4"
+        ItemsSource="{x:Static local:ScheduledShiftManagePage.ShiftSchedulingStateLabels}"
+        SelectedItem="{Binding ShiftSchedulingState}"/>
+    </Grid>
 
     <MyCtrls:ShiftEditorHeaderControl
       Margin="20,0"
       HorizontalAlignment="Stretch"
       Grid.Row="2"/>
-
+    
     <ListView
       x:Name="ShiftRequestListView"
       ScrollBar.Scroll="ListView_Scroll"
@@ -55,7 +72,12 @@
             WorkDate="{Binding WorkDate, Mode=TwoWay}"
             AttendanceTime="{Binding AttendanceTime, Mode=TwoWay}"
             LeavingTime="{Binding LeavingTime, Mode=TwoWay}"
-            BreakTimeDictionary="{Binding BreakTimeDictionary, Mode=TwoWay}"/>
+            BreakTimeDictionary="{Binding BreakTimeDictionary, Mode=TwoWay}">
+            <MultiBinding Converter="{StaticResource UserIDToNameStringConv}">
+              <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Page}" Path="."/>
+              <Binding Path="UserID"/>
+            </MultiBinding>
+          </MyCtrls:ShiftEditorControl>
         </DataTemplate>
       </ListView.ItemTemplate>
     </ListView>
@@ -79,7 +101,12 @@
             WorkDate="{Binding WorkDate, Mode=TwoWay}"
             AttendanceTime="{Binding AttendanceTime, Mode=TwoWay}"
             LeavingTime="{Binding LeavingTime, Mode=TwoWay}"
-            BreakTimeDictionary="{Binding BreakTimeDictionary, Mode=TwoWay}"/>
+            BreakTimeDictionary="{Binding BreakTimeDictionary, Mode=TwoWay}">
+            <MultiBinding Converter="{StaticResource UserIDToNameStringConv}">
+              <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Page}" Path="."/>
+              <Binding Path="UserID"/>
+            </MultiBinding>
+          </MyCtrls:ShiftEditorControl>
         </DataTemplate>
       </ListView.ItemTemplate>
     </ListView>
