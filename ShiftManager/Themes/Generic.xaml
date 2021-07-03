@@ -5,8 +5,9 @@
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="/ShiftManager;component/Controls/ShiftEditorControl.xaml"/>
+    <ResourceDictionary Source="/ShiftManager;component/Controls/ShiftEditorBarControl.xaml"/>
+    <ResourceDictionary Source="/ShiftManager;component/Controls/ShiftEditorHeaderControl.xaml"/>
     <ResourceDictionary Source="/ShiftManager;component/Controls/BreakTimeEditorControl.xaml"/>
     <ResourceDictionary Source="/ShiftManager;component/Controls/PasswordStrengthVisualizerControl.xaml"/>
   </ResourceDictionary.MergedDictionaries>
-
 </ResourceDictionary>

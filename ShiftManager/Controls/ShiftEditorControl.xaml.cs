@@ -37,11 +37,23 @@ namespace ShiftManager.Controls
     public Brush ShiftEditBarBackground { get => (Brush)GetValue(ShiftEditBarBackgroundProperty); set => SetValue(ShiftEditBarBackgroundProperty, value); }
     public static readonly DependencyProperty ShiftEditBarBackgroundProperty = DependencyProperty.Register(nameof(ShiftEditBarBackground), typeof(Brush), typeof(ShiftEditorControl));
 
+    public Brush WorkTimeLenForeground { get => (Brush)GetValue(WorkTimeLenForegroundProperty); private set => SetValue(WorkTimeLenForegroundPropertyKey, value); }
+    private static readonly DependencyPropertyKey WorkTimeLenForegroundPropertyKey = DependencyProperty.RegisterReadOnly(nameof(WorkTimeLenForeground), typeof(Brush), typeof(ShiftEditorControl), new(Brushes.Black));
+    public static readonly DependencyProperty WorkTimeLenForegroundProperty = WorkTimeLenForegroundPropertyKey.DependencyProperty;
+
     public double ShiftEditBarScale { get => (double)GetValue(ShiftEditBarScaleProperty); set => SetValue(ShiftEditBarScaleProperty, value); }
     public static readonly DependencyProperty ShiftEditBarScaleProperty = DependencyProperty.Register(nameof(ShiftEditBarScale), typeof(double), typeof(ShiftEditorControl));
 
     public bool BreakTimePopupState { get => (bool)GetValue(BreakTimePopupStateProperty); set => SetValue(BreakTimePopupStateProperty, value); }
     public static readonly DependencyProperty BreakTimePopupStateProperty = DependencyProperty.Register(nameof(BreakTimePopupState), typeof(bool), typeof(ShiftEditorControl));
+
+    public ISingleShiftData SingleShiftDataSetter { get => (ISingleShiftData)GetValue(SingleShiftDataSetterProperty); set => SetValue(SingleShiftDataSetterProperty, value); }
+    public static readonly DependencyProperty SingleShiftDataSetterProperty = DependencyProperty.Register(nameof(SingleShiftDataSetter), typeof(ISingleShiftData), typeof(ShiftEditorControl),
+      new((s, e) =>
+      {
+        if (s is ShiftEditorControl sec)
+          sec.SingleShiftData = e.NewValue as SingleShiftData;
+      }));
 
     public IUserID UserID { get; private set; } //使わない
     public bool IsPaidHoliday { get; private set; } //使わない
@@ -49,7 +61,7 @@ namespace ShiftManager.Controls
     #endregion
 
     public static readonly ICommand BreakTimePopupOpenButtonClickedCommand = new CustomCommand<ShiftEditorControl>(i => i.BreakTimePopupOpenButtonClicked());
-
+    public static readonly ICommand DeleteButtonClickedCommand = new CustomCommand<ShiftEditorControl>(i => i.DeleteButtonClicked());
 
     static ShiftEditorControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(ShiftEditorControl), new FrameworkPropertyMetadata(typeof(ShiftEditorControl)));
 
@@ -61,6 +73,7 @@ namespace ShiftManager.Controls
       get => new SingleShiftData(this);
       set
       {
+        var i = value ?? new SingleShiftData(null);
         UserID = value.UserID;
         WorkDate = value.WorkDate;
         IsPaidHoliday = value.IsPaidHoliday;
@@ -70,8 +83,15 @@ namespace ShiftManager.Controls
       }
     }
 
-    private void BreakTimePopupOpenButtonClicked() => BreakTimePopupState //表示 == TRUEにするのは, 
-      = VisibleElements.HasFlag(ShiftEditorElements.BreakTime); //休憩時間コントロールが可視状態である場合のみ
+    private void BreakTimePopupOpenButtonClicked()
+    {
+      if (BreakTimePopupState) //既に開いているのであれば
+        BreakTimePopupState = false; //一旦Falseにする
+
+      BreakTimePopupState //表示 == TRUEにするのは, 
+        = VisibleElements.HasFlag(ShiftEditorElements.BreakTime); //休憩時間コントロールが可視状態である場合のみ
+    }
+    private void DeleteButtonClicked() => SingleShiftData = new SingleShiftData(null);
 
     private void ChangeWorkTimeLen() => WorkTimeLength = LeavingTime - AttendanceTime;
 
@@ -79,6 +99,8 @@ namespace ShiftManager.Controls
     {
       if (WorkTimeLength != (LeavingTime - AttendanceTime))
         LeavingTime = AttendanceTime + WorkTimeLength;
+
+      WorkTimeLenForeground = WorkTimeLength < new TimeSpan(0) ? Brushes.Red : Brushes.Black;
     }
 
     public static readonly ShiftEditorElements FullBitsOfElements = (ShiftEditorElements)0b01111111;

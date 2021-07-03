@@ -5,6 +5,8 @@
   xmlns:root="clr-namespace:ShiftManager">
 
   <root:HasFlagConverter x:Key="HasFlagConv"/>
+  <root:TimeSpanTo24HOverStringConverter x:Key="TimeSpanTo24HOverStringConv"/>
+  <root:DateTimeTo24HOverStringConverter x:Key="DateTimeTo24HOverStringConv"/>
   <root:ValueConverterGroup x:Key="ENumFlagToVisibilityConv">
     <root:ValueConverterGroup.Converters>
       <root:HasFlagConverter/>
@@ -39,6 +41,8 @@
               Content="{TemplateBinding Content}"
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.Text}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.Text}}"
+              HorizontalContentAlignment="Center"
+              Width="80"
               Grid.Column="0"
               Margin="4"
               Padding="4"/>
@@ -47,25 +51,54 @@
             <TextBox
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.AttendTime}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.AttendTime}}"
+              HorizontalContentAlignment="Center"
+              Width="50"
               Grid.Column="1"
               Margin="4"
-              Padding="4"
-              Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Path=AttendanceTime, StringFormat=HH:MM}"/>
+              Padding="4">
+              <MultiBinding UpdateSourceTrigger="PropertyChanged">
+                <Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="AttendanceTime"/>
+                <Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="WorkDate"/>
+
+                <MultiBinding.Converter>
+                  <!--DateTimeTo24HOverStringConverterは各箇所でインスタンスを生成して使用する-->
+                  <root:DateTimeTo24HOverStringConverter/>
+                </MultiBinding.Converter>
+                <MultiBinding.ValidationRules>
+                  <root:HHMMValidationRule/>
+                </MultiBinding.ValidationRules>
+              </MultiBinding>
+            </TextBox>
 
             <!--退勤時刻-->
             <TextBox
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.LeaveTime}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.LeaveTime}}"
+              HorizontalContentAlignment="Center"
+              Width="50"
               Grid.Column="2"
               Margin="4"
-              Padding="4"
-              Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Path=LeavingTime, StringFormat=HH:MM}"/>
+              Padding="4">
+              <MultiBinding UpdateSourceTrigger="PropertyChanged">
+                <Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="LeavingTime"/>
+                <Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="WorkDate"/>
+
+                <MultiBinding.Converter>
+                  <!--DateTimeTo24HOverStringConverterは各箇所でインスタンスを生成して使用する-->
+                  <root:DateTimeTo24HOverStringConverter/>
+                </MultiBinding.Converter>
+                <MultiBinding.ValidationRules>
+                  <root:HHMMValidationRule/>
+                </MultiBinding.ValidationRules>
+              </MultiBinding>
+            </TextBox>
 
             <!--休憩時刻-->
             <Button
               x:Name="BreakTimePopupOpenButton"
-              IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.BreakTime}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.BreakTime}}"
+              HorizontalContentAlignment="Center"
+              Width="140"
               Margin="4"
               Padding="4"
               HorizontalAlignment="Stretch"
@@ -75,7 +108,6 @@
               Content="{Binding ElementName=BreakTimeEditor, Path=SelectionText}"/>
             <Popup
               x:Name="BreakTimePopup"
-              IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.BreakTime}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.BreakTime}}"
               IsOpen="{TemplateBinding BreakTimePopupState}"
               AllowsTransparency="True"
@@ -84,29 +116,47 @@
               PlacementTarget="{Binding ElementName=BreakTimePopupOpenButton}">
               <local:BreakTimeEditorControl
                 x:Name="BreakTimeEditor"
+                IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.BreakTime}}"
                 TargetDate="{TemplateBinding WorkDate}"
-                BreakTimeDictionary="{TemplateBinding BreakTimeDictionary}"/>
+                BreakTimeDictionary="{Binding BreakTimeDictionary, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>
             </Popup>
-            
-            <Rectangle
+
+            <local:ShiftEditorBarControl
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.ShiftBar}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.ShiftBar}}"
               Grid.Column="4"
               Margin="4"
-              Fill="Aqua"/>
+              Background="Aqua"/>
+              
 
             <TextBox
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.WorkTimeLen}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.WorkTimeLen}}"
+              Foreground="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=WorkTimeLenForeground, Mode=OneWay}"
+              HorizontalContentAlignment="Center"
+              Width="50"
               Grid.Column="5"
               Margin="4"
-              Padding="4"
-              Text="{Binding WorkTimeLength, RelativeSource={RelativeSource Mode=TemplatedParent}, UpdateSourceTrigger=PropertyChanged, StringFormat=hh\\:mm}"/>
+              Padding="4">
+              <Binding
+                Path="WorkTimeLength"
+                RelativeSource="{RelativeSource Mode=TemplatedParent}"
+                Converter="{StaticResource TimeSpanTo24HOverStringConv}"
+                UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                  <root:HHMMValidationRule/>
+                </Binding.ValidationRules>
+              </Binding>
+            </TextBox>
 
 
             <Button
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.DeleteButton}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.DeleteButton}}"
+              Command="{x:Static local:ShiftEditorControl.DeleteButtonClickedCommand}"
+              CommandParameter="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"
+              HorizontalContentAlignment="Center"
+              Width="50"
               Grid.Column="6"
               Margin="4"
               Padding="4"
