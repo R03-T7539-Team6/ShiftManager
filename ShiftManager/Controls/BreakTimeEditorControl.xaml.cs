@@ -108,11 +108,9 @@ namespace ShiftManager.Controls
     private void AddBreakTime()
     {
       BreakTimeDictionary ??= new(); //BreakTimeDicがNULLなら, 新規インスタンスを割り当てる
-
-      if (!BreakTimeDictionary.ContainsKey(default))
+      if (!BreakTimeDictionary.ContainsKey(TargetDate.Date)) //TargetDateの年月日の0時0分0秒を割り当てる
       {
-        KeyValuePair<DateTime, int> kvp = new(new(TargetDate.Year, TargetDate.Month, TargetDate.Day), 0);
-        BreakTimeDictionary.Add(kvp.Key, kvp.Value);
+        KeyValuePair<DateTime, int> kvp = new(TargetDate.Date, 0);
         BreakTimeList.Add(new(kvp, BreakTimeDictionary, TargetDate));
       }
 
@@ -218,10 +216,10 @@ namespace ShiftManager.Controls
 
         _EndTime = StartTime + TimeLen;
 
+        BreakTimeDictionary.Add(StartTime, timeLen);
+
         OnPropertyChanged(nameof(StartTime));
         OnPropertyChanged(nameof(EndTime));
-
-        BreakTimeDictionary.Add(StartTime, timeLen);
       }
     }
 

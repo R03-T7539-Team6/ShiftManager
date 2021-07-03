@@ -55,7 +55,7 @@ namespace ShiftManager.Communication
             new SingleShiftData(ID0002.UserID, new(2021, 5, 29), false, new(2021, 5, 29, 8, 0, 0), new(2021, 5, 29, 18, 30, 0), new()
               {
                 { new(2021, 5, 29, 9, 0, 0), 60 },
-                { new(2021, 5, 29, 12, 12, 0), 18 },
+                { new(2021, 5, 29, 12, 12, 0), 18 }
               }
             )
           }
@@ -99,7 +99,7 @@ namespace ShiftManager.Communication
       public static WorkLog WorkLog { get; } = new(UserID, new());
       public static UserSetting UserSetting { get; } = new(UserID, NotificationPublishTimings.Before24H | NotificationPublishTimings.DayBeforeYesterday_21, new());
 
-      public static UserData UserData { get; } = new(UserID, HashedPW, NameData, UserGroup, UserState, WorkLog, UserSetting);
+      public static UserData UserData { get; } = new(UserID, HashedPW, NameData, STORE_ID, UserGroup, UserState, WorkLog, UserSetting);
 
       public static SingleShiftData[] SingleShiftDataArr { get; } =
       {
@@ -129,7 +129,7 @@ namespace ShiftManager.Communication
       public static WorkLog WorkLog { get; } = new(UserID, new());
       public static UserSetting UserSetting { get; } = new(UserID, NotificationPublishTimings.Before24H | NotificationPublishTimings.DayBeforeYesterday_21, new());
 
-      public static UserData UserData { get; } = new(UserID, HashedPW, NameData, UserGroup, UserState, WorkLog, UserSetting);
+      public static UserData UserData { get; } = new(UserID, HashedPW, NameData, STORE_ID, UserGroup, UserState, WorkLog, UserSetting);
 
       public static SingleShiftData[] SingleShiftDataArr { get; } =
       {
@@ -159,7 +159,7 @@ namespace ShiftManager.Communication
       public static WorkLog WorkLog { get; } = new(UserID, new());
       public static UserSetting UserSetting { get; } = new(UserID, NotificationPublishTimings.None, new());
 
-      public static UserData UserData { get; } = new(UserID, HashedPW, NameData, UserGroup, UserState, WorkLog, UserSetting);
+      public static UserData UserData { get; } = new(UserID, HashedPW, NameData, STORE_ID, UserGroup, UserState, WorkLog, UserSetting);
 
       public static SingleShiftData[] SingleShiftDataArr { get; } = Array.Empty<SingleShiftData>();
       public static ShiftRequest ShiftRequest { get; } = new(UserID, new(2021, 5, 20, 8, 1, 9), new());

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+
+using ShiftManager.DataClasses;
 
 namespace ShiftManager
 {
@@ -188,5 +191,20 @@ namespace ShiftManager
     public double? Value { get; set; }
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => (double)value + (Value ?? double.Parse(parameter as string));
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+  }
+
+  public class UserIDToNameStringConverter : IMultiValueConverter
+  {
+    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    {
+      if (values.Length >= 2 && values[0] is IContainsApiHolder api && values[1] is IUserID id)
+      {
+        var res = api.ApiHolder.Api.GetUserDataByIDAsync(id).Result;
+        if (res.IsSuccess && res.ReturnData is not null)
+          return res.ReturnData.FullName.LastName + " " + res.ReturnData.FullName.FirstName;
+      }
+      return null;
+    }
+    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => throw new NotImplementedException();
   }
 }
