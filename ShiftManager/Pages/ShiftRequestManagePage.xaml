@@ -13,6 +13,7 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10,88,28,10" HorizontalScrollBarVisibility="Auto" Background="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}">
             <StackPanel Margin="10,50">
       <!--実際は動的に配置する-->
+      <MyCtrls:ShiftEditorHeaderControl/>
       <MyCtrls:ShiftEditorControl/>
       <MyCtrls:ShiftEditorControl/>
       <MyCtrls:ShiftEditorControl/>

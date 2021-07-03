@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.PrintHelper", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator", "RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator\RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator.csproj", "{E032B77C-2AE3-43D5-AF20-18D411A4FFEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShiftManager.Communication.Test", "ShiftManager.Communication.Test\ShiftManager.Communication.Test.csproj", "{B7845FED-D7F2-4B63-9965-60BAB9F3AF8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.Communication.Test", "ShiftManager.Communication.Test\ShiftManager.Communication.Test.csproj", "{B7845FED-D7F2-4B63-9965-60BAB9F3AF8A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShiftManager.Test", "ShiftManager.Test\ShiftManager.Test.csproj", "{7922CEF1-9963-4DF2-AB4F-7EA2395494D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{B7845FED-D7F2-4B63-9965-60BAB9F3AF8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7845FED-D7F2-4B63-9965-60BAB9F3AF8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7845FED-D7F2-4B63-9965-60BAB9F3AF8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7922CEF1-9963-4DF2-AB4F-7EA2395494D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7922CEF1-9963-4DF2-AB4F-7EA2395494D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7922CEF1-9963-4DF2-AB4F-7EA2395494D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7922CEF1-9963-4DF2-AB4F-7EA2395494D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
