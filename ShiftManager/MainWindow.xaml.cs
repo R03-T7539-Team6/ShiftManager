@@ -12,14 +12,22 @@ namespace ShiftManager
   /// <summary>
   /// Interaction logic for MainWindow.xaml
   /// </summary>
-  public partial class MainWindow : Window
+  public partial class MainWindow : Window, IContainsApiHolder
   {
+    public IApiHolder ApiHolder { get; set; } = new ApiHolder();
+
     public MainWindow()
     {
       InitializeComponent();
       MainWindowViewModel mwvm = new() { MainFramePageChanger = new(MainFrame) };
       DataContext = mwvm;
       
+    }
+
+    private void MainFrame_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e)
+    {
+      if (e.Content is IContainsApiHolder i)
+        i.ApiHolder = ApiHolder;
     }
   }
 

@@ -16,7 +16,7 @@
       CanEditUserID="True"
       CanEditUserName="True"
       CanEditUserState="True"
-      CanPrintSettings="False"
+      CanPrintSettings="True"
       CanSaveSettings="True"/>
   </Grid>
 </Page>

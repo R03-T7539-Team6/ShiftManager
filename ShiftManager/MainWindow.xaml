@@ -34,6 +34,7 @@
     <Frame
       x:Name="MainFrame"
       NavigationUIVisibility="Hidden"
+      Navigating="MainFrame_Navigating"
       Grid.Row="1"
       Grid.Column="1"/>
 
@@ -75,6 +76,7 @@
         <Button Content="勤務実績表示" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkLogCheckPage}"/>
         <Button Content="シフト印刷" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftPrintPage}"/>
         <Button Content="ユーザ設定" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:UserSettingPage}"/>
+        <Button Content="Sign In" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:SignInPage}"/>
 
         <Line Stroke="Black"
               StrokeThickness="2"

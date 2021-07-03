@@ -4,11 +4,20 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ShiftManager.Pages"
+      xmlns:MyCtrls="clr-namespace:ShiftManager.Controls"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SignUpPage">
 
   <Grid>
-
-  </Grid>
+        <MyCtrls:UserSettingControl
+      CanEditNotificationSetting="True"
+      CanEditPassword="True"
+      CanEditUserGroup="True"
+      CanEditUserID="False"
+      CanEditUserName="True"
+      CanEditUserState="True"
+      CanPrintSettings="False"
+      CanSaveSettings="True"/>
+    </Grid>
 </Page>
