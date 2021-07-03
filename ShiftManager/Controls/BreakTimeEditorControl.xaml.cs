@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -136,9 +137,11 @@ namespace ShiftManager.Controls
         i.UpdateIndex();
     }
   }
-  public partial class BreakTimeDataSource : INotifyPropertyChanged
+  public partial class BreakTimeDataSource : INotifyPropertyChanged, INotifyDataErrorInfo
   {
     public event PropertyChangedEventHandler PropertyChanged;
+    public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+
     private void OnPropertyChanged(in string propName) => PropertyChanged?.Invoke(this, new(propName));
     public Dictionary<DateTime, int> BreakTimeDictionary { get; }
     public BreakTimeDataSource(in KeyValuePair<DateTime, int> keyValuePair, in Dictionary<DateTime, int> breakTimeDic, in DateTime baseDate)
@@ -167,6 +170,9 @@ namespace ShiftManager.Controls
 
     public void UpdateIndex() => Index = BreakTimeDictionary.Keys.ToList().IndexOf(StartTime);
 
+    private Dictionary<string, List<string>> ErrorsDic = new() { { nameof(StartTime), new() } };
+    public IEnumerable GetErrors(string propertyName) => ErrorsDic[propertyName];
+
     private int _Index;
     public int Index
     {
@@ -178,6 +184,7 @@ namespace ShiftManager.Controls
       }
     }
 
+    const string SAME_DATE_ERROR = "Error: Same Date is already existing";
     private DateTime _StartTime;
     public DateTime StartTime
     {
@@ -187,10 +194,27 @@ namespace ShiftManager.Controls
         if (StartTime == value)
           return;
 
+        DateTime newValue = new(value.Year, value.Month, value.Day, value.Hour, value.Minute, 0);
+
+        if (BreakTimeDictionary.ContainsKey(newValue)) //既に同じキーが存在するかどうかを確認
+        {
+          if (!ErrorsDic[nameof(StartTime)].Contains(SAME_DATE_ERROR))
+          {
+            ErrorsDic[nameof(StartTime)].Add(SAME_DATE_ERROR);
+            ErrorsChanged?.Invoke(this, new(nameof(StartTime)));
+          }
+          return;
+        }
+        else if(ErrorsDic[nameof(StartTime)].Contains(SAME_DATE_ERROR))
+        {
+          ErrorsDic[nameof(StartTime)].Remove(SAME_DATE_ERROR);
+          ErrorsChanged?.Invoke(this, new(nameof(StartTime)));
+        }
+
         if (BreakTimeDictionary.TryGetValue(StartTime, out int timeLen))
           _ = BreakTimeDictionary.Remove(StartTime);
 
-        _StartTime = new(value.Year, value.Month, value.Day, value.Hour, value.Minute, 0);
+        _StartTime = newValue;
 
         _EndTime = StartTime + TimeLen;
 
@@ -232,6 +256,8 @@ namespace ShiftManager.Controls
         BreakTimeDictionary[StartTime] = (int)TimeLen.TotalMinutes;
       }
     }
+
+    public bool HasErrors { get => ErrorsDic[nameof(StartTime)].Count > 0; }
   }
 
 }
