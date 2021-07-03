@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -45,6 +48,25 @@ namespace ShiftManager
       _ = await ApiHolder.Api.SignOutAsync();
       MWVM.IsSignedIn.Value = false;
       MainFrame.Content = null;
+    }
+
+    private void LicenseClicked(object sender, RoutedEventArgs e)
+    {
+      var assembly = Assembly.GetExecutingAssembly();
+      var resourceName = "ShiftManager.Resources.ThirdPartyLicense.md";
+      string manualFileContent;
+      using (var stream = assembly.GetManifestResourceStream(resourceName))
+      {
+        if (stream != null)
+        {
+          using (var sr = new StreamReader(stream))
+          {
+            manualFileContent = sr.ReadToEnd();
+            var window = new Window1(manualFileContent);
+            window.Show();
+          }
+        }
+      }
     }
   }
 
