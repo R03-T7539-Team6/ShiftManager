@@ -12,6 +12,7 @@
     <TextBlock>Shift Request Manage Page</TextBlock>
     <StackPanel Margin="10,50">
       <!--実際は動的に配置する-->
+      <MyCtrls:ShiftEditorHeaderControl/>
       <MyCtrls:ShiftEditorControl/>
       <MyCtrls:ShiftEditorControl/>
       <MyCtrls:ShiftEditorControl/>
