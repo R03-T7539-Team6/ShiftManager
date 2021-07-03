@@ -13,6 +13,8 @@ namespace ShiftManager.Controls
   /// </summary>
   public partial class UserSettingControl : UserControl
   {
+    public event EventHandler SavePushed;
+
     #region 操作の許可/不許可設定用(依存関係)プロパティ群
     public bool CanEditUserID { get => (bool)GetValue(CanEditUserIDProperty); set => SetValue(CanEditUserIDProperty, value); }
     public static readonly DependencyProperty CanEditUserIDProperty = DependencyProperty.Register(nameof(CanEditUserID), typeof(bool), typeof(UserSettingControl));
@@ -103,6 +105,25 @@ namespace ShiftManager.Controls
     public UserSettingControl()
     {
       InitializeComponent();
+
+      UserID uID = new("TESTID01");
+      SetData(new UserData(uID, new HashedPassword(string.Empty, string.Empty, 0), new NameData("FName", "LName"), UserGroup.SystemAdmin, UserState.NotHired, new WorkLog(uID, new()), new UserSetting(uID, NotificationPublishTimings.None, new())));
+      var UGlist = new List<string>();
+      var USlist = new List<string>();
+      UGlist.Add("SystemAdmin");
+      UGlist.Add("SuperUser");
+      UGlist.Add("NormalUser");
+      UGlist.Add("ForTimeRecordTerminal");
+      USlist.Add("Normal");
+      USlist.Add("InLeaveOfAbsence");
+      USlist.Add("Retired");
+      USlist.Add("NotHired");
+      USlist.Add("Others");
+
+      UG.ItemsSource = UGlist;
+      UG.SelectedIndex = 0;
+      US.ItemsSource = USlist;
+      US.SelectedIndex = 0;
     }
 
     private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
@@ -167,6 +188,7 @@ namespace ShiftManager.Controls
       }
 
       //TODO: APIを使用して設定を登録する
+      SavePushed?.Invoke(this, null);
     }
   }
 }
