@@ -53,7 +53,7 @@ namespace ShiftManager.Communication
             new SingleShiftData(ID0002.UserID, new(2021, 5, 29), false, new(2021, 5, 29, 8, 0, 0), new(2021, 5, 29, 18, 30, 0), new()
               {
                 { new(2021, 5, 29, 9, 0, 0), 60 },
-                { new(2021, 5, 29, 12, 12, 0), 18 },
+                { new(2021, 5, 29, 12, 12, 0), 18 }
               }
             )
           }
