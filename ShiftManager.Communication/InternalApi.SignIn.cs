@@ -36,7 +36,10 @@ namespace ShiftManager.Communication
         return new(false, ApiResultCodes.UserID_Not_Found);
 
       if (userD.HashedPassword.Hash == hashedPassword.Hash)
+      {
+        CurrentUserData = new UserData(userD) with { HashedPassword = new HashedPassword() };
         return new(true, ApiResultCodes.Success);//実際はここでトークンをキャッシュする
+      }
       else
         return new(false, ApiResultCodes.Password_Not_Match);
     });

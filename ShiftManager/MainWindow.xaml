@@ -9,11 +9,16 @@
         d:DataContext="{x:Type local:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="MainWindow"
-        FontFamily="BIZ UDPGothic"
-        Height="600"
-        Width="800">
+        FontFamily="BIZ UDPGothic">
   <Window.Resources>
     <sys:Double x:Key="FontSize_Title">24</sys:Double>
+    <BooleanToVisibilityConverter x:Key="VisibleWhenTrueConv"/>
+    <local:ValueConverterGroup x:Key="VisibleWhenFalseConv">
+      <local:ValueConverterGroup.Converters>
+        <local:BooleanReverseConverter/>
+        <BooleanToVisibilityConverter/>
+      </local:ValueConverterGroup.Converters>
+    </local:ValueConverterGroup>
 
     <Style TargetType="Button">
       <Setter Property="Padding" Value="5"/>
@@ -34,10 +39,13 @@
     <Frame
       x:Name="MainFrame"
       NavigationUIVisibility="Hidden"
+      Navigating="MainFrame_Navigating"
+      FontFamily="BIZ UDPGothic"
       Grid.Row="1"
       Grid.Column="1"/>
 
-    <Grid Grid.Row="0"
+    <Grid Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenTrueConv}}"
+          Grid.Row="0"
           Grid.Column="0"
           Grid.ColumnSpan="2"
           Background="DarkGray">
@@ -52,9 +60,11 @@
           </TextBlock.Text>
         </TextBlock>
 
-        <Button Content="ログアウト"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"/>
+        <Button
+          Content="ログアウト"
+          Click="SignOutClicked"
+          HorizontalAlignment="Right"
+          VerticalAlignment="Bottom"/>
       </Grid>
     </Grid>
 
@@ -69,12 +79,12 @@
       VerticalAlignment="Stretch">
 
       <StackPanel Margin="0,60,0,0">
-        <Button Content="HOME" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Null}"/>
-        <Button Content="シフト希望登録" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftRequestManagePage}"/>
-        <Button Content="予定シフト表示" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ScheduledShiftCheckPage}"/>
-        <Button Content="勤務実績表示" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkLogCheckPage}"/>
-        <Button Content="シフト印刷" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftPrintPage}"/>
-        <Button Content="ユーザ設定" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:UserSettingPage}"/>
+        <Button Content="HOME" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Null}"/>
+        <Button Content="シフト希望登録" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftRequestManagePage}"/>
+        <Button Content="予定シフト表示" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ScheduledShiftCheckPage}"/>
+        <Button Content="勤務実績表示" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkLogCheckPage}"/>
+        <Button Content="シフト印刷" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftPrintPage}"/>
+        <Button Content="ユーザ設定" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:UserSettingPage}"/>
 
         <Line Stroke="Black"
               StrokeThickness="2"
@@ -82,10 +92,10 @@
               X2="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualWidth}"/>
 
         <!--#region 管理者用ボタン群  権限が無いなら表示しない-->
-        <Button Content="予定シフト作成" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ScheduledShiftManagePage}"/>
-        <Button Content="新規従業員追加" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:SignUpPage}"/>
-        <Button Content="データ管理" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:DataManagePage}"/>
-        <Button Content="勤怠登録モード" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkTimeRecordPage}"/>
+        <Button Content="予定シフト作成" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ScheduledShiftManagePage}"/>
+        <Button Content="新規従業員追加" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:SignUpPage}"/>
+        <Button Content="データ管理" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:DataManagePage}"/>
+        <Button Content="勤怠登録モード" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkTimeRecordPage}"/>
         <!--#endregion-->
       </StackPanel>
 
@@ -110,6 +120,25 @@
         Padding="5"
         FontSize="{StaticResource FontSize_Title}"/>
     </StackPanel>
+
+    <Rectangle
+      Fill="Black"
+      Opacity="0.5"
+      Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenFalseConv}}"
+      Grid.Row="1"
+      Grid.Column="1"/>
+
+    <pages:SignInPage
+      x:Name="SignInPageElem"
+      Login="SignInPageElem_Login"
+      FontFamily="Yu Gothic UI"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Center"
+      Height="450"
+      Width="800"
+      Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenFalseConv}}"
+      Grid.Row="1"
+      Grid.Column="1"/>
 
   </Grid>
 </Window>

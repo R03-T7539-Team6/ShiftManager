@@ -9,12 +9,26 @@ namespace ShiftManager.DataClasses
   /// <summary>勤務予定/実績用クラス</summary>
   public record SingleShiftData(IUserID UserID, DateTime WorkDate, bool IsPaidHoliday, DateTime AttendanceTime, DateTime LeavingTime, Dictionary<DateTime, int> BreakTimeDictionary) : ISingleShiftData
   {
-    public SingleShiftData(ISingleShiftData i) : this(i?.UserID ?? new UserID(), i?.WorkDate ?? new(), i?.IsPaidHoliday ?? false, i?.AttendanceTime ?? new(), i?.LeavingTime ?? new(), i?.BreakTimeDictionary ?? new()) { }
+    public SingleShiftData(ISingleShiftData i) : this(i?.UserID ?? new UserID(), i?.WorkDate ?? new(), i?.IsPaidHoliday ?? false, i?.AttendanceTime ?? new(), i?.LeavingTime ?? new(), new(i?.BreakTimeDictionary ?? new())) { }
   }
 
   public partial class SingleShiftData_NotifyPropertuChanged : ISingleShiftData, INotifyPropertyChanged
   {
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    public SingleShiftData_NotifyPropertuChanged() { }
+    public SingleShiftData_NotifyPropertuChanged(in ISingleShiftData i)
+    {
+      if (i is null)
+        return;
+
+      UserID = i.UserID;
+      WorkDate = i.WorkDate;
+      IsPaidHoliday = i.IsPaidHoliday;
+      AttendanceTime = i.AttendanceTime;
+      LeavingTime = i.LeavingTime;
+      BreakTimeDictionary = i.BreakTimeDictionary; //コピーコンストラクタを使うかどうかは要検討
+    }
 
     [AutoNotify]
     private IUserID _UserID = new UserID();

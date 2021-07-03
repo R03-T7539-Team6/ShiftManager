@@ -45,9 +45,9 @@ namespace ShiftManager.Communication
         ShiftSchedulingState.NotStarted, new(), new());
 
       //Remoteへの追加
-      TestD.ScheduledShiftDictionary.Add(retD.TargetDate, retD);
-
-      return new(true, ApiResultCodes.Success, retD);
+      return TestD.ScheduledShiftDictionary.TryAdd(retD.TargetDate, retD)
+      ? new(true, ApiResultCodes.Success, retD)
+      : new(false, ApiResultCodes.Data_Already_Exists, new(TestD.ScheduledShiftDictionary[retD.TargetDate]));
     });
 
     public Task<ApiResult<ShiftRequest>> GenerateShiftRequestAsync(IUserID userID) => GenerateShiftRequestAsync(new(userID));

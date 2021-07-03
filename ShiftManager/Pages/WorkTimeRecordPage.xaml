@@ -4,95 +4,117 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:MyCtrl="clr-namespace:ShiftManager.Controls"
+      xmlns:MyCtrls="clr-namespace:ShiftManager.Controls"
+      xmlns:root="clr-namespace:ShiftManager"
       mc:Ignorable="d" 
       FontSize="18"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="WorkTimeRecordPage">
 
-  <Grid Background="LightGray">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="*"/>
-    </Grid.ColumnDefinitions>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="3*"/>
-      <RowDefinition Height="1*"/>
-      <RowDefinition Height="1*"/>
-    </Grid.RowDefinitions>
+    <Page.Resources>
+        <root:DoubleValueAddConverter x:Key="DoubleValueAddConv"/>
+    </Page.Resources>
+    
+    <Grid Background="LightGray">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="90"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
 
-    <Viewbox
+        <Viewbox
       Margin="10"
       Grid.Row="0"
       Grid.Column="0">
-      <Border
+            <Border
         BorderThickness="1"
         BorderBrush="Black"
         Background="White">
-        <TextBlock Text="23:59:59" Margin="2"/>
-      </Border>
-    </Viewbox>
+                <TextBlock x:Name="time" Text="00:00:00" Margin="2"/>
+            </Border>
+        </Viewbox>
 
-    <Grid
+        <Grid
       Margin="10"
       Grid.Column="0"
       Grid.Row="1">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="160"/>
-        <ColumnDefinition Width="*"/>
-      </Grid.ColumnDefinitions>
-      <TextBlock
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock
         Text="ユーザID&#xa;(従業員番号)"
         Margin="4"
         VerticalAlignment="Center"
         TextAlignment="Right"/>
-      <TextBox
+            <TextBox x:Name="UID"
         Padding="2,4"
         Grid.Column="1"
         VerticalContentAlignment="Center"
         VerticalAlignment="Center"/>
-    </Grid>
+        </Grid>
 
-    <Grid
+        <Grid
       Margin="10"
       Grid.Column="0"
       Grid.Row="2">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*"/>
-        <ColumnDefinition Width="*"/>
-        <ColumnDefinition Width="*"/>
-        <ColumnDefinition Width="*"/>
-      </Grid.ColumnDefinitions>
-      
-      <!--できればF1とかのキーを使って操作できるようにしたい-->
-      <Button
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--できればF1とかのキーを使って操作できるようにしたい-->
+            <Button x:Name="syukkin"
         Margin="10"
         Grid.Column="0"
-        Content="出勤"/>
-      <Button
+        Content="出勤" Click="syukkin_Click"/>
+            <Button x:Name="kyunyu"
         Margin="10"
         Grid.Column="1"
-        Content="休入"/>
-      <Button
+        Content="休入" Click="kyunyu_Click"/>
+            <Button x:Name="kyusyutu"
         Margin="10"
         Grid.Column="2"
-        Content="休出"/>
-      <Button
+        Content="休出" Click="kyusyutu_Click_1"/>
+            <Button x:Name="taikin"
         Margin="10"
         Grid.Column="3"
-        Content="退勤"/>
+        Content="退勤" Click="taikin_Click_1"/>
 
+        </Grid>
+
+<Viewbox Grid.Row="0" Grid.Column="1">
+        <StackPanel>
+            <MyCtrls:ShiftEditorHeaderControl
+x:Name="ShiftEditorHeader"
+VisibleElements="Text, AttendTime, LeaveTime, BreakTime, ShiftBar, WorkTimeLen"
+      Margin="20,0"/>
+            <ListView
+      x:Name="abc"
+      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+      ItemsSource="{Binding ShiftRequestArray}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <MyCtrls:ShiftEditorControl
+            MinWidth="600"
+EditableElements="None"
+VisibleElements="{Binding VisibleElements, ElementName=ShiftEditorHeader}"
+            Content="{Binding WorkDate, StringFormat=YYYY/MM/DD}"
+            Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleValueAddConv}, ConverterParameter=-40, Mode=OneWay}"
+            WorkDate="{Binding WorkDate, Mode=TwoWay}"
+            AttendanceTime="{Binding AttendanceTime, Mode=TwoWay}"
+            LeavingTime="{Binding LeavingTime, Mode=TwoWay}"
+            BreakTimeDictionary="{Binding BreakTimeDictionary, Mode=TwoWay}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel> 
+</Viewbox>
     </Grid>
-    
-    <StackPanel
-      Margin="10"
-      Background="White"
-      Grid.RowSpan="3"
-      Grid.Column="1">
-      <!--実際は動的に配置する-->
-      <MyCtrl:ShiftEditorControl/>
-      <MyCtrl:ShiftEditorControl/>
-      <MyCtrl:ShiftEditorControl/>
-      <MyCtrl:ShiftEditorControl/>
-    </StackPanel>
-  </Grid>
 </Page>

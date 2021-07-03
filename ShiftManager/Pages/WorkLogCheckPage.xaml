@@ -4,11 +4,46 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ShiftManager.Pages"
+      xmlns:MyCtrls="clr-namespace:ShiftManager.Controls"
+      xmlns:root="clr-namespace:ShiftManager"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
+Loaded="OnLoaded"
       Title="WorkLogCheckPage">
 
-  <Grid>
+    <Page.Resources>
+        <root:DoubleValueAddConverter x:Key="DoubleValueAddConv"/>
+    </Page.Resources>
 
-  </Grid>
+    <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="3*"/>
+        </Grid.RowDefinitions>
+
+        <MyCtrls:ShiftEditorHeaderControl
+      Margin="-10,0"
+      Grid.Row="2"/>
+        <ListView
+      x:Name="abc"
+      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+      ItemsSource="{Binding ShiftRequestArray}"
+      Grid.Row="3">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <MyCtrls:ShiftEditorControl
+            MinWidth="600"
+            Content="{Binding WorkDate, StringFormat=YYYY/MM/DD}"
+            Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleValueAddConv}, ConverterParameter=-40, Mode=OneWay}"
+            WorkDate="{Binding WorkDate, Mode=TwoWay}"
+            AttendanceTime="{Binding AttendanceTime, Mode=TwoWay}"
+            LeavingTime="{Binding LeavingTime, Mode=TwoWay}"
+            BreakTimeDictionary="{Binding BreakTimeDictionary, Mode=TwoWay}"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
 </Page>

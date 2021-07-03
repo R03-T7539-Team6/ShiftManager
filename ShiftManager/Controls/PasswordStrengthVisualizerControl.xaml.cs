@@ -6,11 +6,11 @@ namespace ShiftManager.Controls
   public class PasswordStrengthVisualizerControl : Control
   {
     public string PasswordText { get => (string)GetValue(PasswordTextProperty); set => SetValue(PasswordTextProperty, value); }
-    static public DependencyProperty PasswordTextProperty = DependencyProperty.Register(nameof(PasswordText), typeof(string), typeof(PasswordStrengthVisualizerControl), new(PWChanged));
+    public static readonly DependencyProperty PasswordTextProperty = DependencyProperty.Register(nameof(PasswordText), typeof(string), typeof(PasswordStrengthVisualizerControl), new(PWChanged));
 
     public double PasswordStrength { get => (double)GetValue(PasswordStrengthProperty); protected set => SetValue(PasswordStrengthPropertyKey, value); }
-    static private DependencyPropertyKey PasswordStrengthPropertyKey = DependencyProperty.RegisterReadOnly(nameof(PasswordStrength), typeof(double), typeof(PasswordStrengthVisualizerControl), new());
-    static public DependencyProperty PasswordStrengthProperty = PasswordStrengthPropertyKey.DependencyProperty;
+    private static readonly DependencyPropertyKey PasswordStrengthPropertyKey = DependencyProperty.RegisterReadOnly(nameof(PasswordStrength), typeof(double), typeof(PasswordStrengthVisualizerControl), new());
+    public static readonly DependencyProperty PasswordStrengthProperty = PasswordStrengthPropertyKey.DependencyProperty;
 
     /// <summary>パスワードの強度における"良い"の閾値</summary>
     public static double PWStrength_Good { get; } = 0.7;
