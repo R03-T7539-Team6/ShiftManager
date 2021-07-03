@@ -5,8 +5,9 @@ namespace ShiftManager.Pages
   /// <summary>
   /// Interaction logic for WorkLogCheckPage.xaml
   /// </summary>
-  public partial class WorkLogCheckPage : Page
+  public partial class WorkLogCheckPage : Page, IContainsApiHolder
   {
+    public IApiHolder ApiHolder { get; set; }
     public WorkLogCheckPage()
     {
       InitializeComponent();
