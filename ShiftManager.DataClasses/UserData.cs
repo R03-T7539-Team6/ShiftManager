@@ -82,7 +82,7 @@ namespace ShiftManager.DataClasses
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public NameData_PropertyChanged() { }
-    public NameData_PropertyChanged(INameData i) { FirstName = i.FirstName; LastName = i.LastName; }
+    public NameData_PropertyChanged(INameData i) { FirstName = i?.FirstName ?? string.Empty; LastName = i?.LastName ?? string.Empty; }
 
     [AutoNotify]
     private string _FirstName = string.Empty;
