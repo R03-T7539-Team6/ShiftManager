@@ -45,7 +45,7 @@
         Margin="4"
         VerticalAlignment="Center"
         TextAlignment="Right"/>
-            <TextBox
+            <TextBox x:Name="UID"
         Padding="2,4"
         Grid.Column="1"
         VerticalContentAlignment="Center"
@@ -64,22 +64,22 @@
             </Grid.ColumnDefinitions>
 
             <!--できればF1とかのキーを使って操作できるようにしたい-->
-            <Button
+            <Button x:Name="syukkin"
         Margin="10"
         Grid.Column="0"
-        Content="出勤"/>
-            <Button
+        Content="出勤" Click="syukkin_Click"/>
+            <Button x:Name="kyunyu"
         Margin="10"
         Grid.Column="1"
-        Content="休入"/>
-            <Button
+        Content="休入" Click="kyunyu_Click"/>
+            <Button x:Name="kyusyutu"
         Margin="10"
         Grid.Column="2"
-        Content="休出"/>
-            <Button
+        Content="休出" Click="kyusyutu_Click_1"/>
+            <Button x:Name="taikin"
         Margin="10"
         Grid.Column="3"
-        Content="退勤"/>
+        Content="退勤" Click="taikin_Click_1"/>
 
         </Grid>
 
