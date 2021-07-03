@@ -1,27 +1,66 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Controls;
 using ShiftManager.DataClasses;
+using AutoNotify;
+using System.Collections.ObjectModel;
 
 namespace ShiftManager.Pages
 {
+  public partial class WorkLogCheckViewModel : INotifyPropertyChanged
+  {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    [AutoNotify]
+    private ObservableCollection<ISingleWorkLog> _WorkLogArray;
+
+    private double _ShiftRequestListItemWidth = double.NaN;
+    public double ShiftRequestListItemWidth
+    {
+      get => _ShiftRequestListItemWidth;
+      set
+      {
+        _ShiftRequestListItemWidth = value > 16 ? value : value - 16;
+        PropertyChanged?.Invoke(this, new(nameof(ShiftRequestListItemWidth)));
+      }
+    }
+
+    [AutoNotify]
+    private DateTime _TargetDate = DateTime.Now.Date;
+  }
+
   /// <summary>
   /// Interaction logic for WorkLogCheckPage.xaml
   /// </summary>
   public partial class WorkLogCheckPage : Page, IContainsApiHolder
   {
-    public IApiHolder ApiHolder { get; set; }
+    public IApiHolder ApiHolder { get; set; } = new ApiHolder();
+    WorkLogCheckViewModel VM = new();
     public WorkLogCheckPage()
     {
       InitializeComponent();
+      VM.WorkLogArray = new();
+      DataContext = VM;
     }
 
     public async void hoge()
     {
       var res = await ApiHolder.Api.GetWorkLogAsync();
-      WorkLog wl  =  res.ReturnData;
+      WorkLog wl = res.ReturnData;
+      DateTime today = DateTime.Today;
 
-      if (wl.WorkLogDictionary.TryGetValue(new DateTime(2021, 5, 1, 12, 0, 3).Date, out var output)) { }
-      
+      for (int i = 0; i > -30; i--)
+      {
+        if (wl.WorkLogDictionary.TryGetValue(today.AddDays(i), out var output))
+        {
+          VM.WorkLogArray.Add(output);
+        }
+      }
+    }
+
+    private void OnLoaded(object sender, System.Windows.RoutedEventArgs e)
+    {
+      hoge();
     }
   }
 }
