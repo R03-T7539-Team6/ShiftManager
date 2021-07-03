@@ -106,8 +106,6 @@ namespace ShiftManager.Controls
     {
       InitializeComponent();
 
-      UserID uID = new("TESTID01");
-      SetData(new UserData(uID, new HashedPassword(string.Empty, string.Empty, 0), new NameData("FName", "LName"), UserGroup.SystemAdmin, UserState.NotHired, new WorkLog(uID, new()), new UserSetting(uID, NotificationPublishTimings.None, new())));
       var UGlist = new List<string>();
       var USlist = new List<string>();
       UGlist.Add("SystemAdmin");
