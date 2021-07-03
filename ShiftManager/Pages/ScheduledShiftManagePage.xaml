@@ -27,7 +27,6 @@
     </Grid.RowDefinitions>
 
     <DatePicker
-      x:Name="abc"
       Margin="4"
       HorizontalAlignment="Left"
       VerticalAlignment="Bottom"
@@ -40,12 +39,17 @@
       Grid.Row="2"/>
 
     <ListView
+      x:Name="ShiftRequestListView"
+      ScrollBar.Scroll="ListView_Scroll"
+      PreviewMouseWheel="ShiftRequestListView_MouseWheel"
+      VirtualizingPanel.ScrollUnit="Pixel"
       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
       ItemsSource="{Binding ShiftRequestArray}"
       Grid.Row="3">
       <ListView.ItemTemplate>
         <DataTemplate>
           <MyCtrls:ShiftEditorControl
+            EditableElements="None"
             MinWidth="600"
             Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleValueAddConv}, ConverterParameter=-40, Mode=OneWay}"
             WorkDate="{Binding WorkDate, Mode=TwoWay}"
@@ -60,6 +64,10 @@
       Margin="20,0"
       Grid.Row="4"/>
     <ListView
+      x:Name="ScheduledShiftListView"
+      ScrollBar.Scroll="ListView_Scroll"
+      PreviewMouseWheel="ShiftRequestListView_MouseWheel"
+      VirtualizingPanel.ScrollUnit="Pixel"
       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
       ItemsSource="{Binding ScheduledShiftArray}"
       Grid.Row="5">

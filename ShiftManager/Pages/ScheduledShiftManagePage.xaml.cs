@@ -3,7 +3,11 @@ using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Automation;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 using AutoNotify;
 
@@ -22,6 +26,8 @@ namespace ShiftManager.Pages
     {
       InitializeComponent();
 
+      VM.ShiftRequestArray = new();
+      VM.ScheduledShiftArray = new();
       DataContext = VM;
     }
 
@@ -42,14 +48,18 @@ namespace ShiftManager.Pages
       }
 
       ShiftRequests = shiftReqs.ReturnData;
-      VM.ShiftRequestArray = new();
-      foreach (var i in ShiftRequests)
-      {
-        if (!i.RequestsDictionary.TryGetValue(VM.TargetDate, out ISingleShiftData ssd))
-          ssd = new SingleShiftData(i.UserID, VM.TargetDate, false, default, default, new());
-        VM.ShiftRequestArray.Add(ssd);
-      }
+      VM.ScheduledShiftArray.Clear();
+      VM.ShiftRequestArray.Clear();
+      for (int v = 0; v < 10; v++)
+        foreach (var i in ShiftRequests)
+        {
+          if (!i.RequestsDictionary.TryGetValue(VM.TargetDate, out ISingleShiftData ssd))
+            ssd = new SingleShiftData(i.UserID, VM.TargetDate, false, default, default, new());
+          VM.ShiftRequestArray.Add(ssd);
+          VM.ScheduledShiftArray.Add(new SingleShiftData(ssd));
+        }
     }
+
     private async void ReloadScheduledShift()
     {
       
@@ -63,13 +73,47 @@ namespace ShiftManager.Pages
           return;
         }
       }
-      VM.ScheduledShiftArray = new();
-      foreach (var i in ret.ReturnData.ShiftDictionary.Values)
-        VM.ScheduledShiftArray.Add(new SingleShiftData(i));
+      //VM.ScheduledShiftArray = new();
+      for (int v = 0; v < 10; v++)
+        foreach (var i in ret.ReturnData.ShiftDictionary.Values)
+        {
+          VM.ScheduledShiftArray.Add(new SingleShiftData(i));
+        }
       
     }
-    private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+    private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e) => ReloadData();
+
+    private void ListView_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e) => ScrollSyncer(sender);
+
+    private void ShiftRequestListView_MouseWheel(object sender, MouseWheelEventArgs e) => ScrollSyncer(sender);
+
+    private void ScrollSyncer(object sender)
     {
+      static IScrollProvider GetScrollProvider(in UIElement uie)
+        => UIElementAutomationPeer.CreatePeerForElement(uie)?.GetPattern(PatternInterface.Scroll) as IScrollProvider;
+
+      if (sender is not ListView lv)
+        return;
+
+      //ref : https://blog.okazuki.jp/entry/20120105/1325771139
+      var scrollProvider = GetScrollProvider(lv);
+
+      if (scrollProvider is null)
+        return;
+      
+      double scrollPercent = scrollProvider.VerticalScrollPercent;
+      scrollPercent =
+        scrollPercent < 0 ? 0 :
+        scrollPercent > 100 ? 100 :
+        scrollPercent;
+
+      var srlvScrollProvider = GetScrollProvider(ShiftRequestListView);
+      if (srlvScrollProvider.VerticalScrollPercent != scrollPercent)
+        srlvScrollProvider.SetScrollPercent(ScrollPatternIdentifiers.NoScroll, scrollPercent);
+
+      var sslvScrollProvider = GetScrollProvider(ScheduledShiftListView);
+      if (sslvScrollProvider.VerticalScrollPercent != scrollPercent)
+        sslvScrollProvider.SetScrollPercent(ScrollPatternIdentifiers.NoScroll, scrollPercent);
     }
   }
 
