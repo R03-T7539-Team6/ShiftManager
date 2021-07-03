@@ -101,7 +101,7 @@ namespace ShiftManager.Controls
     private void BreakTimeDictionaryUpdated()
     {
       BreakTimeList = new();
-      foreach (var i in BreakTimeDictionary)
+      foreach (var i in new Dictionary<DateTime, int>(BreakTimeDictionary))
         BreakTimeList.Add(new(i, BreakTimeDictionary, TargetDate));
     }
 
