@@ -183,5 +183,10 @@ namespace ShiftManager
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => TimeSpan.Parse(value as string);
   }
 
-
+  public class DoubleValueAddConverter : IValueConverter
+  {
+    public double? Value { get; set; }
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => (double)value + (Value ?? double.Parse(parameter as string));
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+  }
 }
