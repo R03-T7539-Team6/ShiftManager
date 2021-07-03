@@ -27,7 +27,7 @@ namespace ShiftManager.Communication
         return new(false, ApiResultCodes.Target_Date_Not_Found, null);
 
       if (!scheduledShift.ShiftDictionary.TryGetValue(new(userID), out ISingleShiftData? singleShiftData) || singleShiftData is null)
-        return new(false, ApiResultCodes.UserID_Not_Found, null);
+        return new(false, ApiResultCodes.UserID_Not_Found_In_Scheduled_Shift, null);
       else
       {
         ApiResultCodes resultCode = scheduledShift.SchedulingState switch
