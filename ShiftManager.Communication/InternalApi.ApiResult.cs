@@ -87,6 +87,9 @@
     BreakTimeLen_Zero_Or_Less,
 
     /// <summary>氏名が一致しない</summary>
-    FullName_Not_Match
+    FullName_Not_Match,
+
+    /// <summary>予定シフトに指定のユーザIDが存在しない</summary>
+    UserID_Not_Found_In_Scheduled_Shift,
   }
 }
