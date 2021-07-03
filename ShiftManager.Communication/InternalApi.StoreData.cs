@@ -112,7 +112,7 @@ namespace ShiftManager.Communication
         return new(false, ApiResultCodes.UserID_Not_Found, null);
 
       //ユーザデータからはハッシュを削除して返す
-      return new(true, ApiResultCodes.Success, null);
+      return new(true, ApiResultCodes.Success, new UserData(userData) with { HashedPassword = (new HashedPassword(userData.HashedPassword) with { Hash = string.Empty }) });
     });
 
     public Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserGroupAsync(UserGroup userGroup = UserGroup.None)
