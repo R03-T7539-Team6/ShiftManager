@@ -28,7 +28,7 @@ namespace ShiftManager.Pages
         ApiResult<SingleShiftData> res = await ApiHolder.Api.GetScheduledShiftByIDAsync(selectday.AddDays(i), ApiHolder.Api.CurrentUserData?.UserID);
         if (!res.IsSuccess)
         {
-          MessageBox.Show("データ取得に失敗しました");
+          break;
         }
         else
         {

@@ -75,7 +75,17 @@ namespace ShiftManager.Communication
 
         new(){1}),
       new(new(2021, 5, 31), new(2021, 5, 31, 0, 0, 0), new(2021, 6, 1, 0, 0, 0), ShiftSchedulingState.NotStarted, new(), new(){1}),
-      new(new(2021, 7, 4), new(2021, 7, 4, 0, 0, 0), new(2021, 7, 5, 0, 0, 0), ShiftSchedulingState.NotStarted, new(), new(){1}),
+      new(new(2021, 7, 4), new(2021, 7, 4, 0, 0, 0), new(2021, 7, 5, 0, 0, 0), ShiftSchedulingState.Working,
+        new()
+        {
+					{
+            ID0000.UserID,
+            new SingleShiftData(ID0000.UserID, new(2021, 7, 1), false, new(2021, 7, 4, 12, 0, 0), new(2021, 7, 4, 18, 0, 0),
+              new()
+            )
+          }
+        },
+        new(){1}),
       new(new(2021, 7, 5), new(2021, 7, 5, 0, 0, 0), new(2021, 7, 6, 0, 0, 0), ShiftSchedulingState.NotStarted, new(), new(){1}),
     };
 
