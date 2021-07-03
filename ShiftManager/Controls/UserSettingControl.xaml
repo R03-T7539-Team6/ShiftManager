@@ -161,7 +161,7 @@
       Grid.Column="0"
       Grid.Row="3"
       Text="UserGroup"/>
-    <ComboBox
+    <ComboBox x:Name="UG"
       IsEnabled="{Binding CanEditUserGroup, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
       SelectedItem="{Binding SelectedUserGroup, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
       Grid.Column="1"
@@ -171,7 +171,7 @@
       Grid.Column="0"
       Grid.Row="4"
       Text="UserState"/>
-    <ComboBox
+    <ComboBox x:Name="US"
       IsEnabled="{Binding CanEditUserState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
       SelectedItem="{Binding SelectedUserState, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:UserSettingControl}}"
       Grid.Column="1"

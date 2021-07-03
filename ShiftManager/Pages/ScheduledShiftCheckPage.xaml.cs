@@ -1,39 +1,48 @@
 ﻿using System.Windows.Controls;
 using System;
-using System.Collections.Generic;
 using ShiftManager.DataClasses;
 using ShiftManager.Communication;
-using System.Threading.Tasks;
+using System.Windows;
 
 namespace ShiftManager.Pages
 {
   /// <summary>
   /// Interaction logic for ScheduledShiftCheckPage.xaml
   /// </summary>
-  public partial class ScheduledShiftCheckPage : Page
+  public partial class ScheduledShiftCheckPage : Page, IContainsApiHolder
   {
     public IApiHolder ApiHolder { get; set; }
+    ScheduledShiftManagePageViewModel VM = new();
     public ScheduledShiftCheckPage()
     {
       InitializeComponent();
-
-      var Datelist = new List<DateTime>();
-      DateTime today = DateTime.Today;
-      Datelist.Add(today);
-      Datelist.Add(today.AddDays(1));
-      Datelist.Add(today.AddDays(2));
-      Datelist.Add(today.AddDays(3));
-      Datelist.Add(today.AddDays(4));
-      Datelist.Add(today.AddDays(5));
-      Datelist.Add(today.AddDays(6));
-      Datelist.Add(today.AddDays(7));
-
-      ComboBox.ItemsSource = Datelist;
-      ComboBox.SelectedIndex = 0;
-
-  
+      VM.ShiftRequestArray = new();
+      DataContext = VM;
     }
 
-    
+    public async void hoge()
+    {
+      DateTime selectday = VM.TargetDate.Date;
+      for (int i = 0; i < 7; i++)
+      {
+        ApiResult<SingleShiftData> res = await ApiHolder.Api.GetScheduledShiftByIDAsync(selectday.AddDays(i), ApiHolder.Api.CurrentUserData?.UserID);
+        if (!res.IsSuccess)
+        {
+          break;
+        }
+        else
+        {
+          VM.ShiftRequestArray.Add(res.ReturnData);
+        }
+      }
+    }
+
+    private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e) => OnLoaded(null, null);
+
+    private void OnLoaded(object sender, System.Windows.RoutedEventArgs e)
+    {
+      VM.ShiftRequestArray.Clear();
+      hoge();
+    }
   }
 }
