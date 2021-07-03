@@ -47,6 +47,14 @@ namespace ShiftManager.Controls
     public bool BreakTimePopupState { get => (bool)GetValue(BreakTimePopupStateProperty); set => SetValue(BreakTimePopupStateProperty, value); }
     public static readonly DependencyProperty BreakTimePopupStateProperty = DependencyProperty.Register(nameof(BreakTimePopupState), typeof(bool), typeof(ShiftEditorControl));
 
+    public ISingleShiftData SingleShiftDataSetter { get => (ISingleShiftData)GetValue(SingleShiftDataSetterProperty); set => SetValue(SingleShiftDataSetterProperty, value); }
+    public static readonly DependencyProperty SingleShiftDataSetterProperty = DependencyProperty.Register(nameof(SingleShiftDataSetter), typeof(ISingleShiftData), typeof(ShiftEditorControl),
+      new((s, e) =>
+      {
+        if (s is ShiftEditorControl sec)
+          sec.SingleShiftData = e.NewValue as SingleShiftData;
+      }));
+
     public IUserID UserID { get; private set; } //使わない
     public bool IsPaidHoliday { get; private set; } //使わない
 
@@ -65,6 +73,7 @@ namespace ShiftManager.Controls
       get => new SingleShiftData(this);
       set
       {
+        var i = value ?? new SingleShiftData(null);
         UserID = value.UserID;
         WorkDate = value.WorkDate;
         IsPaidHoliday = value.IsPaidHoliday;

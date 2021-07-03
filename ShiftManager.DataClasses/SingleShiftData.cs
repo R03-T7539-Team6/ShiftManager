@@ -16,6 +16,20 @@ namespace ShiftManager.DataClasses
   {
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    public SingleShiftData_NotifyPropertuChanged() { }
+    public SingleShiftData_NotifyPropertuChanged(in ISingleShiftData i)
+    {
+      if (i is null)
+        return;
+
+      UserID = i.UserID;
+      WorkDate = i.WorkDate;
+      IsPaidHoliday = i.IsPaidHoliday;
+      AttendanceTime = i.AttendanceTime;
+      LeavingTime = i.LeavingTime;
+      BreakTimeDictionary = i.BreakTimeDictionary; //コピーコンストラクタを使うかどうかは要検討
+    }
+
     [AutoNotify]
     private IUserID _UserID = new UserID();
     [AutoNotify]

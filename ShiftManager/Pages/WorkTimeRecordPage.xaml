@@ -4,11 +4,17 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:MyCtrl="clr-namespace:ShiftManager.Controls"
+      xmlns:MyCtrls="clr-namespace:ShiftManager.Controls"
+      xmlns:root="clr-namespace:ShiftManager"
       mc:Ignorable="d" 
       FontSize="18"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="WorkTimeRecordPage">
 
+    <Page.Resources>
+        <root:DoubleValueAddConverter x:Key="DoubleValueAddConv"/>
+    </Page.Resources>
+    
     <Grid Background="LightGray">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -83,24 +89,32 @@
 
         </Grid>
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="19,0,19,10" HorizontalScrollBarVisibility="Auto" Grid.Column="1" Grid.RowSpan="3">
-            <ListView x:Name="ListView"
-      Margin="10"
-      Background="White"
-      Grid.RowSpan="3"
-      Grid.Column="1">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="日付" DisplayMemberBinding="{Binding Path=hoge}" Width="130"/>
-                        <GridViewColumn Header="出勤" DisplayMemberBinding="{Binding Path=hoge}" Width="60"/>
-                        <GridViewColumn Header="退勤" DisplayMemberBinding="{Binding Path=hoge}" Width="60"/>
-                        <GridViewColumn Header="休憩" DisplayMemberBinding="{Binding Path=hoge}" Width="140"/>
-                        <GridViewColumn Header="0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24" DisplayMemberBinding="{Binding Path=hoge}" Width="340"/>
-                        <GridViewColumn Header="勤務時間" DisplayMemberBinding="{Binding Path=hoge}" Width="130"/>
-                    </GridView>
-                </ListView.View>
+<Viewbox Grid.Row="0" Grid.Column="1">
+        <StackPanel>
+            <MyCtrls:ShiftEditorHeaderControl
+x:Name="ShiftEditorHeader"
+VisibleElements="Text, AttendTime, LeaveTime, BreakTime, ShiftBar, WorkTimeLen"
+      Margin="20,0"/>
+            <ListView
+      x:Name="abc"
+      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+      ItemsSource="{Binding ShiftRequestArray}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <MyCtrls:ShiftEditorControl
+            MinWidth="600"
+EditableElements="None"
+VisibleElements="{Binding VisibleElements, ElementName=ShiftEditorHeader}"
+            Content="{Binding WorkDate, StringFormat=YYYY/MM/DD}"
+            Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleValueAddConv}, ConverterParameter=-40, Mode=OneWay}"
+            WorkDate="{Binding WorkDate, Mode=TwoWay}"
+            AttendanceTime="{Binding AttendanceTime, Mode=TwoWay}"
+            LeavingTime="{Binding LeavingTime, Mode=TwoWay}"
+            BreakTimeDictionary="{Binding BreakTimeDictionary, Mode=TwoWay}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
             </ListView>
-        </ScrollViewer>
-        <CheckBox Content="CheckBox" Grid.Column="1" HorizontalAlignment="Left" Margin="435,-66,0,0" VerticalAlignment="Top"/>
+        </StackPanel> 
+</Viewbox>
     </Grid>
 </Page>
