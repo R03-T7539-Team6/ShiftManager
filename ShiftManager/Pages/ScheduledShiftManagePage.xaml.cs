@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -20,7 +21,7 @@ namespace ShiftManager.Pages
   /// </summary>
   public partial class ScheduledShiftManagePage : Page, IContainsApiHolder
   {
-    public IApiHolder ApiHolder { get; set; } = new ApiHolder();
+    public IApiHolder ApiHolder { get => VM.ApiHolder; set => VM.ApiHolder = value; }
     ScheduledShiftManagePageViewModel VM = new();
     public ScheduledShiftManagePage()
     {
@@ -35,6 +36,7 @@ namespace ShiftManager.Pages
     private void Page_Loaded(object sender, RoutedEventArgs e) => ReloadData();
     private void ReloadData()
     {
+      VM.ApiHolder = ApiHolder;
       ReloadShiftRequest();
       ReloadScheduledShift();
     }
@@ -48,21 +50,17 @@ namespace ShiftManager.Pages
       }
 
       ShiftRequests = shiftReqs.ReturnData;
-      VM.ScheduledShiftArray.Clear();
       VM.ShiftRequestArray.Clear();
-      for (int v = 0; v < 10; v++)
-        foreach (var i in ShiftRequests)
-        {
-          if (!i.RequestsDictionary.TryGetValue(VM.TargetDate, out ISingleShiftData ssd))
-            ssd = new SingleShiftData(i.UserID, VM.TargetDate, false, default, default, new());
-          VM.ShiftRequestArray.Add(ssd);
-          VM.ScheduledShiftArray.Add(new SingleShiftData(ssd));
-        }
+      foreach (var i in ShiftRequests)
+      {
+        if (!i.RequestsDictionary.TryGetValue(VM.TargetDate, out ISingleShiftData ssd))
+          ssd = new SingleShiftData(i.UserID, VM.TargetDate, false, VM.TargetDate, VM.TargetDate, new());
+        VM.ShiftRequestArray.Add(ssd);
+      }
     }
 
     private async void ReloadScheduledShift()
     {
-      
       var ret = await ApiHolder.Api.GetScheduledShiftByDateAsync(VM.TargetDate);
       if (!ret.IsSuccess) {
         if (ret.ResultCode == Communication.ApiResultCodes.Target_Date_Not_Found)
@@ -73,13 +71,34 @@ namespace ShiftManager.Pages
           return;
         }
       }
-      //VM.ScheduledShiftArray = new();
-      for (int v = 0; v < 10; v++)
-        foreach (var i in ret.ReturnData.ShiftDictionary.Values)
-        {
-          VM.ScheduledShiftArray.Add(new SingleShiftData(i));
-        }
-      
+      VM.ScheduledShiftArray.Clear();
+
+      foreach (var i in ret.ReturnData.ShiftDictionary.Values)
+        VM.ScheduledShiftArray.Add(new SingleShiftData(i));
+    }
+
+    private async void UpdateScheduledShift()
+    {
+      //シフトを登録
+      if (VM.ScheduledShiftArray.Count <= 0)
+        return;
+
+      DateTime targetDate = VM.ScheduledShiftArray[0].WorkDate.Date;
+      var scheduledShifts = await ApiHolder.Api.UpdateSingleScheduledShiftListAsync(targetDate, VM.ScheduledShiftArray);
+
+      if (!scheduledShifts.IsSuccess)
+        if (MessageBox.Show("Error has occured\nErrorCode:" + scheduledShifts.ResultCode.ToString() + "\nRetry?", "ShiftManager", MessageBoxButton.YesNo, MessageBoxImage.Error) == MessageBoxResult.Yes)
+          UpdateScheduledShift();
+
+      UpdateShiftSchedulingState(targetDate);
+    }
+    private async void UpdateShiftSchedulingState(DateTime targetDate)
+    {
+      var stateUpdateResult = await ApiHolder.Api.UpdateShiftSchedulingStateAsync(targetDate, VM.ShiftSchedulingState);
+
+      if (!stateUpdateResult.IsSuccess)
+        if (MessageBox.Show("Error has occured\nErrorCode:" + stateUpdateResult.ResultCode.ToString() + "\nRetry?", "ShiftManager", MessageBoxButton.YesNo, MessageBoxImage.Error) == MessageBoxResult.Yes)
+          UpdateShiftSchedulingState(targetDate);
     }
     private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e) => ReloadData();
 
@@ -108,16 +127,20 @@ namespace ShiftManager.Pages
         scrollPercent;
 
       var srlvScrollProvider = GetScrollProvider(ShiftRequestListView);
-      if (srlvScrollProvider.VerticalScrollPercent != scrollPercent)
+      if (srlvScrollProvider.VerticallyScrollable && srlvScrollProvider.VerticalScrollPercent != scrollPercent)
         srlvScrollProvider.SetScrollPercent(ScrollPatternIdentifiers.NoScroll, scrollPercent);
 
       var sslvScrollProvider = GetScrollProvider(ScheduledShiftListView);
-      if (sslvScrollProvider.VerticalScrollPercent != scrollPercent)
+      if (sslvScrollProvider.VerticallyScrollable && sslvScrollProvider.VerticalScrollPercent != scrollPercent)
         sslvScrollProvider.SetScrollPercent(ScrollPatternIdentifiers.NoScroll, scrollPercent);
     }
+
+    public static readonly ShiftSchedulingState[] ShiftSchedulingStateLabels = (ShiftSchedulingState[])Enum.GetValues(typeof(ShiftSchedulingState));
+
+    private void Page_Unloaded(object sender, RoutedEventArgs e) => UpdateScheduledShift();
   }
 
-  public partial class ScheduledShiftManagePageViewModel : INotifyPropertyChanged
+  public partial class ScheduledShiftManagePageViewModel : INotifyPropertyChanged, IContainsApiHolder
   {
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -129,5 +152,11 @@ namespace ShiftManager.Pages
 
     [AutoNotify]
     private DateTime _TargetDate = DateTime.Now.Date;
+
+    [AutoNotify]
+    private ShiftSchedulingState _ShiftSchedulingState = ShiftSchedulingState.NotStarted;
+
+    [AutoNotify]
+    private IApiHolder _ApiHolder;
   }
 }
