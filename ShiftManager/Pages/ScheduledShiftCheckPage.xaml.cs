@@ -39,6 +39,5 @@ namespace ShiftManager.Pages
       DateTime selectday = (DateTime)ComboBox.SelectedItem;
       var re =await ApiHolder.Api.GetScheduledShiftByIDAsync(selectday, ApiHolder.Api.CurrentUserData?.UserID);
     }
-
   }
 }
