@@ -55,33 +55,21 @@ namespace ShiftManager.Pages
       
       var ret = await ApiHolder.Api.GetScheduledShiftByDateAsync(VM.TargetDate);
       if (!ret.IsSuccess) {
-        if (ret.ResultCode == Communication.ApiResultCodes.Data_Not_Found)
+        if (ret.ResultCode == Communication.ApiResultCodes.Target_Date_Not_Found)
           ret = await ApiHolder.Api.GenerateScheduledShiftAsync(VM.TargetDate);
         else
         {
-          MessageBox.Show("Error has occured ");
+          MessageBox.Show("Error has occured\nErrorCode:" + ret.ResultCode.ToString(), "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
           return;
-          }
-      }/*
-      if (!shiftReqs.IsSuccess)
-      {
-        _ = MessageBox.Show("Cannot Get ShiftRequest\nErrorCode:" + shiftReqs.ResultCode.ToString(), "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
-        return;
+        }
       }
-
-      ShiftRequests = shiftReqs.ReturnData;
-      VM.ShiftRequestArray = new();
-      foreach (var i in ShiftRequests)
-      {
-        if (!i.RequestsDictionary.TryGetValue(VM.TargetDate, out ISingleShiftData ssd))
-          ssd = new SingleShiftData(i.UserID, VM.TargetDate, false, default, default, new());
-        //VM.ShiftRequestArray.Add(ssd);
-      }*/
+      VM.ScheduledShiftArray = new();
+      foreach (var i in ret.ReturnData.ShiftDictionary.Values)
+        VM.ScheduledShiftArray.Add(new SingleShiftData(i));
       
     }
     private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
     {
-
     }
   }
 
@@ -94,17 +82,6 @@ namespace ShiftManager.Pages
 
     [AutoNotify]
     private ObservableCollection<ISingleShiftData> _ScheduledShiftArray;
-
-    private double _ShiftRequestListItemWidth = double.NaN;
-    public double ShiftRequestListItemWidth
-    {
-      get => _ShiftRequestListItemWidth;
-      set
-      {
-        _ShiftRequestListItemWidth = value > 16 ? value : value - 16;
-        PropertyChanged?.Invoke(this, new(nameof(ShiftRequestListItemWidth)));
-      }
-    }
 
     [AutoNotify]
     private DateTime _TargetDate = DateTime.Now.Date;
