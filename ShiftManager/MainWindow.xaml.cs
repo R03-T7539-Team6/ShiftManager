@@ -52,7 +52,12 @@ namespace ShiftManager
   {
     public FramePageChanger MainFramePageChanger { get; init; }
     public ReactivePropertySlim<bool> IsMenuExpanded { get; } = new(true);
-    public ReactivePropertySlim<bool> IsSignedIn { get; } = new(false);
+    public ReactivePropertySlim<bool> IsSignedIn { get; }
+#if DEBUG
+      = new(true);
+#else
+      = new(false);
+#endif
     public ReactivePropertySlim<NameData_PropertyChanged> UserName { get; } = new(new());
   }
 
