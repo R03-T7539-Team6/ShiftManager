@@ -80,7 +80,7 @@ namespace ShiftManager.Communication
         {
           {
             ID0000.UserID,
-            new SingleShiftData(ID0000.UserID, new(2021, 7, 1), false, new(2021, 7, 4, 12, 0, 0), new(2021, 7, 4, 18, 0, 0),
+            new SingleShiftData(ID0000.UserID, new(2021, 7, 4), false, new(2021, 7, 4, 12, 0, 0), new(2021, 7, 4, 18, 0, 0),
               new()
             )
           }
