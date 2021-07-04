@@ -31,7 +31,7 @@ namespace ShiftManager
     private void SignInPageElem_Login(object sender, EventArgs e)
     {
       MWVM.IsSignedIn.Value = true;
-      MWVM.UserName.Value = new(ApiHolder.Api.CurrentUserData?.FullName);
+      MWVM.UserName.Value = new(ApiHolder.CurrentUserName);
     }
 
     private void MainFrame_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e)

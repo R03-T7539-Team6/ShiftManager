@@ -25,7 +25,7 @@ namespace ShiftManager.Pages
       DateTime selectday = VM.TargetDate.Date;
       for (int i = 0; i < 7; i++)
       {
-        ApiResult<SingleShiftData> res = await ApiHolder.Api.GetScheduledShiftByIDAsync(selectday.AddDays(i), ApiHolder.Api.CurrentUserData?.UserID);
+        ApiResult<SingleShiftData> res = await ApiHolder.Api.GetScheduledShiftByIDAsync(selectday.AddDays(i), ApiHolder.CurrentUserID);
         if (!res.IsSuccess)
         {
           break;

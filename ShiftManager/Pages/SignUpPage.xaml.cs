@@ -44,7 +44,7 @@ namespace ShiftManager.Pages
         int StretchCount = 33;//適当な数字
         HashedPassword Hash = InternalApi.HashedPasswordGetter(rawPassword, new HashedPassword(string.Empty, Salt, StretchCount));
         WorkLog wl = new(userID, new());
-        UserData userData = new(userID, Hash, new NameData(USC.FirstNameText, USC.LastNameText), ApiHolder.Api.CurrentUserData.StoreID, USC.SelectedUserGroup, USC.SelectedUserState, wl, new UserSetting(userID, NotificationPublishTimings.None, new()));
+        UserData userData = new(userID, Hash, new NameData(USC.FirstNameText, USC.LastNameText), ApiHolder.CurrentStoreID, USC.SelectedUserGroup, USC.SelectedUserState, wl, new UserSetting(userID, NotificationPublishTimings.None, new()));
         ApiHolder.Api.SignUpAsync(userData);
       }
     }
