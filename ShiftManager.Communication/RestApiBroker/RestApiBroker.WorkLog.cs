@@ -11,22 +11,17 @@ namespace ShiftManager.Communication
   {
     public ICurrentTimeProvider CurrentTimeProvider { get; init; } = new CurrentTimeProvider();
 
+    Dictionary<UserID, ISingleWorkLog> WorkLogCache { get; } = new();
+
     /// <summary>指定のユーザについて, 休憩終了の打刻を行います</summary>
     /// <param name="userID">ユーザID</param>
     /// <returns>実行結果と, 処理した時刻</returns>
-    public Task<ApiResult<DateTime>> DoBreakTimeEndLoggingAsync(IUserID userID) => Task.Run<ApiResult<DateTime>>(() =>
+    public async Task<ApiResult<DateTime>> DoBreakTimeEndLoggingAsync(IUserID userID)
     {
       DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
 
-      if (!TestD.UserDataDictionary.TryGetValue(new(userID), out IUserData? userData) || userData is null)
-        return new(false, ApiResultCodes.UserID_Not_Found, CurrentTime);
-
-      var workLogDic = userData.WorkLog.WorkLogDictionary;
-
-      if (workLogDic.Count <= 0) //勤務記録がない == 出勤打刻をしたことがない
+      if (!WorkLogCache.TryGetValue(new UserID(userID), out var lastWorkLog) || lastWorkLog is null || lastWorkLog.AttendanceTime == default)
         return new(false, ApiResultCodes.Work_Not_Started, CurrentTime);
-
-      ISingleWorkLog lastWorkLog = workLogDic.Values.Last();
 
       //最後の要素に出勤打刻が行われていない || 最後の要素に退勤打刻が終わっている
       if (lastWorkLog.AttendanceTime == default || lastWorkLog.LeavingTime != default)
@@ -42,8 +37,10 @@ namespace ShiftManager.Communication
 
       lastWorkLog.BreakTimeDictionary[lastBreakLog.Key] = breakTimeLen;
 
-      return new(true, ApiResultCodes.Success, CurrentTime);
-    });
+      var res = await Api.ExecuteWithDataAsync<RestData.RestWorkLog, RestData.RestWorkLog>("/logs", RestData.RestWorkLog.GenerateFromSingleWorkLog(lastWorkLog, userID), RestSharp.Method.PUT);
+
+      return new(res.IsSuccess, res.ResultCode, CurrentTime);
+    }
 
     /// <summary>休憩時刻の長さを計算します</summary>
     /// <param name="start">休憩開始時刻</param>
@@ -55,19 +52,12 @@ namespace ShiftManager.Communication
     /// <summary>指定のユーザについて, 休憩開始の打刻を行います</summary>
     /// <param name="userID">ユーザID</param>
     /// <returns>実行結果と, 処理した時刻</returns>
-    public Task<ApiResult<DateTime>> DoBreakTimeStartLoggingAsync(IUserID userID) => Task.Run<ApiResult<DateTime>>(() =>
+    public async Task<ApiResult<DateTime>> DoBreakTimeStartLoggingAsync(IUserID userID)
     {
       DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
 
-      if (!TestD.UserDataDictionary.TryGetValue(new(userID), out IUserData? userData) || userData is null)
-        return new(false, ApiResultCodes.UserID_Not_Found, CurrentTime);
-
-      var workLogDic = userData.WorkLog.WorkLogDictionary;
-
-      if (workLogDic.Count <= 0) //勤務記録がない == 出勤打刻をしたことがない
+      if (!WorkLogCache.TryGetValue(new UserID(userID), out var lastWorkLog) || lastWorkLog is null || lastWorkLog.AttendanceTime == default)
         return new(false, ApiResultCodes.Work_Not_Started, CurrentTime);
-
-      ISingleWorkLog lastWorkLog = workLogDic.Values.Last();
 
       //最後の要素に出勤打刻が行われていない || 最後の要素に退勤打刻が終わっている
       if (lastWorkLog.AttendanceTime == default || lastWorkLog.LeavingTime != default)
@@ -83,25 +73,20 @@ namespace ShiftManager.Communication
 
       lastWorkLog.BreakTimeDictionary.Add(CurrentTime, 0);
 
-      return new(true, ApiResultCodes.Success, CurrentTime);
-    });
+      var res = await Api.ExecuteWithDataAsync<RestData.RestWorkLog, RestData.RestWorkLog>("/logs", RestData.RestWorkLog.GenerateFromSingleWorkLog(lastWorkLog, userID), RestSharp.Method.PUT);
+
+      return new(res.IsSuccess, res.ResultCode, CurrentTime);
+    }
 
     /// <summary>指定のユーザについて, 退勤の打刻を行います</summary>
     /// <param name="userID">ユーザID</param>
     /// <returns>実行結果と, 処理した時刻</returns>
-    public Task<ApiResult<DateTime>> DoWorkEndTimeLoggingAsync(IUserID userID) => Task.Run<ApiResult<DateTime>>(() =>
+    public async Task<ApiResult<DateTime>> DoWorkEndTimeLoggingAsync(IUserID userID)
     {
       DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
 
-      if (!TestD.UserDataDictionary.TryGetValue(new(userID), out IUserData? userData) || userData is null)
-        return new(false, ApiResultCodes.UserID_Not_Found, CurrentTime);
-
-      var workLogDic = userData.WorkLog.WorkLogDictionary;
-
-      if (workLogDic.Count <= 0) //勤務記録がない == 出勤打刻をしたことがない
+      if (!WorkLogCache.TryGetValue(new UserID(userID), out var lastWorkLog) || lastWorkLog is null || lastWorkLog.AttendanceTime == default)
         return new(false, ApiResultCodes.Work_Not_Started, CurrentTime);
-
-      ISingleWorkLog lastWorkLog = workLogDic.Values.Last();
 
       //最後の要素に出勤打刻が行われていない || 最後の要素に退勤打刻が終わっている
       if (lastWorkLog.AttendanceTime == default || lastWorkLog.LeavingTime != default)
@@ -111,32 +96,31 @@ namespace ShiftManager.Communication
       if (lastWorkLog.BreakTimeDictionary.Count > 0 && lastWorkLog.BreakTimeDictionary.Last().Value <= 0)
         return new(false, ApiResultCodes.BreakTime_Not_Ended, CurrentTime);
 
-      workLogDic[lastWorkLog.AttendanceTime] = new SingleWorkLog(lastWorkLog) with { LeavingTime = CurrentTime };//退勤打刻
+      lastWorkLog = new SingleWorkLog(lastWorkLog) with { LeavingTime = CurrentTime };
 
-      return new(true, ApiResultCodes.Success, CurrentTime);
-    });
+      var res = await Api.ExecuteWithDataAsync<RestData.RestWorkLog, RestData.RestWorkLog>("/logs", RestData.RestWorkLog.GenerateFromSingleWorkLog(lastWorkLog, userID), RestSharp.Method.PUT);
+
+      return new(res.IsSuccess, res.ResultCode, CurrentTime);
+    }
 
     /// <summary>指定のユーザについて, 出勤の打刻を行います</summary>
     /// <param name="userID">ユーザID</param>
     /// <returns>実行結果と, 処理した時刻</returns>
-    public Task<ApiResult<DateTime>> DoWorkStartTimeLoggingAsync(IUserID userID) => Task.Run<ApiResult<DateTime>>(() =>
+    public async Task<ApiResult<DateTime>> DoWorkStartTimeLoggingAsync(IUserID userID)
     {
       DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
+      UserID uID = new(userID);
+      if (!WorkLogCache.TryGetValue(uID, out var lastWorkLog))
+      {
+        if (lastWorkLog is null || lastWorkLog.LeavingTime == default)
+          return new(false, ApiResultCodes.Work_Not_Ended, CurrentTime);
+      }
+      else
+        WorkLogCache[uID] = new SingleWorkLog(CurrentTime, default, new());
 
-      if (!TestD.UserDataDictionary.TryGetValue(new(userID), out IUserData? userData) || userData is null)
-        return new(false, ApiResultCodes.UserID_Not_Found, CurrentTime);
-
-      var workLogDic = userData.WorkLog.WorkLogDictionary;
-
-      ISingleWorkLog? lastWorkLog = workLogDic.Values.LastOrDefault();
-
-      //最後の要素に出勤打刻が行われており, かつ退勤打刻が行われていない
-      if (lastWorkLog is not null && lastWorkLog.AttendanceTime != default && lastWorkLog.LeavingTime == default)
-        return new(false, ApiResultCodes.Work_Not_Ended, CurrentTime);
-
-      workLogDic.Add(CurrentTime, new SingleWorkLog(CurrentTime, default, new())); //出勤打刻
+      var res = await Api.ExecuteWithDataAsync<RestData.RestWorkLog, RestData.RestWorkLog>("/logs", RestData.RestWorkLog.GenerateFromSingleWorkLog(lastWorkLog, userID));
 
       return new(true, ApiResultCodes.Success, CurrentTime);
-    });
+    }
   }
 }
