@@ -98,6 +98,12 @@
     /// <summary>ユーザIDの文字列長が不正</summary>
     Invalid_Length_UserID,
 
+    /// <summary>サインインに失敗した</summary>
+    SignIn_Failed,
+
+    /// <summary>許可されていない操作 (権限不足)</summary>
+    Not_Allowed_Control,
+
     E204_No_Content,
     E400_Bad_Request,
     E403_Forbidded,
