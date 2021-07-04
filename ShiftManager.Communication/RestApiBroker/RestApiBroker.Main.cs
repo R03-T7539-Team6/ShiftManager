@@ -64,11 +64,11 @@ namespace ShiftManager.Communication
         return (result.StatusCode, result.Content);
       }
 
-      public async Task<ApiResult<TResult>> ExecuteWithDataAsync<TPost, TResult>(string path, TPost data)
+      public async Task<ApiResult<TResult>> ExecuteWithDataAsync<TPost, TResult>(string path, TPost data, Method reqType = Method.POST)
         where TPost : class
         where TResult : class
       {
-        RestRequest request = new(path, Method.POST);
+        RestRequest request = new(path, reqType);
         var s = ToJson(data);
         request.AddParameter(application_json, s, ParameterType.RequestBody);
 
