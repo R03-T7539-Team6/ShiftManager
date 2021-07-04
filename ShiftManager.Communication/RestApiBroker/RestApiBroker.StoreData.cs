@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
+using RestSharp;
+
+using ShiftManager.Communication.RestData;
 using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
@@ -12,113 +16,139 @@ namespace ShiftManager.Communication
   public partial class RestApiBroker : IInternalApi_StoreData
   {
     public Task<ApiResult> DeleteUserDataAsync(IUserID userID) => DeleteUserDataAsync(new(userID));//NULLが渡されるとぶっ壊れるので注意
-    public Task<ApiResult> DeleteUserDataAsync(UserID userID)
-      => Task.Run<ApiResult>(() => !string.IsNullOrWhiteSpace(userID?.Value) && TestD.UserDataDictionary.Remove(userID) //UserIDが指定されていた場合のみ実行
-      ? new(true, ApiResultCodes.Success) : new(false, ApiResultCodes.UserID_Not_Found));
-
-    public Task<ApiResult<ScheduledShift>> GenerateScheduledShiftAsync(DateTime dateTime) => Task.Run<ApiResult<ScheduledShift>>(() =>
+    public async Task<ApiResult> DeleteUserDataAsync(UserID userID)
     {
-      if (TestD.ScheduledShiftDictionary.TryGetValue(dateTime.Date, out IScheduledShift? scheduledShift) && scheduledShift is not null) //時分秒情報は除去する
-        return new(false, ApiResultCodes.Data_Already_Exists, new(scheduledShift));
+      if (userID?.Value?.Length != 8)
+        return new ApiResult(false, ApiResultCodes.Invalid_Length_UserID);
 
-      //Remoteにデータが存在しない場合のみ新規作成
-      ScheduledShift retD = new(dateTime.Date,
-        dateTime.Date,//TargetDateの00:00から
-        dateTime.Date.AddDays(1),//TargetDateの翌日の00:00まで
-        ShiftSchedulingState.NotStarted, new(), new());
+      if (CurrentUserData?.UserGroup != UserGroup.SystemAdmin)
+        return new(false, ApiResultCodes.Not_Allowed_Control);
 
-      //Remoteへの追加
-      return TestD.ScheduledShiftDictionary.TryAdd(retD.TargetDate, retD)
-      ? new(true, ApiResultCodes.Success, retD)
-      : new(false, ApiResultCodes.Data_Already_Exists, new(TestD.ScheduledShiftDictionary[retD.TargetDate]));
-    });
+      var result = await Api.ExecuteApiAsync(new RestRequest("/users", Method.DELETE));
+
+      return new(result.StatusCode == HttpStatusCode.OK, ToApiRes(result.StatusCode));
+    }
+
+    public async Task<ApiResult<ScheduledShift>> GenerateScheduledShiftAsync(DateTime dateTime)
+    {
+      if (!IsLoggedIn || CurrentUserData is null)
+        return new(false, ApiResultCodes.Not_Logged_In, null);
+
+      var res = await Api.ExecuteWithDataAsync<RestShiftSchedule, RestShiftSchedule>("/shifts/schedule", new()
+      {
+        store_id = CurrentUserData.StoreID.Value,
+        target_date = dateTime.Date,
+        start_of_schedule = dateTime.Date,
+        end_of_schedule = dateTime.Date,
+        worker_num = 1
+      });
+
+      return new(res.IsSuccess, res.ResultCode, res.ReturnData?.ToScheduledShift());
+    }
 
     public Task<ApiResult<ShiftRequest>> GenerateShiftRequestAsync(IUserID userID) => GenerateShiftRequestAsync(new(userID));
-    public Task<ApiResult<ShiftRequest>> GenerateShiftRequestAsync(UserID userID) => Task.Run<ApiResult<ShiftRequest>>(() =>
+    public async Task<ApiResult<ShiftRequest>> GenerateShiftRequestAsync(UserID userID)
     {
-      if (string.IsNullOrWhiteSpace(userID?.Value))
-        return new(false, ApiResultCodes.UserID_Not_Found, null);
+      if (!IsLoggedIn || CurrentUserData is null)
+        return new(false, ApiResultCodes.Not_Logged_In, null);
 
-      if (TestD.ShiftRequestsDictionary.TryGetValue(userID, out IShiftRequest? shiftRequest) && shiftRequest is not null)
-        return new(false, ApiResultCodes.Data_Already_Exists, new(shiftRequest));
+      var res = await Api.ExecuteWithDataAsync<GenShiftReqFilePOSTData, RestShiftRequest>("/shifts/requests", new()
+      {
+        user_id = CurrentUserData.UserID.Value,
+        store_id = CurrentUserData.StoreID.Value,
+        last_update = DateTime.Now,
+        shift_request = null
+      });
 
-      //Remoteにデータが存在しない場合のみ新規作成
-      ShiftRequest retD = new(userID, DateTime.Now, new());
+      return new(res.IsSuccess, res.ResultCode, res.ReturnData?.ToShiftRequest());
+    }
 
-      //Remoteへの追加
-      TestD.ShiftRequestsDictionary.Add(userID, retD);
-
-      return new(true, ApiResultCodes.Success, retD);
-    });
-
-    public Task<ApiResult<ImmutableArray<ShiftRequest>>> GetAllShiftRequestAsync()
-      => Task.Run<ApiResult<ImmutableArray<ShiftRequest>>>(() => new(true, ApiResultCodes.Success,
-        TestD.ShiftRequestsDictionary.Values.Select(i => new ShiftRequest(i)).ToImmutableArray() //ShiftRequestが存在しない場合は「要素0」の配列が返る
-        ));
-
-    public Task<ApiResult<ImmutableArray<UserData>>> GetAllUserAsync()
-      => Task.Run<ApiResult<ImmutableArray<UserData>>>(() => new(true, ApiResultCodes.Success,
-        //ShiftRequestが存在しない場合は「要素0」の配列が返る
-        //安全のため, ハッシュ化に関わる情報は含めない
-        TestD.UserDataDictionary.Values.Select(i => new UserData(i) with { HashedPassword = new HashedPassword(string.Empty, string.Empty, 0) }).ToImmutableArray()
-        ));
-
-    public Task<ApiResult<bool>> GetIsScheduledShiftFinalVersionAsync(DateTime date) => Task.Run<ApiResult<bool>>(() =>
+    public async Task<ApiResult<ImmutableArray<ShiftRequest>>> GetAllShiftRequestAsync()
     {
-      if (!TestD.ScheduledShiftDictionary.TryGetValue(date.Date, out IScheduledShift? scheduledShift) || scheduledShift is null)
-        return new(false, ApiResultCodes.Target_Date_Not_Found, false);
+      var res = await Api.GetDataAsync<RestStore>("/stores/0000");
 
-      return new(true, ApiResultCodes.Success, scheduledShift.SchedulingState == ShiftSchedulingState.FinalVersion);
-    });
+      if (res.IsSuccess || res.ReturnData is null)
+        return new(false, res.ResultCode, new ImmutableArray<ShiftRequest>());
 
-    public Task<ApiResult<ScheduledShift>> GetScheduledShiftByDateAsync(DateTime dateTime) => Task.Run<ApiResult<ScheduledShift>>(() =>
+      return new(true, res.ResultCode, res.ReturnData.shift_requests.Select(i => i.ToShiftRequest()).ToImmutableArray());
+    }
+
+    public async Task<ApiResult<ImmutableArray<UserData>>> GetAllUserAsync()
     {
-      if (TestD.ScheduledShiftDictionary.TryGetValue(dateTime.Date, out IScheduledShift? scheduledShift) && scheduledShift is not null)
-        return new(true, ApiResultCodes.Success, new(scheduledShift));
-      else
-        return new(false, ApiResultCodes.Target_Date_Not_Found, null);
-    });
+      var res = await Api.GetDataAsync<RestUser[]>("/users");
+      if (!res.IsSuccess)
+        return new(res.IsSuccess, res.ResultCode, Array.Empty<UserData>().ToImmutableArray());
+      if (res.ReturnData is null)
+        return new(false, ApiResultCodes.Data_Not_Found, Array.Empty<UserData>().ToImmutableArray());
+
+      return new(res.IsSuccess, res.ResultCode, res.ReturnData.Select(i => i.ToUserData()).ToImmutableArray());
+    }
+    public Task<ApiResult<bool>> GetIsScheduledShiftFinalVersionAsync(DateTime date)
+      => throw new NotSupportedException();
+
+    public async Task<ApiResult<ScheduledShift>> GetScheduledShiftByDateAsync(DateTime dateTime)
+    {
+      var res = await Api.GetDataAsync<RestStore>("/stores/0000");
+
+      if (res.IsSuccess || res.ReturnData is null)
+        return new(false, res.ResultCode, null);
+
+      var ret = res.ReturnData.shift_schedules.Select(i => i.ToScheduledShift()).Where(i => i.TargetDate == dateTime.Date).FirstOrDefault();
+
+      return new(true, res.ResultCode, ret);
+    }
 
     public Task<ApiResult<ShiftRequest>> GetShiftRequestByIDAsync(IUserID userID) => GetShiftRequestByIDAsync(new(userID));
-    public Task<ApiResult<ShiftRequest>> GetShiftRequestByIDAsync(UserID userID) => Task.Run<ApiResult<ShiftRequest>>(() =>
+    public async Task<ApiResult<ShiftRequest>> GetShiftRequestByIDAsync(UserID userID)
     {
-      if (!string.IsNullOrWhiteSpace(userID?.Value) && TestD.ShiftRequestsDictionary.TryGetValue(userID, out IShiftRequest? shiftRequest) && shiftRequest is not null)
-        return new(true, ApiResultCodes.Success, new(shiftRequest));
-      else
-        return new(false, ApiResultCodes.UserID_Not_Found, null);
-    });
+      var apires = await GetAllShiftRequestAsync();
+      if (!apires.IsSuccess || apires.ReturnData.Length <= 0)
+        return new(false, apires.ResultCode, null);
+
+      var res = apires.ReturnData.Where(i => new UserID(i.UserID) == userID).FirstOrDefault();
+      if (res is null)
+        return new(false, ApiResultCodes.Unknown_Error, null);
+
+      return new(true, ApiResultCodes.Success, res);
+    }
 
     public Task<ApiResult<UserData>> GetUserDataByIDAsync(IUserID userID) => GetUserDataByIDAsync(new(userID));
-    public Task<ApiResult<UserData>> GetUserDataByIDAsync(UserID userID) => Task.Run<ApiResult<UserData>>(() =>
+    public Task<ApiResult<UserData>> GetUserDataByIDAsync(UserID userID) => Task.Run<ApiResult<UserData>>(async () =>
     {
-      if (string.IsNullOrWhiteSpace(userID?.Value) || !TestD.UserDataDictionary.TryGetValue(new UserID(userID), out IUserData? userData) || userData is null)
-        return new(false, ApiResultCodes.UserID_Not_Found, null);
+      if (userID.Value?.Length != 8)
+        return new(false, ApiResultCodes.Invalid_Length_UserID, null);
 
-      //ユーザデータからはハッシュを削除して返す
-      return new(true, ApiResultCodes.Success, new UserData(userData) with { HashedPassword = (new HashedPassword(userData.HashedPassword) with { Hash = string.Empty }) });
+      var result = await Api.GetDataAsync<RestUser>("/users");
+      if (!result.IsSuccess || result.ReturnData is null)
+        return new(false, result.ResultCode, null);
+
+      return new(true, ApiResultCodes.Success, result.ReturnData.ToUserData());
     });
 
     public Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserGroupAsync(UserGroup userGroup = UserGroup.None)
-      => Task.Run<ApiResult<ImmutableArray<UserData>>>(() => new(true, ApiResultCodes.Success,
-        TestD.UserDataDictionary.Values.Where(i => i.UserGroup == userGroup).Select(i => new UserData(i) with { HashedPassword = new HashedPassword(string.Empty, string.Empty, 0) }).ToImmutableArray()
-        ));
+      => throw new NotSupportedException();
 
     public Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserStateAsync(UserState userState = UserState.Normal)
-      => Task.Run<ApiResult<ImmutableArray<UserData>>>(() => new(true, ApiResultCodes.Success,
-        TestD.UserDataDictionary.Values.Where(i => i.UserState == userState).Select(i => new UserData(i) with { HashedPassword = new HashedPassword(string.Empty, string.Empty, 0) }).ToImmutableArray()
-        ));
+      => throw new NotSupportedException();
 
-    public Task<ApiResult> SignUpAsync(IUserData userData) => Task.Run<ApiResult>(() =>
-    {
-      if (string.IsNullOrWhiteSpace(userData?.UserID?.Value))
-        return new(false, ApiResultCodes.Not_Enough_Data); //最低限, ID文字列は必要
+    public Task<ApiResult> SignUpAsync(IUserData userData)
+      => throw new NotSupportedException();
+  }
 
-      UserID userID = new(userData.UserID); //DictionaryのKeyで使用できるように型変換を行う
-      if (TestD.UserDataDictionary.ContainsKey(userID))
-        return new(false, ApiResultCodes.UserID_Already_Exists);
+  public class GenShiftReqFilePOSTData
+  {
+    public string user_id { get; set; } = string.Empty;
+    public string store_id { get; set; } = string.Empty;
+    public DateTime last_update { get; set; }
+    public RestShift[]? shift_request { get; set; } = null;
+  }
 
-      TestD.UserDataDictionary.Add(userID, userData);
-      return new(true, ApiResultCodes.Success);
-    });
+  public class GenSchedShiftFilePOSTData
+  {
+    public string store_id { get; set; } = string.Empty;
+    public DateTime target_date { get; set; }
+    public DateTime start_of_schedule { get; set; }
+    public DateTime end_of_schedule { get; set; }
+    public uint worker_num { get; set; }
   }
 }
