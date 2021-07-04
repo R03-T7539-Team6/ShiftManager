@@ -18,6 +18,18 @@ namespace ShiftManager.Pages
       USC.SavePushed+=OnSavePushed;
     }
 
+    /*******************************************
+    * specification ;
+    * name = OnSavePushed ;
+    * Function = 保存ボタンが押された時に入力された情報をサーバに送る ;
+    * note = 補足説明 ;
+    * date = 07/03/2021 ;
+    * author = 佐藤真通 ;
+    * History = 更新履歴 ;
+    * input = 保存ボタンが押されたことを知らせるイベントハンドラ ;
+    * output = N/A ;
+    * end of specification ;
+    *******************************************/
     private void OnSavePushed(object sender, EventArgs e){
       //TODO: Saveボタンが押されたときの処理を書く.
       if (string.IsNullOrWhiteSpace(USC.UserIDText))

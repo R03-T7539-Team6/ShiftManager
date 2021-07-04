@@ -50,6 +50,18 @@ namespace ShiftManager
       MainFrame.Content = null;
     }
 
+/*******************************************
+* specification ;
+* name = LicenseClicked ;
+* Function = ライセンスボタンがクリックされた時にライセンス情報のテキストフォルダを読み込んでサブウィンドウに渡す ;
+* note = 補足説明 ;
+* date = 07/04/2021 ;
+* author = 佐藤真通 ;
+* History = 更新履歴 ;
+* input = ライセンスボタンが押されたことを知らせるイベントハンドラ ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void LicenseClicked(object sender, RoutedEventArgs e)
     {
       var assembly = Assembly.GetExecutingAssembly();

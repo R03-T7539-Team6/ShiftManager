@@ -25,7 +25,18 @@ namespace ShiftManager.Pages
       InitializeComponent();
     }
 
-
+/*******************************************
+* specification ;
+* name = In_Click_2 ;
+* Function = ログインボタンが押された時にログインを試行する関数を呼び出す ;
+* note = 補足説明 ;
+* date = 07/03/2021 ;
+* author = 佐藤真通 ;
+* History = 更新履歴 ;
+* input = ログインボタンが押されたことを知らせるイベントハンドラ ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private async void ln_Click_2(object sender, System.Windows.RoutedEventArgs e)
     {
       string UID = ID.Text;
@@ -38,6 +49,18 @@ namespace ShiftManager.Pages
       MessageBox.Show(re.IsSuccess.ToString() + " * " + re.ResultCode.ToString());
     }
 
+    /*******************************************
+    * specification ;
+    * name = SignInAsyncTest_WithIDAndPassword ;
+    * Function = ログインを試行する ;
+    * note = 補足説明 ;
+    * date = 07/03/2021 ;
+    * author = 佐藤真通 ;
+    * History = 更新履歴 ;
+    * input = ユーザID、生パスワード ;
+    * output = 試行結果 ;
+    * end of specification ;
+    *******************************************/
     public async Task<ApiResult> SignInAsyncTest_WithIDAndPassword(string userID, string rawPassword)
     {
       //ユーザID情報をAPIに渡すために, 型を変換します
