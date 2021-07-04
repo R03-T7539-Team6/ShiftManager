@@ -20,6 +20,18 @@ namespace ShiftManager.Pages
       DataContext = VM;
     }
 
+    /*******************************************
+* specification ;
+* name = DatePicker_SelectedDateChanged ;
+* Function = 選択する日付が変更された時にシフト希望の内容を更新する ;
+* note = 補足説明 ;
+* date = 07/03/2021 ;
+* author = 佐藤真通 ;
+* History = 更新履歴 ;
+* input = 保存ボタンが押されたことを知らせるイベントハンドラ ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void Save_Click(object sender, System.Windows.RoutedEventArgs e)
     {
       for (int i = 0; i < 7; i++)
@@ -30,8 +42,32 @@ namespace ShiftManager.Pages
       }
     }
 
+/*******************************************
+* specification ;
+* name = DatePicker_SelectedDateChanged ;
+* Function = 選択する日付が変更された時にシフト希望の内容を更新する ;
+* note = 補足説明 ;
+* date = 07/03/2021 ;
+* author = 佐藤真通 ;
+* History = 更新履歴 ;
+* input = 選択する日付が変わったことを知らせるイベントハンドラ ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e) => OnLoaded(null, null);
 
+/*******************************************
+* specification ;
+* name = OnLoaded ;
+* Function = 画面がロードされた時に予定シフト表の内容を更新する ;
+* note = 補足説明 ;
+* date = 07/03/2021 ;
+* author = 佐藤真通 ;
+* History = 更新履歴 ;
+* input = 画面がロードされたことを知らせるイベントハンドラ ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
       VM.ShiftRequestArray.Clear();

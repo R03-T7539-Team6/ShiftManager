@@ -10,6 +10,18 @@ using System.Windows.Input;
 
 namespace ShiftManager.Controls
 {
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public class BreakTimeEditorControl : Control, INotifyPropertyChanged
   {
     public event PropertyChangedEventHandler PropertyChanged;
@@ -28,6 +40,18 @@ namespace ShiftManager.Controls
     public ObservableCollection<BreakTimeDataSource> BreakTimeList { get => (ObservableCollection<BreakTimeDataSource>)GetValue(BreakTimeListProperty); set => SetValue(BreakTimeListProperty, value); }
     public static readonly DependencyProperty BreakTimeListProperty = DependencyProperty.Register(nameof(BreakTimeList), typeof(ObservableCollection<BreakTimeDataSource>), typeof(BreakTimeEditorControl));
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public string SelectionText
     {
       get => _SelectionText;
@@ -41,6 +65,18 @@ namespace ShiftManager.Controls
 
     private BreakTimeDataSource LastSelectionTextObject;
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     private void _OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
       foreach (var r in e.RemovedItems)
@@ -82,6 +118,18 @@ namespace ShiftManager.Controls
       }
     }
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     private void LastSelectionTextObject_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
       if (sender is BreakTimeDataSource newV)
@@ -98,6 +146,18 @@ namespace ShiftManager.Controls
         lv.SelectionChanged += _OnSelectionChanged;
     }
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     private void BreakTimeDictionaryUpdated()
     {
       BreakTimeList = new();
@@ -118,6 +178,18 @@ namespace ShiftManager.Controls
         i.UpdateIndex();
     }
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     private void RemoveBreakTime()
     {
       if (SelectedBreakTime is null || SelectedBreakTime.Count <= 0)
@@ -140,6 +212,18 @@ namespace ShiftManager.Controls
     public event PropertyChangedEventHandler PropertyChanged;
     public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     private void OnPropertyChanged(in string propName) => PropertyChanged?.Invoke(this, new(propName));
     public Dictionary<DateTime, int> BreakTimeDictionary { get; }
     public BreakTimeDataSource(in KeyValuePair<DateTime, int> keyValuePair, in Dictionary<DateTime, int> breakTimeDic, in DateTime baseDate)
@@ -172,6 +256,18 @@ namespace ShiftManager.Controls
     public IEnumerable GetErrors(string propertyName) => ErrorsDic[propertyName];
 
     private int _Index;
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public int Index
     {
       get => _Index;
@@ -184,6 +280,18 @@ namespace ShiftManager.Controls
 
     const string SAME_DATE_ERROR = "Error: Same Date is already existing";
     private DateTime _StartTime;
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public DateTime StartTime
     {
       get => _StartTime;
@@ -224,6 +332,18 @@ namespace ShiftManager.Controls
     }
 
     private DateTime _EndTime;
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public DateTime EndTime
     {
       get => _EndTime;
@@ -240,6 +360,18 @@ namespace ShiftManager.Controls
     }
 
     private TimeSpan _TimeLen;
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public TimeSpan TimeLen
     {
       get => _TimeLen;

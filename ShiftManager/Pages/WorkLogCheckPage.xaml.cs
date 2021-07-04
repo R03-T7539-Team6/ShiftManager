@@ -45,7 +45,19 @@ namespace ShiftManager.Pages
       DataContext = VM;
     }
 
-    public async void hoge()
+    /*******************************************
+        * specification ;
+        * name = main ;
+        * Function = 勤怠履歴を取得する関数を呼び出す ;
+        * note = 補足説明 ;
+        * date = 07/03/2021 ;
+        * author = 佐藤真通 ;
+        * History = 更新履歴 ;
+        * input = N/A ;
+        * output = N/A ;
+        * end of specification ;
+        *******************************************/
+    public async void main()
     {
       var res = await ApiHolder.Api.GetWorkLogAsync();
       WorkLog wl = res.ReturnData;
@@ -60,9 +72,21 @@ namespace ShiftManager.Pages
       }
     }
 
+    /*******************************************
+    * specification ;
+    * name = OnLooaded ;
+    * Function = 画面がロードされた時に勤怠履歴を更新する ;
+    * note = 補足説明 ;
+    * date = 07/03/2021 ;
+    * author = 佐藤真通 ;
+    * History = 更新履歴 ;
+    * input = 画面がロードされたことを知らせるイベントハンドラ ;
+    * output = N/A ;
+    * end of specification ;
+    *******************************************/
     private void OnLoaded(object sender, System.Windows.RoutedEventArgs e)
     {
-      hoge();
+      main();
     }
   }
 }
