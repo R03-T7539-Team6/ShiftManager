@@ -131,8 +131,15 @@ namespace ShiftManager.Communication
     public Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserStateAsync(UserState userState = UserState.Normal)
       => throw new NotSupportedException();
 
-    public Task<ApiResult> SignUpAsync(IUserData userData)
-      => throw new NotSupportedException();
+    public async Task<ApiResult> SignUpAsync(IUserData userData)
+    {
+      var res = await Api.ExecuteWithDataAsync<RestUser, RestUser>("/signup", new RestUser().FromUserData(userData));
+
+      if (!res.IsSuccess)
+        return new(false, res.ResultCode);
+
+      return await SignInAsync(userData.UserID, userData.HashedPassword);
+    }
   }
 
   public class GenShiftReqFilePOSTData
