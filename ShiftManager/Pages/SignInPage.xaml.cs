@@ -41,7 +41,7 @@ namespace ShiftManager.Pages
     private async void ln_Click_2(object sender, System.Windows.RoutedEventArgs e)
     {
       string UID = ID.Text;
-      string UPass = Pass.Text;
+      string UPass = Pass.Password;
       var re = await SignInAsyncTest_WithIDAndPassword(UID, UPass);
       if (re.IsSuccess)
       {
