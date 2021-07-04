@@ -91,5 +91,10 @@
 
     /// <summary>予定シフトに指定のユーザIDが存在しない</summary>
     UserID_Not_Found_In_Scheduled_Shift,
+
+    E204_Not_Content,
+    E400_Bad_Request,
+    E403_Forbidded,
+    E404_Not_Found
   }
 }
