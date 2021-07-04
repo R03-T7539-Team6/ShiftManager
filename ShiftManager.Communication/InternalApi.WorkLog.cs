@@ -14,15 +14,21 @@ namespace ShiftManager.Communication
     Task<ApiResult<DateTime>> DoBreakTimeStartLoggingAsync(IUserID userID);
     Task<ApiResult<DateTime>> DoBreakTimeEndLoggingAsync(IUserID userID);
   }
-
+  public interface ICurrentTimeProvider
+  {
+    DateTime CurrentTime { get; }
+  }
+  public class CurrentTimeProvider : ICurrentTimeProvider { public DateTime CurrentTime => DateTime.Now; }
   public partial class InternalApi : InternalApi_WorkLog
   {
+    public ICurrentTimeProvider CurrentTimeProvider { get; init; } = new CurrentTimeProvider();
+
     /// <summary>指定のユーザについて, 休憩終了の打刻を行います</summary>
     /// <param name="userID">ユーザID</param>
     /// <returns>実行結果と, 処理した時刻</returns>
     public Task<ApiResult<DateTime>> DoBreakTimeEndLoggingAsync(IUserID userID) => Task.Run<ApiResult<DateTime>>(() =>
     {
-      DateTime CurrentTime = DateTime.Now;
+      DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
 
       if (!TestD.UserDataDictionary.TryGetValue(new(userID), out IUserData? userData) || userData is null)
         return new(false, ApiResultCodes.UserID_Not_Found, CurrentTime);
@@ -63,7 +69,7 @@ namespace ShiftManager.Communication
     /// <returns>実行結果と, 処理した時刻</returns>
     public Task<ApiResult<DateTime>> DoBreakTimeStartLoggingAsync(IUserID userID) => Task.Run<ApiResult<DateTime>>(() =>
     {
-      DateTime CurrentTime = DateTime.Now;
+      DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
 
       if (!TestD.UserDataDictionary.TryGetValue(new(userID), out IUserData? userData) || userData is null)
         return new(false, ApiResultCodes.UserID_Not_Found, CurrentTime);
@@ -97,7 +103,7 @@ namespace ShiftManager.Communication
     /// <returns>実行結果と, 処理した時刻</returns>
     public Task<ApiResult<DateTime>> DoWorkEndTimeLoggingAsync(IUserID userID) => Task.Run<ApiResult<DateTime>>(() =>
     {
-      DateTime CurrentTime = DateTime.Now;
+      DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
 
       if (!TestD.UserDataDictionary.TryGetValue(new(userID), out IUserData? userData) || userData is null)
         return new(false, ApiResultCodes.UserID_Not_Found, CurrentTime);
@@ -127,7 +133,7 @@ namespace ShiftManager.Communication
     /// <returns>実行結果と, 処理した時刻</returns>
     public Task<ApiResult<DateTime>> DoWorkStartTimeLoggingAsync(IUserID userID) => Task.Run<ApiResult<DateTime>>(() =>
     {
-      DateTime CurrentTime = DateTime.Now;
+      DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
 
       if (!TestD.UserDataDictionary.TryGetValue(new(userID), out IUserData? userData) || userData is null)
         return new(false, ApiResultCodes.UserID_Not_Found, CurrentTime);

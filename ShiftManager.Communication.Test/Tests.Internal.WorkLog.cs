@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
+
+using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication.InternalApiTest
 {
@@ -61,5 +60,37 @@ namespace ShiftManager.Communication.InternalApiTest
     [TestCaseSource(nameof(GetBreakTimeLengthTest_TestCases))]
     public int GetBreakTimeLengthTest(in DateTime start, in DateTime end)
       => InternalApi.GetBreakTimeLength(start, end);
+
+    public class CurrentTimeMock : ICurrentTimeProvider
+    {
+      public DateTime CurrentTime { get; set; }
+    }
+    [Test]
+    public async Task AttendLeaveTest()
+    {
+      CurrentTimeMock tp = new();
+      InternalApi i = new() { CurrentTimeProvider = tp };
+      tp.CurrentTime = new(2021, 5, 31, 9, 1, 2);
+
+      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoWorkStartTimeLoggingAsync(new UserID("ID0000")));
+      tp.CurrentTime = new(2021, 5, 31, 9, 2, 2);
+      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoWorkEndTimeLoggingAsync(new UserID("ID0000")));
+    }
+
+    [Test]
+    public async Task AttendBreakLeaveTest()
+    {
+      CurrentTimeMock tp = new();
+      InternalApi i = new() { CurrentTimeProvider = tp };
+      tp.CurrentTime = new(2021, 5, 31, 9, 1, 2);
+
+      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoWorkStartTimeLoggingAsync(new UserID("ID0000")));
+      tp.CurrentTime = new(2021, 5, 31, 9, 5, 2);
+      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoBreakTimeStartLoggingAsync(new UserID("ID0000")));
+      tp.CurrentTime = new(2021, 5, 31, 9, 6, 2);
+      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoBreakTimeEndLoggingAsync(new UserID("ID0000")));
+      tp.CurrentTime = new(2021, 5, 31, 9, 8, 2);
+      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoWorkEndTimeLoggingAsync(new UserID("ID0000")));
+    }
   }
 }

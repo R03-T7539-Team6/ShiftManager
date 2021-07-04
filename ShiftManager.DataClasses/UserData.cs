@@ -10,16 +10,18 @@ namespace ShiftManager.DataClasses
     public UserID() : this(string.Empty) { }
     public UserID(IUserID i) : this(i?.Value ?? string.Empty) { }
   }
-  public record UserData(IUserID UserID, IHashedPassword HashedPassword, INameData FullName, UserGroup UserGroup, UserState UserState, IWorkLog WorkLog, IUserSetting UserSetting) : IUserData
+  public record UserData(IUserID UserID, IHashedPassword HashedPassword, INameData FullName, IStoreID StoreID, UserGroup UserGroup, UserState UserState, IWorkLog WorkLog, IUserSetting UserSetting) : IUserData
   {
     public UserData(IUserData i) : this(
       i?.UserID ?? new UserID(),
       i?.HashedPassword ?? new HashedPassword(),
       i?.FullName ?? new NameData(),
+      i?.StoreID ?? new StoreID(),
       i?.UserGroup ?? UserGroup.None,
       i?.UserState ?? UserState.Others,
       i?.WorkLog ?? new WorkLog(i?.UserID ?? new UserID(), new()),
-      i?.UserSetting ?? new UserSetting(i?.UserID ?? new UserID(), NotificationPublishTimings.None, new())) { }
+      i?.UserSetting ?? new UserSetting(i?.UserID ?? new UserID(), NotificationPublishTimings.None, new()))
+    { }
   }
 
   public record HashedPassword(string Hash, string Salt, int StretchCount) : IHashedPassword
@@ -55,6 +57,8 @@ namespace ShiftManager.DataClasses
     private IHashedPassword _HashedPassword = new HashedPassword();
     [AutoNotify]
     private INameData _FullName = new NameData();
+    [AutoNotify]
+    private IStoreID _StoreID = new StoreID();
     [AutoNotify]
     private UserGroup _UserGroup;
     [AutoNotify]
@@ -142,6 +146,7 @@ namespace ShiftManager.DataClasses
     IUserID UserID { get; }
     IHashedPassword HashedPassword { get; }
     INameData FullName { get; }
+    IStoreID StoreID { get; }
     UserGroup UserGroup { get; }
     UserState UserState { get; }
     IWorkLog WorkLog { get; }

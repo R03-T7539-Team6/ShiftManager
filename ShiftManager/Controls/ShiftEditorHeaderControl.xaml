@@ -17,7 +17,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type local:ShiftEditorHeaderControl}">
-          <Grid>
+          <Grid Margin="-16,0,16,0">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="auto"/>
               <ColumnDefinition Width="auto"/>
@@ -35,7 +35,7 @@
               HorizontalContentAlignment="Center"
               Margin="4"
               Padding="4"
-              Width="80"/>
+              Width="160"/>
 
             <TextBlock
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.AttendTime}}"

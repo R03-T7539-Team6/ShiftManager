@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace ShiftManager.PrintHelper
+﻿namespace ShiftManager.PrintHelper
 {
-	public class Class1
-	{
-	}
+  public class Class1
+  {
+  }
 }

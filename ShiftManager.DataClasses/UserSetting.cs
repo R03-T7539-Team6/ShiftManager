@@ -8,7 +8,7 @@ namespace ShiftManager.DataClasses
 {
   public record UserSetting(IUserID UserID, NotificationPublishTimings NotificationPublishTiming, List<IClientData> ClientDataList) : IUserSetting
   {
-    public UserSetting(IUserSetting i) : this(i?.UserID ?? new UserID(), i?.NotificationPublishTiming?? NotificationPublishTimings.None, i?.ClientDataList ?? new()) { }
+    public UserSetting(IUserSetting i) : this(i?.UserID ?? new UserID(), i?.NotificationPublishTiming ?? NotificationPublishTimings.None, i?.ClientDataList ?? new()) { }
   }
 
   public record ClientData(string Name, string EndPoint, string UserPublicKey, string UserAuthToken) : IClientData

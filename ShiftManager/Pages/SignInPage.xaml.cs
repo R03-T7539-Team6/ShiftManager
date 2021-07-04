@@ -1,9 +1,10 @@
-﻿using System.Windows.Controls;
+﻿using System;
 using System.Threading.Tasks;
-using ShiftManager.DataClasses;
-using ShiftManager.Communication;
 using System.Windows;
-using System;
+using System.Windows.Controls;
+
+using ShiftManager.Communication;
+using ShiftManager.DataClasses;
 
 namespace ShiftManager.Pages
 {
@@ -40,8 +41,8 @@ namespace ShiftManager.Pages
     private async void ln_Click_2(object sender, System.Windows.RoutedEventArgs e)
     {
       string UID = ID.Text;
-      string UPass = Pass.Password;
-      var re=await SignInAsyncTest_WithIDAndPassword(UID, UPass);
+      string UPass = Pass.Text;
+      var re = await SignInAsyncTest_WithIDAndPassword(UID, UPass);
       if (re.IsSuccess)
       {
         Start();

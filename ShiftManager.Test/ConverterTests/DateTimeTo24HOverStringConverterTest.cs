@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 
 using NUnit.Framework;
 
-using ShiftManager;
-
 namespace ShiftManager.Test
 {
-	public class DateTimeTo24HOverStringConverterTests
+  public class DateTimeTo24HOverStringConverterTests
   {
     DateTimeTo24HOverStringConverter target { get; } = new();
 
     [SetUp]
-		public void Setup()
-		{
-		}
+    public void Setup()
+    {
+    }
 
     public static IEnumerable Convert_TestCases
     {
@@ -60,13 +57,13 @@ namespace ShiftManager.Test
     }
 
     [TestCaseSource(nameof(Convert_TestCases))]
-    public string ConvertTest(in DateTime value, in DateTime parameter) => target.Convert(value, parameter);
+    public string ConvertTest(in DateTime value, in DateTime parameter) => target.Convert(new object[] { value, parameter }, null, null, null) as string;
 
-    [TestCaseSource(nameof(ConvertBack_TestCases))]
-    public DateTime ConvertBackTest(in string value, in DateTime parameter) => target.ConvertBack(value, parameter);
+    /*[TestCaseSource(nameof(ConvertBack_TestCases))]
+    public DateTime ConvertBackTest(in string value, in DateTime parameter) => (DateTime)target.ConvertBack(value, null, null, null)[0];*/
 
     [TestCaseSource(nameof(ConvertBack_InvalidInput_TestCases))]
-    public void ConvertBackInvalidInputTest(string value, DateTime parameter, Type exception) => Assert.Throws(exception, () => target.ConvertBack(value, parameter));
-    
-	}
+    public void ConvertBackInvalidInputTest(string value, DateTime parameter, Type exception) => Assert.Throws(exception, () => target.ConvertBack(value, null, null, null));
+
+  }
 }

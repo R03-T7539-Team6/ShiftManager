@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+
 using ShiftManager.DataClasses;
 
 namespace ShiftManager.Pages
@@ -33,7 +34,8 @@ namespace ShiftManager.Pages
 *******************************************/
     private void Save_Click(object sender, System.Windows.RoutedEventArgs e)
     {
-      for (int i = 0; i < 7; i++) {
+      for (int i = 0; i < 7; i++)
+      {
         SingleShiftData ssdata = new(VM.ShiftRequestArray[i]);
         var res = ApiHolder.Api.AddShiftRequestAsync(ssdata);
         if (!res.Result.IsSuccess) { MessageBox.Show("データ送信に失敗しました"); }
