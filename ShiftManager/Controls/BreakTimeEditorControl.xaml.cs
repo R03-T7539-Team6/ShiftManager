@@ -203,7 +203,7 @@ namespace ShiftManager.Controls
           }
           return;
         }
-        else if(ErrorsDic[nameof(StartTime)].Contains(SAME_DATE_ERROR))
+        else if (ErrorsDic[nameof(StartTime)].Contains(SAME_DATE_ERROR))
         {
           ErrorsDic[nameof(StartTime)].Remove(SAME_DATE_ERROR);
           ErrorsChanged?.Invoke(this, new(nameof(StartTime)));

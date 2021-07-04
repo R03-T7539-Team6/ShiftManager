@@ -31,11 +31,11 @@ namespace ShiftManager.Communication
 
       return (hashedPasswordInfo is HashedPassword recordHashedPW ? recordHashedPW : new HashedPassword(hashedPasswordInfo))//引数で渡されたのがrecordならrecordで, そうでないならrecordに変換してから使用する
         with //recordの中身を変更する
-        {
-          Hash = Convert.ToBase64String(//Hashを変更する
+      {
+        Hash = Convert.ToBase64String(//Hashを変更する
             KeyDerivation.Pbkdf2(rawPassword, Convert.FromBase64String(hashedPasswordInfo.Salt), KeyDerivationPrf.HMACSHA256, hashedPasswordInfo.StretchCount, HASH_SIZE)
             )
-        };
+      };
     }
 
 

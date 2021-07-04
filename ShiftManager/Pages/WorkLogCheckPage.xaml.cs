@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Controls;
-using ShiftManager.DataClasses;
+
 using AutoNotify;
-using System.Collections.ObjectModel;
+
+using ShiftManager.DataClasses;
 
 namespace ShiftManager.Pages
 {

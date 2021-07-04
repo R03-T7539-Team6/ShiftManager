@@ -15,7 +15,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RoslynSDK.SourceGeneratorSa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.Communication.Test", "ShiftManager.Communication.Test\ShiftManager.Communication.Test.csproj", "{B7845FED-D7F2-4B63-9965-60BAB9F3AF8A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShiftManager.Test", "ShiftManager.Test\ShiftManager.Test.csproj", "{7922CEF1-9963-4DF2-AB4F-7EA2395494D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.Test", "ShiftManager.Test\ShiftManager.Test.csproj", "{7922CEF1-9963-4DF2-AB4F-7EA2395494D7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A1C48997-5A36-45E7-A0C8-8E46686A89F5}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

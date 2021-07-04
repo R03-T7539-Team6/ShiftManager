@@ -9,6 +9,6 @@ namespace ShiftManager.Controls
     public static readonly DependencyProperty VisibleElementsProperty = DependencyProperty.Register(nameof(VisibleElements), typeof(ShiftEditorElements), typeof(ShiftEditorHeaderControl));
 
     static ShiftEditorHeaderControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(ShiftEditorHeaderControl), new FrameworkPropertyMetadata(typeof(ShiftEditorHeaderControl)));
-    
+
   }
 }

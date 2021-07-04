@@ -47,7 +47,7 @@ namespace ShiftManager.Communication
         {
           return new(false, ApiResultCodes.Target_Date_Not_Found);
         }
-      } 
+      }
     }
     public Task<ApiResult> AddShiftRequestAsync(ISingleShiftData singleShiftData)
       => Task.Run(() => AddShiftRequest(singleShiftData));
