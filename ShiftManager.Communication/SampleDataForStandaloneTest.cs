@@ -35,6 +35,7 @@ namespace ShiftManager.Communication
         }
       );
 
+    }
     private static StoreID STORE_ID { get => new("STORE001"); }
     private static UserData[] USER_DATA_ARR
     {
