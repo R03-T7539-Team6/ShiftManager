@@ -41,6 +41,8 @@ namespace ShiftManager.Communication.RestData
 
       return this;
     }
+
+    public static RestUser GenerateFromUserData(in IUserData i) => new RestUser().FromUserData(i);
   }
 
   public class RestShift
@@ -83,6 +85,9 @@ namespace ShiftManager.Communication.RestData
       }
       return this;
     }
+
+    public static RestShift GenerateFromSingleShiftData(in ISingleShiftData i, in uint id, in string store_id, in bool is_request)
+      => new RestShift().FromSingleShiftData(i, id, store_id, is_request);
   }
 
   public class RestShiftRequest : RestModel
@@ -103,6 +108,9 @@ namespace ShiftManager.Communication.RestData
 
       return this;
     }
+
+    public static RestShiftRequest GenerateFromShiftRequest(in IShiftRequest i, string store_id)
+      => new RestShiftRequest().FromShiftRequest(i, store_id);
   }
 
   public class RestShiftSchedule : RestModel
@@ -120,7 +128,7 @@ namespace ShiftManager.Communication.RestData
       => new(target_date.Date, start_of_schedule, end_of_schedule, RestDataConstants.ShiftStatus.ConvToValue(shift_state),
         shifts.Select(i => i.ToSingleShiftData() as ISingleShiftData).ToDictionary(i => new UserID(i.UserID)), new() { (int)worker_num });
 
-    public RestShiftSchedule FromSchedyledShift(in IScheduledShift i, string store_id)
+    public RestShiftSchedule FromScheduledShift(in IScheduledShift i, string store_id)
     {
       this.store_id = store_id;
       target_date = i.TargetDate.Date;
@@ -131,6 +139,9 @@ namespace ShiftManager.Communication.RestData
       worker_num = (uint)i.RequiredWorkerCountList.FirstOrDefault();
       return this;
     }
+
+    public static RestShiftSchedule GenerateFromScheduledShift(in IScheduledShift i, in string store_id)
+      => new RestShiftSchedule().FromScheduledShift(i, store_id);
   }
 
   public class RestStore : RestModel
@@ -152,11 +163,12 @@ namespace ShiftManager.Communication.RestData
       store_id = i.StoreID.Value;
       worker_lists = i.UserDataDictionary.Values.Select((i, _) => new RestUser().FromUserData(i)).ToArray();
       shift_requests = i.ShiftRequestsDictionary.Values.Select((i, _) => new RestShiftRequest().FromShiftRequest(i, store_id)).ToArray();
-      shift_schedules = i.ScheduledShiftDictionary.Values.Select((i, _) => new RestShiftSchedule().FromSchedyledShift(i, store_id)).ToArray();
+      shift_schedules = i.ScheduledShiftDictionary.Values.Select((i, _) => new RestShiftSchedule().FromScheduledShift(i, store_id)).ToArray();
 
       return this;
     }
-    
+
+    public static RestStore GenerateFromStoreData(in IStoreData i) => new RestStore().FromStoreData(i);
   }
 
   public class RestWorkLog : RestModel
@@ -190,5 +202,8 @@ namespace ShiftManager.Communication.RestData
 
       return this;
     }
+
+    public static RestWorkLog GenerateFromSingleWorkLog(in SingleWorkLog i, in IUserID userID)
+      => new RestWorkLog().FromSingleWorkLog(i, userID);
   }
 }
