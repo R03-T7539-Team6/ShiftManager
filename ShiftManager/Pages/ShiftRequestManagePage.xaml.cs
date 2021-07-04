@@ -68,13 +68,13 @@ namespace ShiftManager.Pages
 * output = N/A ;
 * end of specification ;
 *******************************************/
-    private void OnLoaded(object sender, System.Windows.RoutedEventArgs e)
+    private void OnLoaded(object sender, RoutedEventArgs e)
     {
       VM.ShiftRequestArray.Clear();
       for (int i = 0; i < 7; i++)
       {
         DateTime targetDate = VM.TargetDate.Date.AddDays(i);
-        VM.ShiftRequestArray.Add(new SingleShiftData(ApiHolder.Api.CurrentUserData?.UserID, targetDate, false, targetDate, targetDate, new()));
+        VM.ShiftRequestArray.Add(new SingleShiftData(ApiHolder.CurrentUserID, targetDate, false, targetDate, targetDate, new()));
       }
     }
   }

@@ -92,13 +92,14 @@ namespace ShiftManager.Pages
 
       UpdateShiftSchedulingState(targetDate);
     }
-    private async void UpdateShiftSchedulingState(DateTime targetDate)
+    private void UpdateShiftSchedulingState(DateTime targetDate)
     {
-      var stateUpdateResult = await ApiHolder.Api.UpdateShiftSchedulingStateAsync(targetDate, VM.ShiftSchedulingState);
+      //実装準備状態とする
+      /*var stateUpdateResult = await ApiHolder.Api.UpdateShiftSchedulingStateAsync(targetDate, VM.ShiftSchedulingState);
 
       if (!stateUpdateResult.IsSuccess)
         if (MessageBox.Show("Error has occured\nErrorCode:" + stateUpdateResult.ResultCode.ToString() + "\nRetry?", "ShiftManager", MessageBoxButton.YesNo, MessageBoxImage.Error) == MessageBoxResult.Yes)
-          UpdateShiftSchedulingState(targetDate);
+          UpdateShiftSchedulingState(targetDate);*/
     }
     private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e) => ReloadData();
 

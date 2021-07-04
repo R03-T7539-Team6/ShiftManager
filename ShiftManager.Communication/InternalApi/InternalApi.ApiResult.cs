@@ -126,5 +126,22 @@
 
     /// <summary>予定シフトに指定のユーザIDが存在しない</summary>
     UserID_Not_Found_In_Scheduled_Shift,
+
+    /// <summary>勤務時間が短すぎる(最低1分は必要)</summary>
+    WorkTimeLen_Too_Short,
+
+    /// <summary>ユーザIDの文字列長が不正</summary>
+    Invalid_Length_UserID,
+
+    /// <summary>サインインに失敗した</summary>
+    SignIn_Failed,
+
+    /// <summary>許可されていない操作 (権限不足)</summary>
+    Not_Allowed_Control,
+
+    E204_No_Content,
+    E400_Bad_Request,
+    E403_Forbidded,
+    E404_Not_Found
   }
 }

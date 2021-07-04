@@ -12,7 +12,7 @@ namespace ShiftManager.Communication.InternalApiTest
     {
       PasswordHashingTest_TestCases = new object[PasswordHashingTest_TestCasesCount];
       for (int i = 0; i < PasswordHashingTest_TestCasesCount; i++)
-        PasswordHashingTest_TestCases[i] = new object[] { Password_Samples[i], Salt_Samples[i], STRETCH_COUNT, HashedPasswordExpectedResults[i] };
+        PasswordHashingTest_TestCases[i] = new object[] { Password_Samples[i], Salt_Samples[i], i == 5 ? 33 : STRETCH_COUNT, HashedPasswordExpectedResults[i] };
     }
     IInternalApi_Password TestTarget { get; } = new InternalApi();
 
@@ -24,14 +24,15 @@ namespace ShiftManager.Communication.InternalApiTest
     #region HashedPasswordGetter Test
     static object[] PasswordHashingTest_TestCases;
     const int STRETCH_COUNT = 10000;
-    const int PasswordHashingTest_TestCasesCount = 5;
+    const int PasswordHashingTest_TestCasesCount = 6;
     static readonly string[] Password_Samples = new string[PasswordHashingTest_TestCasesCount]
     {
       "0000",
       "0000",
       "12345678",
       "HWRnwOCy4HMiGPTA",
-      "i1KgfuhDy41yGy8x"
+      "i1KgfuhDy41yGy8x",
+      "TestPassword"
     };
     //Saltは16Bytes(128bit = 22char)とする.  <- https://ja.wikipedia.org/wiki/PBKDF2
     static readonly string[] Salt_Samples = new string[PasswordHashingTest_TestCasesCount]
@@ -40,7 +41,8 @@ namespace ShiftManager.Communication.InternalApiTest
       "ROa+FuvyOtq8w5w6LC92PA==",
       "5fRI5RQ+9eVSCMQ5g1z9LA==",
       "mdTM8HTo96Ba3kV77N9MSQ==",
-      "LkDfl7iv6fO5bShQoru4Iw=="
+      "LkDfl7iv6fO5bShQoru4Iw==",
+      "eiofjrueahrgheirugha"
     };
     static readonly string[] HashedPasswordExpectedResults = new string[PasswordHashingTest_TestCasesCount]
     {
@@ -48,7 +50,8 @@ namespace ShiftManager.Communication.InternalApiTest
       "YVfGOEf8r8a+S7TioAWNN0u3seOby1d5SLOzhIymJwf0wdougMuJYmU2Ws1PkTEcr70Flu2ReqmSI7WaiovvKg==",
       "XaXu/kodppLFbME+9y470G+WPaCqxziAiB5w7ZwYq95zA3gbEjLkxz+HJ6qUWUJ15CI/hd1cAtwXSVRnvpH+4g==",
       "xMIjIuiIPYrmBoQqskJHHYlL2hc0TvKsdjbifXICxPzvUkh5/weTbWCoFECQabYZeVP+awQ9Cv+txfWzLtFxQQ==",
-      "bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg=="
+      "bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==",
+      "Kr+I5A8P7G0XA4wDQMdGYvQypNhJP6nlVWhTAlPohWkhYiyycdtcCF/3btJK4xnlqvN9UpCZf6cEH7Yxi3NoFQ=="
     };
 
 
