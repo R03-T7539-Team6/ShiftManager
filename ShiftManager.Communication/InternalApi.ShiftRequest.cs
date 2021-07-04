@@ -34,7 +34,7 @@ namespace ShiftManager.Communication
           TestD.ShiftRequestsDictionary[targetUserID] = new ShiftRequest(shiftRequest) with
           {
             LastUpdate = DateTime.Now,
-            RequestsDictionary = new(shiftRequest.RequestsDictionary) { { singleShiftData.WorkDate, singleShiftData } }
+            RequestsDictionary = new(shiftRequest.RequestsDictionary)
           };
 
           return new(true, ApiResultCodes.Success);
