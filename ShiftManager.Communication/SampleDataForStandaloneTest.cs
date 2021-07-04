@@ -7,34 +7,35 @@ namespace ShiftManager.Communication
 {
   internal class SampleDataForStandaloneTest
   {
-    public StoreData StoreData { get =>
-      new(
-        STORE_ID,
+    public StoreData StoreData
+    {
+      get =>
+new(
+STORE_ID,
 
-        new()
-        {
-          { new(USER_DATA_ARR[0].UserID), USER_DATA_ARR[0] },
-          { new(USER_DATA_ARR[1].UserID), USER_DATA_ARR[1] },
-          { new(USER_DATA_ARR[2].UserID), USER_DATA_ARR[2] }
-        },
+new()
+{
+  { new(USER_DATA_ARR[0].UserID), USER_DATA_ARR[0] },
+  { new(USER_DATA_ARR[1].UserID), USER_DATA_ARR[1] },
+  { new(USER_DATA_ARR[2].UserID), USER_DATA_ARR[2] }
+},
 
-        new()
-        {
-          { ID0000.UserID, ID0000.ShiftRequest },
-          { ID0001.UserID, ID0001.ShiftRequest },
-          { ID0002.UserID, ID0002.ShiftRequest }
-        },
+new()
+{
+  { ID0000.UserID, ID0000.ShiftRequest },
+  { ID0001.UserID, ID0001.ShiftRequest },
+  { ID0002.UserID, ID0002.ShiftRequest }
+},
 
-        new()
-        {
-          { SCHEDULED_SHIFT_ARR[0].TargetDate, SCHEDULED_SHIFT_ARR[0] },
-          { SCHEDULED_SHIFT_ARR[1].TargetDate, SCHEDULED_SHIFT_ARR[1] },
-          { SCHEDULED_SHIFT_ARR[2].TargetDate, SCHEDULED_SHIFT_ARR[2] },
-          { SCHEDULED_SHIFT_ARR[3].TargetDate, SCHEDULED_SHIFT_ARR[3] },
-          { SCHEDULED_SHIFT_ARR[4].TargetDate, SCHEDULED_SHIFT_ARR[4] }
-        }
-      );
-
+new()
+{
+  { SCHEDULED_SHIFT_ARR[0].TargetDate, SCHEDULED_SHIFT_ARR[0] },
+  { SCHEDULED_SHIFT_ARR[1].TargetDate, SCHEDULED_SHIFT_ARR[1] },
+  { SCHEDULED_SHIFT_ARR[2].TargetDate, SCHEDULED_SHIFT_ARR[2] },
+  { SCHEDULED_SHIFT_ARR[3].TargetDate, SCHEDULED_SHIFT_ARR[3] },
+  { SCHEDULED_SHIFT_ARR[4].TargetDate, SCHEDULED_SHIFT_ARR[4] }
+}
+);
     }
     private static StoreID STORE_ID { get => new("STORE001"); }
     private static UserData[] USER_DATA_ARR
