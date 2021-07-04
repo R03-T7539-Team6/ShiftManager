@@ -1,31 +1,59 @@
-﻿namespace ShiftManager.Communication.RestApiBroker.RestData
+﻿using ShiftManager.DataClasses;
+
+namespace ShiftManager.Communication.RestData
 {
   public static class RestDataConstants
   {
     public static class Status
     {
-      public static readonly string Normal = "Normal";
-      public static readonly string InLeaveOfAbsence = "InLeaveOfAbsence";
-      public static readonly string Retired = "Retired";
-      public static readonly string NotHired = "NotHired";
-      public static readonly string Others = "Others";
+      public const string Normal = "Normal";
+      public const string InLeaveOfAbsence = "InLeaveOfAbsence";
+      public const string Retired = "Retired";
+      public const string NotHired = "NotHired";
+      public const string Others = "Others";
+
+      public static UserState ConvToValue(in string value) => value switch
+      {
+        Normal => UserState.Normal,
+        InLeaveOfAbsence => UserState.InLeaveOfAbsence,
+        Retired => UserState.Retired,
+        NotHired => UserState.NotHired,
+        _ => UserState.Others
+      };
     }
 
     public static class Group
     {
-      public static readonly string None = "None";
-      public static readonly string SystemAdmin = "SystemAdmin";
-      public static readonly string SuperUser = "SuperUser";
-      public static readonly string NormalUser = "NormalUser";
-      public static readonly string ForTimeRecordTerminal = "ForTimeRecordTerminal";
+      public const string None = "None";
+      public const string SystemAdmin = "SystemAdmin";
+      public const string SuperUser = "SuperUser";
+      public const string NormalUser = "NormalUser";
+      public const string ForTimeRecordTerminal = "ForTimeRecordTerminal";
+
+      public static UserGroup ConvToValue(in string value) => value switch
+      {
+        SystemAdmin => UserGroup.SystemAdmin,
+        SuperUser => UserGroup.SuperUser,
+        NormalUser => UserGroup.NormalUser,
+        ForTimeRecordTerminal => UserGroup.ForTimeRecordTerminal,
+        _ => UserGroup.None
+      };
     }
 
     public static class ShiftStatus
     {
-      public static readonly string NoneShift = "None";
-      public static readonly string NotStarted = "NotStarted";
-      public static readonly string Working = "Working";
-      public static readonly string FinalVersion = "FinalVersion";
+      public const string NoneShift = "None";
+      public const string NotStarted = "NotStarted";
+      public const string Working = "Working";
+      public const string FinalVersion = "FinalVersion";
+
+      public static ShiftSchedulingState ConvToValue(in string value) => value switch
+      {
+        NotStarted => ShiftSchedulingState.NotStarted,
+        Working => ShiftSchedulingState.Working,
+        FinalVersion => ShiftSchedulingState.FinalVersion,
+        _ => ShiftSchedulingState.None
+      };
     }
   }
 }
