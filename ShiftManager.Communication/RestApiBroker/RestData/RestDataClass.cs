@@ -188,7 +188,7 @@ namespace ShiftManager.Communication.RestData
       return new(attendance_time, leaving_time ?? default, breakT);
     }
 
-    public RestWorkLog FromSingleWorkLog(in SingleWorkLog i, in IUserID userID)
+    public RestWorkLog FromSingleWorkLog(in ISingleWorkLog i, in IUserID userID)
     {
       user_id = userID.Value;
       attendance_time = i.AttendanceTime;
@@ -203,7 +203,7 @@ namespace ShiftManager.Communication.RestData
       return this;
     }
 
-    public static RestWorkLog GenerateFromSingleWorkLog(in SingleWorkLog i, in IUserID userID)
+    public static RestWorkLog GenerateFromSingleWorkLog(in ISingleWorkLog i, in IUserID userID)
       => new RestWorkLog().FromSingleWorkLog(i, userID);
   }
 }
