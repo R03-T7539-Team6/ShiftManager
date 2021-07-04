@@ -27,7 +27,7 @@ namespace ShiftManager.Communication
       var req = RestShift.GenerateFromSingleShiftData(singleShiftData, 0, CurrentUserData?.StoreID.Value ?? string.Empty, true);
 
       var res = await Api.ExecuteWithDataAsync<RestShift, RestShift>("/shifts", req);
-      
+
       return new(res.IsSuccess, res.ResultCode);
     }
 

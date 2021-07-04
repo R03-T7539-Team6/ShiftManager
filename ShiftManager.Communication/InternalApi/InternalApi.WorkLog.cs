@@ -127,7 +127,7 @@ namespace ShiftManager.Communication
       if (new DateTime(attendT.Year, attendT.Month, attendT.Day, attendT.Hour, attendT.Minute, 0)
       == new DateTime(CurrentTime.Year, CurrentTime.Month, CurrentTime.Day, CurrentTime.Hour, CurrentTime.Minute, 0))
         return new(false, ApiResultCodes.WorkTimeLen_Too_Short, CurrentTime);
-      
+
       workLogDic[attendT] = new SingleWorkLog(lastWorkLog) with { LeavingTime = CurrentTime };//退勤打刻
 
       return new(true, ApiResultCodes.Success, CurrentTime);

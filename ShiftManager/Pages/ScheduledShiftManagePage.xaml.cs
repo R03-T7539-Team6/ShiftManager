@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -62,7 +61,8 @@ namespace ShiftManager.Pages
     private async void ReloadScheduledShift()
     {
       var ret = await ApiHolder.Api.GetScheduledShiftByDateAsync(VM.TargetDate);
-      if (!ret.IsSuccess) {
+      if (!ret.IsSuccess)
+      {
         if (ret.ResultCode == Communication.ApiResultCodes.Target_Date_Not_Found)
           ret = await ApiHolder.Api.GenerateScheduledShiftAsync(VM.TargetDate);
         else
@@ -120,7 +120,7 @@ namespace ShiftManager.Pages
 
       if (scrollProvider is null)
         return;
-      
+
       double scrollPercent = scrollProvider.VerticalScrollPercent;
       scrollPercent =
         scrollPercent < 0 ? 0 :

@@ -20,7 +20,8 @@ namespace ShiftManager.DataClasses
       i?.UserGroup ?? UserGroup.None,
       i?.UserState ?? UserState.Others,
       i?.WorkLog ?? new WorkLog(i?.UserID ?? new UserID(), new()),
-      i?.UserSetting ?? new UserSetting(i?.UserID ?? new UserID(), NotificationPublishTimings.None, new())) { }
+      i?.UserSetting ?? new UserSetting(i?.UserID ?? new UserID(), NotificationPublishTimings.None, new()))
+    { }
   }
 
   public record HashedPassword(string Hash, string Salt, int StretchCount) : IHashedPassword

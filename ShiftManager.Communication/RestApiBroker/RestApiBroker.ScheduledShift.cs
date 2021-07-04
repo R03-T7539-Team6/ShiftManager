@@ -28,7 +28,8 @@ namespace ShiftManager.Communication
         return new(false, ApiResultCodes.Data_Not_Found, null);
 
       var tmp1 = res.ReturnData.shift_schedules.Where(i => i.target_date == targetDate);
-      foreach (var tmp2 in tmp1) {
+      foreach (var tmp2 in tmp1)
+      {
         var tmp3 = tmp2.shifts.Where(i => i.user_id == userID.Value).FirstOrDefault();
         if (tmp3 != default)
           return new(true, ApiResultCodes.Success, tmp3.ToSingleShiftData());

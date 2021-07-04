@@ -104,7 +104,7 @@ namespace ShiftManager.Communication.RestData
       user_id = i.UserID.Value;
       this.store_id = store_id;
       last_update = i.LastUpdate;
-      shifts = i.RequestsDictionary.Values.Select((i, count)=> new RestShift().FromSingleShiftData(i, (uint)count, store_id, true)).ToArray();
+      shifts = i.RequestsDictionary.Values.Select((i, count) => new RestShift().FromSingleShiftData(i, (uint)count, store_id, true)).ToArray();
 
       return this;
     }

@@ -108,22 +108,29 @@ new()
 
       public static UserData UserData { get => new(UserID, HashedPW, NameData, STORE_ID, UserGroup, UserState, WorkLog, UserSetting); }
 
-      public static SingleShiftData[] SingleShiftDataArr { get => new SingleShiftData[]
+      public static SingleShiftData[] SingleShiftDataArr
       {
+        get => new SingleShiftData[]
+{
         new(UserID, new(2021, 6, 1), false, new(2021, 6, 1, 12, 0, 0), new(2021, 6, 1, 18, 0, 0), new()),
         new(UserID, new(2021, 6, 2), false, new(2021, 6, 2, 15, 0, 0), new(2021, 6, 2, 18, 0, 0), new()),
         new(UserID, new(2021, 6, 3), false, new(2021, 6, 3,  9, 0, 0), new(2021, 6, 3, 18, 0, 0), new()),
         new(UserID, new(2021, 6, 11), false, new(2021, 6, 11, 22, 0, 0), new(2021, 6, 12, 0, 0, 0), new()),
         new(UserID, new(2021, 6, 12), false, new(2021, 6, 12,  0, 0, 0), new(2021, 6, 12,  5, 0, 0), new()),
-      }; }
-      public static ShiftRequest ShiftRequest { get => new(UserID, new(2021, 5, 31, 12, 50, 39),
-        new() {
-          { SingleShiftDataArr[0].WorkDate, SingleShiftDataArr[0] },
-          { SingleShiftDataArr[1].WorkDate, SingleShiftDataArr[1] },
-          { SingleShiftDataArr[2].WorkDate, SingleShiftDataArr[2] },
-          { SingleShiftDataArr[3].WorkDate, SingleShiftDataArr[3] },
-          { SingleShiftDataArr[4].WorkDate, SingleShiftDataArr[4] },
-        }); }
+};
+      }
+      public static ShiftRequest ShiftRequest
+      {
+        get => new(UserID, new(2021, 5, 31, 12, 50, 39),
+new()
+{
+  { SingleShiftDataArr[0].WorkDate, SingleShiftDataArr[0] },
+  { SingleShiftDataArr[1].WorkDate, SingleShiftDataArr[1] },
+  { SingleShiftDataArr[2].WorkDate, SingleShiftDataArr[2] },
+  { SingleShiftDataArr[3].WorkDate, SingleShiftDataArr[3] },
+  { SingleShiftDataArr[4].WorkDate, SingleShiftDataArr[4] },
+});
+      }
     }
 
     private static class ID0002
@@ -138,22 +145,29 @@ new()
 
       public static UserData UserData { get => new(UserID, HashedPW, NameData, STORE_ID, UserGroup, UserState, WorkLog, UserSetting); }
 
-      public static SingleShiftData[] SingleShiftDataArr { get => new SingleShiftData[]
+      public static SingleShiftData[] SingleShiftDataArr
       {
+        get => new SingleShiftData[]
+{
         new(UserID, new(2021, 6, 1), false, new(2021, 6, 1, 9, 0, 0), new(2021, 6, 1, 12, 0, 0), new()),
         new(UserID, new(2021, 6, 2), true, new(2021, 6, 2, 0, 0, 0), new(2021, 6, 2, 0, 0, 0), new()),
         new(UserID, new(2021, 6, 5), false, new(2021, 6, 5,  9, 0, 0), new(2021, 6, 5, 18, 0, 0), new()),
         new(UserID, new(2021, 6, 11), false, new(2021, 6, 11, 8, 0, 0), new(2021, 6, 12, 0, 0, 0), new()),
         new(UserID, new(2021, 6, 12), false, new(2021, 6, 12,  0, 0, 0), new(2021, 6, 12,  8, 0, 0), new()),
-      }; }
-      public static ShiftRequest ShiftRequest { get => new(UserID, new(2021, 5, 30, 8, 1, 9),
-        new() {
-          { SingleShiftDataArr[0].WorkDate, SingleShiftDataArr[0] },
-          { SingleShiftDataArr[1].WorkDate, SingleShiftDataArr[1] },
-          { SingleShiftDataArr[2].WorkDate, SingleShiftDataArr[2] },
-          { SingleShiftDataArr[3].WorkDate, SingleShiftDataArr[3] },
-          { SingleShiftDataArr[4].WorkDate, SingleShiftDataArr[4] }
-        }); }
+};
+      }
+      public static ShiftRequest ShiftRequest
+      {
+        get => new(UserID, new(2021, 5, 30, 8, 1, 9),
+new()
+{
+  { SingleShiftDataArr[0].WorkDate, SingleShiftDataArr[0] },
+  { SingleShiftDataArr[1].WorkDate, SingleShiftDataArr[1] },
+  { SingleShiftDataArr[2].WorkDate, SingleShiftDataArr[2] },
+  { SingleShiftDataArr[3].WorkDate, SingleShiftDataArr[3] },
+  { SingleShiftDataArr[4].WorkDate, SingleShiftDataArr[4] }
+});
+      }
     }
 
     private static class ID0000
