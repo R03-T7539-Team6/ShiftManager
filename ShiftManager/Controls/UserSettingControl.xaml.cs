@@ -11,6 +11,18 @@ namespace ShiftManager.Controls
   /// <summary>
   /// Interaction logic for UserSettingControl.xaml
   /// </summary>
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public partial class UserSettingControl : UserControl
   {
     public event EventHandler SavePushed;
@@ -74,6 +86,18 @@ namespace ShiftManager.Controls
     public int PasswordMaxLength { get; } = 32;
     UserData RemoteData { get; set; }
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     static object PasswordCoerceCallback(DependencyObject d, object baseValue)
     {
       if (d is UserSettingControl c && baseValue is string s && s.Length >= c.PasswordMaxLength)
@@ -82,6 +106,18 @@ namespace ShiftManager.Controls
         return baseValue;
     }
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     static void UpdatePWBoxText(PasswordBox target, object newValue)
     {
       if (target is not null && newValue is string s)
@@ -89,6 +125,18 @@ namespace ShiftManager.Controls
           target.Password = s;
     }
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     IUserData InitialUserData { get; set; }
     public void SetData(IUserData userData)
     {
@@ -102,6 +150,18 @@ namespace ShiftManager.Controls
       //通知は実装省略
     }
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public UserSettingControl()
     {
       InitializeComponent();
@@ -124,6 +184,18 @@ namespace ShiftManager.Controls
       US.SelectedIndex = 0;
     }
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
     {
       if (sender is PasswordBox pb)
@@ -165,6 +237,18 @@ namespace ShiftManager.Controls
         GeneratePW();//再試行
     }
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     private void PrintClicked(object sender, RoutedEventArgs e)
     {
       throw new NotImplementedException();

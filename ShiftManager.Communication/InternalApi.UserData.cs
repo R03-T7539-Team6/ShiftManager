@@ -4,6 +4,18 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public interface IInternalApi_UserData
   {
     Task<ApiResult> UpdatePasswordAsync(IHashedPassword hashedPassword);
@@ -13,6 +25,18 @@ namespace ShiftManager.Communication
     Task<ApiResult<UserSetting>> GetUserSettingAsync();
   }
 
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public partial class InternalApi : IInternalApi_UserData
   {
     public Task<ApiResult<UserSetting>> GetUserSettingAsync() => Task.Run(() =>
@@ -37,6 +61,18 @@ namespace ShiftManager.Communication
       return UpdatePasswordAsync(CurrentUserData.UserID, CurrentUserData.FullName, hashedPassword).Result;
     });
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public Task<ApiResult> UpdatePasswordAsync(IUserID userID, INameData nameData, IHashedPassword hashedPassword) => Task.Run<ApiResult>(() =>
     {
       if (userID is null || nameData is null || hashedPassword is null)

@@ -7,6 +7,18 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public interface IInternalApi_StoreData
   {
     //自身が所属する店舗に対してのみ操作可能
@@ -26,6 +38,18 @@ namespace ShiftManager.Communication
   }
 
   /// <summary>内部で使用するAPI</summary>
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public partial class InternalApi : IInternalApi_StoreData
   {
     public Task<ApiResult> DeleteUserDataAsync(IUserID userID) => DeleteUserDataAsync(new(userID));//NULLが渡されるとぶっ壊れるので注意
@@ -50,6 +74,18 @@ namespace ShiftManager.Communication
       : new(false, ApiResultCodes.Data_Already_Exists, new(TestD.ScheduledShiftDictionary[retD.TargetDate]));
     });
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public Task<ApiResult<ShiftRequest>> GenerateShiftRequestAsync(IUserID userID) => GenerateShiftRequestAsync(new(userID));
     public Task<ApiResult<ShiftRequest>> GenerateShiftRequestAsync(UserID userID) => Task.Run<ApiResult<ShiftRequest>>(() =>
     {
@@ -68,11 +104,35 @@ namespace ShiftManager.Communication
       return new(true, ApiResultCodes.Success, retD);
     });
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public Task<ApiResult<ImmutableArray<ShiftRequest>>> GetAllShiftRequestAsync()
       => Task.Run<ApiResult<ImmutableArray<ShiftRequest>>>(() => new(true, ApiResultCodes.Success,
         TestD.ShiftRequestsDictionary.Values.Select(i => new ShiftRequest(i)).ToImmutableArray() //ShiftRequestが存在しない場合は「要素0」の配列が返る
         ));
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public Task<ApiResult<ImmutableArray<UserData>>> GetAllUserAsync()
       => Task.Run<ApiResult<ImmutableArray<UserData>>>(() => new(true, ApiResultCodes.Success,
         //ShiftRequestが存在しない場合は「要素0」の配列が返る
@@ -80,6 +140,18 @@ namespace ShiftManager.Communication
         TestD.UserDataDictionary.Values.Select(i => new UserData(i) with { HashedPassword = new HashedPassword(string.Empty, string.Empty, 0) }).ToImmutableArray()
         ));
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public Task<ApiResult<bool>> GetIsScheduledShiftFinalVersionAsync(DateTime date) => Task.Run<ApiResult<bool>>(() =>
     {
       if (!TestD.ScheduledShiftDictionary.TryGetValue(date.Date, out IScheduledShift? scheduledShift) || scheduledShift is null)
@@ -88,6 +160,18 @@ namespace ShiftManager.Communication
       return new(true, ApiResultCodes.Success, scheduledShift.SchedulingState == ShiftSchedulingState.FinalVersion);
     });
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public Task<ApiResult<ScheduledShift>> GetScheduledShiftByDateAsync(DateTime dateTime) => Task.Run<ApiResult<ScheduledShift>>(() =>
     {
       if (TestD.ScheduledShiftDictionary.TryGetValue(dateTime.Date, out IScheduledShift? scheduledShift) && scheduledShift is not null)
@@ -96,6 +180,18 @@ namespace ShiftManager.Communication
         return new(false, ApiResultCodes.Target_Date_Not_Found, null);
     });
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public Task<ApiResult<ShiftRequest>> GetShiftRequestByIDAsync(IUserID userID) => GetShiftRequestByIDAsync(new(userID));
     public Task<ApiResult<ShiftRequest>> GetShiftRequestByIDAsync(UserID userID) => Task.Run<ApiResult<ShiftRequest>>(() =>
     {
@@ -105,6 +201,18 @@ namespace ShiftManager.Communication
         return new(false, ApiResultCodes.UserID_Not_Found, null);
     });
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public Task<ApiResult<UserData>> GetUserDataByIDAsync(IUserID userID) => GetUserDataByIDAsync(new(userID));
     public Task<ApiResult<UserData>> GetUserDataByIDAsync(UserID userID) => Task.Run<ApiResult<UserData>>(() =>
     {
@@ -115,16 +223,52 @@ namespace ShiftManager.Communication
       return new(true, ApiResultCodes.Success, new UserData(userData) with { HashedPassword = (new HashedPassword(userData.HashedPassword) with { Hash = string.Empty }) });
     });
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserGroupAsync(UserGroup userGroup = UserGroup.None)
       => Task.Run<ApiResult<ImmutableArray<UserData>>>(() => new(true, ApiResultCodes.Success,
         TestD.UserDataDictionary.Values.Where(i => i.UserGroup == userGroup).Select(i => new UserData(i) with { HashedPassword = new HashedPassword(string.Empty, string.Empty, 0) }).ToImmutableArray()
         ));
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserStateAsync(UserState userState = UserState.Normal)
       => Task.Run<ApiResult<ImmutableArray<UserData>>>(() => new(true, ApiResultCodes.Success,
         TestD.UserDataDictionary.Values.Where(i => i.UserState == userState).Select(i => new UserData(i) with { HashedPassword = new HashedPassword(string.Empty, string.Empty, 0) }).ToImmutableArray()
         ));
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public Task<ApiResult> SignUpAsync(IUserData userData) => Task.Run<ApiResult>(() =>
     {
       if (string.IsNullOrWhiteSpace(userData?.UserID?.Value))

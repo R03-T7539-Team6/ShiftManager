@@ -7,11 +7,35 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public interface IInternalApi_Password
   {
     Task<ApiResult<HashedPassword>> GetPasswordHashingDataAsync(IUserID userID);
   }
 
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public partial class InternalApi : IInternalApi_Password
   {
     const int HASH_SIZE = 64;
@@ -21,6 +45,18 @@ namespace ShiftManager.Communication
     /// <param name="rawPassword">パスワード文字列(PlaneText)</param>
     /// <param name="hashedPasswordInfo">パスワードのハッシュ化に使用する</param>
     /// <returns>ハッシュ化されたパスワード</returns>
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     static public HashedPassword HashedPasswordGetter(in string rawPassword, in IHashedPassword hashedPasswordInfo)
     {
       if (hashedPasswordInfo is null)
@@ -42,6 +78,18 @@ namespace ShiftManager.Communication
     /// <summary>パスワードのハッシュ化に必要な情報を取得します</summary>
     /// <param name="userID">ユーザID</param>
     /// <returns>パスワードのハッシュ化に必要な情報</returns>
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public Task<ApiResult<HashedPassword>> GetPasswordHashingDataAsync(IUserID userID) => Task.Run<ApiResult<HashedPassword>>(() =>
     {
       if (!TestD.UserDataDictionary.TryGetValue(new(userID), out IUserData? userD) || userD is null)

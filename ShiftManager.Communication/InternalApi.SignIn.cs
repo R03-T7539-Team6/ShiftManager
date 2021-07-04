@@ -4,6 +4,18 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public interface IInternalApi_SignIn
   {
     IUserData? CurrentUserData { get; }
@@ -19,6 +31,18 @@ namespace ShiftManager.Communication
     Task<ApiResult> SignOutAsync();
   }
 
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public partial class InternalApi : IInternalApi_SignIn
   {
     /// <summary>非同期でサインインを試行します</summary>
@@ -46,6 +70,18 @@ namespace ShiftManager.Communication
 
     /// <summary>サインアウトを実行します</summary>
     /// <returns>実行結果</returns>
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public Task<ApiResult> SignOutAsync() => Task.Run<ApiResult>(() =>
     {
       if (CurrentUserData is null)
