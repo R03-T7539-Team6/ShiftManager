@@ -24,7 +24,7 @@ namespace ShiftManager.Communication
       if (CurrentUserData is null || res.ReturnData is null)
         return new(false, ApiResultCodes.NewData_Is_NULL, null);
 
-      return new(true, res.ResultCode, new WorkLog(CurrentUserData.UserID, new(res.ReturnData.Select(i => i.ToSingleWorkLog() as ISingleWorkLog).ToDictionary(i => i.AttendanceTime.Date)));
+      return new(true, res.ResultCode, new WorkLog(CurrentUserData.UserID, new(res.ReturnData.Select(i => i.ToSingleWorkLog() as ISingleWorkLog).ToDictionary(i => i.AttendanceTime.Date))));
     }
 
     public Task<ApiResult> UpdatePasswordAsync(IHashedPassword hashedPassword) => Task.Run<ApiResult>(() =>
@@ -35,7 +35,7 @@ namespace ShiftManager.Communication
       return UpdatePasswordAsync(CurrentUserData.UserID, CurrentUserData.FullName, hashedPassword).Result;
     });
 
-    public Task<ApiResult> UpdatePasswordAsync(IUserID userID, INameData nameData, IHashedPassword hashedPassword) => Task.Run<ApiResult>(async () =>
+    public async Task<ApiResult> UpdatePasswordAsync(IUserID userID, INameData nameData, IHashedPassword hashedPassword)
     {
       if (userID is null || nameData is null || hashedPassword is null)
         return new(false, ApiResultCodes.Invalid_Input); //引数NULLは許容できない
@@ -48,7 +48,7 @@ namespace ShiftManager.Communication
 
       throw new NotSupportedException();
 
-      //return await SignInAsync(userID, hashedPassword);
-    });
+      return await SignInAsync(userID, hashedPassword);
+    }
   }
 }
