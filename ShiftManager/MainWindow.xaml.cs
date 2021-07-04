@@ -15,6 +15,18 @@ namespace ShiftManager
   /// <summary>
   /// Interaction logic for MainWindow.xaml
   /// </summary>
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public partial class MainWindow : Window, IContainsApiHolder
   {
     public IApiHolder ApiHolder { get; set; } = new ApiHolder();
@@ -31,18 +43,54 @@ namespace ShiftManager
     /// <summary>SignInがSuccessした際に実行される</summary>
     /// <param name="sender">呼び出し元</param>
     /// <param name="e">イベント引数</param>
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     private void SignInPageElem_Login(object sender, EventArgs e)
     {
       MWVM.IsSignedIn.Value = true;
       MWVM.UserName.Value = new(ApiHolder.Api.CurrentUserData?.FullName);
     }
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     private void MainFrame_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e)
     {
       if (e.Content is IContainsApiHolder i)
         i.ApiHolder = ApiHolder;
     }
 
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     private async void SignOutClicked(object sender, RoutedEventArgs e)
     {
       _ = await ApiHolder.Api.SignOutAsync();
@@ -82,6 +130,18 @@ namespace ShiftManager
     }
   }
 
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   internal class MainWindowViewModel
   {
     public FramePageChanger MainFramePageChanger { get; init; }
@@ -96,6 +156,18 @@ namespace ShiftManager
   }
 
   /// <summary>指定のFrameに, CommandParmeterで指定された型のPageを表示する</summary>
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   internal class FramePageChanger : ICommand
   {
     public event EventHandler CanExecuteChanged;

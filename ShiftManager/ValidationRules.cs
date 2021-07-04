@@ -5,6 +5,18 @@ namespace ShiftManager
 {
   public class HHMMValidationRule : ValidationRule
   {
+    /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
     public override ValidationResult Validate(object value, CultureInfo cultureInfo)
     {
       if (value is not string s)

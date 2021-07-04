@@ -13,10 +13,10 @@
       CanEditNotificationSetting="True"
       CanEditPassword="True"
       CanEditUserGroup="True"
-      CanEditUserID="True"
+      CanEditUserID="False"
       CanEditUserName="True"
       CanEditUserState="True"
-      CanPrintSettings="True"
+      CanPrintSettings="False"
       CanSaveSettings="True"/>
   </Grid>
 </Page>

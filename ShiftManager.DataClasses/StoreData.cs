@@ -6,6 +6,18 @@ using AutoNotify;
 
 namespace ShiftManager.DataClasses
 {
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public record StoreID(string Value) : IStoreID
   {
     public StoreID() : this(string.Empty) { }
@@ -16,6 +28,18 @@ namespace ShiftManager.DataClasses
     public StoreData(IStoreData i) : this(i?.StoreID ?? new StoreID(), i?.UserDataDictionary ?? new(), i?.ShiftRequestsDictionary ?? new(), i?.ScheduledShiftDictionary ?? new()) { }
   }
 
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public partial class StoreID_NotifyPropertyChanged : IStoreID, INotifyPropertyChanged
   {
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -24,6 +48,18 @@ namespace ShiftManager.DataClasses
     private string _Value = string.Empty;
   }
 
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public partial class StoreData_NotifyPropertyChanged : IStoreData, INotifyPropertyChanged
   {
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -38,11 +74,34 @@ namespace ShiftManager.DataClasses
     private Dictionary<DateTime, IScheduledShift> _ScheduledShiftDictionary = new();
   }
 
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public interface IStoreID
   {
     string Value { get; }
   }
-
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public interface IStoreData
   {
     IStoreID StoreID { get; }

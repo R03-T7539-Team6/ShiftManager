@@ -6,11 +6,35 @@ using AutoNotify;
 
 namespace ShiftManager.DataClasses
 {
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public record ScheduledShift(DateTime TargetDate, DateTime StartOfSchedule, DateTime EndOfSchedule, ShiftSchedulingState SchedulingState, Dictionary<UserID, ISingleShiftData> ShiftDictionary, List<int> RequiredWorkerCountList) : IScheduledShift
   {
     public ScheduledShift(IScheduledShift i) : this(i?.TargetDate ?? new(), i?.StartOfSchedule ?? new(), i?.EndOfSchedule ?? new(), i?.SchedulingState ?? ShiftSchedulingState.None, i?.ShiftDictionary ?? new(), i?.RequiredWorkerCountList ?? new()) { }
   }
 
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public partial class ScheduledShift_NotifyPropertyChanged : IScheduledShift, INotifyPropertyChanged
   {
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -29,6 +53,18 @@ namespace ShiftManager.DataClasses
 
   }
 
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public enum ShiftSchedulingState
   {
     None,
@@ -37,6 +73,18 @@ namespace ShiftManager.DataClasses
     FinalVersion
   }
 
+  /*******************************************
+* specification ;
+* name = メソッド名 ;
+* Function = メソッドの説明 ;
+* note = 補足説明 ;
+* date = 最終更新(MM/DD/YYYY) ;
+* author = 作成者 ;
+* History = 更新履歴 ;
+* input = 入力 ;
+* output = 出力 ;
+* end of specification ;
+*******************************************/
   public interface IScheduledShift
   {
     DateTime TargetDate { get; }
