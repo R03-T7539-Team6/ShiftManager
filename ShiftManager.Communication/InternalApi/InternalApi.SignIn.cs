@@ -4,18 +4,6 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public interface IInternalApi_SignIn
   {
     IUserData? CurrentUserData { get; }
@@ -31,24 +19,24 @@ namespace ShiftManager.Communication
     Task<ApiResult> SignOutAsync();
   }
 
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public partial class InternalApi : IInternalApi_SignIn
   {
     /// <summary>非同期でサインインを試行します</summary>
     /// <param name="userID">試行するUserID</param>
     /// <param name="hashedPassword">試行するハッシュ化パスワード</param>
     /// <returns>試行結果</returns>
+    /*******************************************
+  * specification ;
+  * name = SignInAsync ;
+  * Function = サインイン(ログイン)を試行します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = ユーザID, ハッシュ化されたパスワード ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult> SignInAsync(IUserID userID, IHashedPassword hashedPassword) => Task.Run<ApiResult>(() =>
     {
       if (string.IsNullOrWhiteSpace(userID?.Value))
@@ -71,17 +59,17 @@ namespace ShiftManager.Communication
     /// <summary>サインアウトを実行します</summary>
     /// <returns>実行結果</returns>
     /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
+  * specification ;
+  * name = SignOutAsync ;
+  * Function = サインアウト(ログアウト)を行います ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = N/A ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult> SignOutAsync() => Task.Run<ApiResult>(() =>
     {
       if (CurrentUserData is null)

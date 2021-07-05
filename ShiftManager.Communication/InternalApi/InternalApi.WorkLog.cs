@@ -7,18 +7,6 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public interface InternalApi_WorkLog
   {
     Task<ApiResult<DateTime>> DoWorkStartTimeLoggingAsync(IUserID userID);
@@ -26,54 +14,32 @@ namespace ShiftManager.Communication
     Task<ApiResult<DateTime>> DoBreakTimeStartLoggingAsync(IUserID userID);
     Task<ApiResult<DateTime>> DoBreakTimeEndLoggingAsync(IUserID userID);
   }
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
+
   public interface ICurrentTimeProvider
   {
     DateTime CurrentTime { get; }
   }
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
+
   public class CurrentTimeProvider : ICurrentTimeProvider { public DateTime CurrentTime => DateTime.Now; }
   public partial class InternalApi : InternalApi_WorkLog
   {
-    /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
     public ICurrentTimeProvider CurrentTimeProvider { get; init; } = new CurrentTimeProvider();
 
     /// <summary>指定のユーザについて, 休憩終了の打刻を行います</summary>
     /// <param name="userID">ユーザID</param>
     /// <returns>実行結果と, 処理した時刻</returns>
+    /*******************************************
+  * specification ;
+  * name = DoBreakTimeEndLoggingAsync ;
+  * Function = 休憩を終了する打刻を試行します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = ユーザID ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult<DateTime>> DoBreakTimeEndLoggingAsync(IUserID userID) => Task.Run<ApiResult<DateTime>>(() =>
     {
       DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
@@ -110,17 +76,17 @@ namespace ShiftManager.Communication
     /// <param name="end">休憩終了時刻</param>
     /// <returns>休憩時間長 [min]</returns>
     /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
+  * specification ;
+  * name = GetBreakTimeLength ;
+  * Function = 休憩時間長を取得します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 開始時間, 終了時間 ;
+  * output = 休憩時間長 [分] ;
+  * end of specification ;
+  *******************************************/
     static internal int GetBreakTimeLength(in DateTime start, in DateTime end)
       => (int)(new DateTime(end.Year, end.Month, end.Day, end.Hour, end.Minute, 0) - new DateTime(start.Year, start.Month, start.Day, start.Hour, start.Minute, 0)).TotalMinutes;
 
@@ -128,17 +94,17 @@ namespace ShiftManager.Communication
     /// <param name="userID">ユーザID</param>
     /// <returns>実行結果と, 処理した時刻</returns>
     /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
+  * specification ;
+  * name = DoBreakTimeStartLoggingAsync ;
+  * Function = 休憩を開始する打刻を試行します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = ユーザID ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult<DateTime>> DoBreakTimeStartLoggingAsync(IUserID userID) => Task.Run<ApiResult<DateTime>>(() =>
     {
       DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
@@ -174,17 +140,17 @@ namespace ShiftManager.Communication
     /// <param name="userID">ユーザID</param>
     /// <returns>実行結果と, 処理した時刻</returns>
     /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
+  * specification ;
+  * name = DoWorkEndTimeLoggingAsync ;
+  * Function = 退勤打刻を試行します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = ユーザID ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult<DateTime>> DoWorkEndTimeLoggingAsync(IUserID userID) => Task.Run<ApiResult<DateTime>>(() =>
     {
       DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
@@ -221,17 +187,17 @@ namespace ShiftManager.Communication
     /// <param name="userID">ユーザID</param>
     /// <returns>実行結果と, 処理した時刻</returns>
     /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
+  * specification ;
+  * name = DoWorkStartTimeLoggingAsync ;
+  * Function = 出勤打刻を試行します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = ユーザID ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult<DateTime>> DoWorkStartTimeLoggingAsync(IUserID userID) => Task.Run<ApiResult<DateTime>>(() =>
     {
       DateTime CurrentTime = CurrentTimeProvider.CurrentTime;

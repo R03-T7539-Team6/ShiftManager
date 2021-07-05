@@ -1,18 +1,6 @@
 ﻿namespace ShiftManager.Communication
 {
   /// <summary>APIの返答</summary>
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public interface IApiResult
   {
     /// <summary>実行に成功したかどうか</summary>
@@ -25,18 +13,6 @@
   }
 
   /// <summary>APIの返答用インターフェイス(返り値付き)</summary>
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public interface IApiResult<T> : IApiResult
   {
     /// <summary>実行の結果得られたデータ</summary>
@@ -44,19 +20,9 @@
   }
 
   public record ApiResult(bool IsSuccess, ApiResultCodes ResultCode) : IApiResult;
+
   public record ApiResult<T>(bool IsSuccess, ApiResultCodes ResultCode, T? ReturnData) : IApiResult<T>;
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
+
   public enum ApiResultCodes
   {
     /// <summary>情報が存在しない (不明なエラー)</summary>
