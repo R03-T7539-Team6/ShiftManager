@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager", "ShiftManage
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.DataClasses", "ShiftManager.DataClasses\ShiftManager.DataClasses.csproj", "{9448511A-91C2-49E1-8E10-403A3ED3B59C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.Communication.InternalApi", "ShiftManager.Communication.InternalApi\ShiftManager.Communication.csproj", "{2EA56783-983F-4749-8335-C4DDF4E03E3E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.Communication.InternalApi", "ShiftManager.Communication.InternalApi\ShiftManager.Communication.InternalApi.csproj", "{2EA56783-983F-4749-8335-C4DDF4E03E3E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.PrintHelper", "ShiftManager.PrintHelper\ShiftManager.PrintHelper.csproj", "{F17476AD-9C40-474A-87A4-911B92F127EF}"
 EndProject
