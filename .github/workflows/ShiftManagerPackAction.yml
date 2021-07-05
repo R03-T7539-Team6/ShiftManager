@@ -1,0 +1,40 @@
+name: Packaging
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        target-architecture: [x86, x64]
+
+    env:
+      ARTIFACT_NAME: Package_${{ matrix.target-architecture }}
+      RUNTIME_IDENTIFIER: win-${{ matrix.target-architecture }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: Create the app package
+        run: dotnet publish ShiftManager/ShiftManager.csproj -c Release -f net5.0-windows -o publish -p:PublishReadyToRun=true -p:PublishSingleFile=true --self-contained true -r {{ $env.RUNTIME_IDENTIFIER }}
+
+      - name: Upload build artifacts (X86)
+        uses: actions/upload-artifact@v2
+        with:
+          name: PackedArtifact
+          path: publish
