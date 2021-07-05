@@ -7,14 +7,14 @@ namespace ShiftManager
   {
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = Validate ;
+* Function = 入力値のバリデーションを行います  HH:MMの形式が期待されます ;
+* note = N/A ;
+* date = 07/03/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = 入力値, 地域情報 ;
+* output = Validate結果 ;
 * end of specification ;
 *******************************************/
     public override ValidationResult Validate(object value, CultureInfo cultureInfo)
