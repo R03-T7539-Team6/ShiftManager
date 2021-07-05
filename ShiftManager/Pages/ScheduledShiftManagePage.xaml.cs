@@ -22,6 +22,19 @@ namespace ShiftManager.Pages
   {
     public IApiHolder ApiHolder { get => VM.ApiHolder; set => VM.ApiHolder = value; }
     ScheduledShiftManagePageViewModel VM = new();
+
+    /*******************************************
+* specification ;
+* name = ScheduledShiftManagePage ;
+* Function = インスタンスを初期化します ;
+* note = N/A ;
+* date = 07/04/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     public ScheduledShiftManagePage()
     {
       InitializeComponent();
@@ -32,13 +45,52 @@ namespace ShiftManager.Pages
     }
 
     ImmutableArray<ShiftRequest> ShiftRequests;
+
+    /*******************************************
+* specification ;
+* name = Page_Loaded ;
+* Function = ページが表示された際に実行され, 表示するデータの読み込みを行います ;
+* note = 本PageのLoadedイベントをハンドリングしています ;
+* date = 07/03/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = Pageのインスタンス, イベント情報 ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void Page_Loaded(object sender, RoutedEventArgs e) => ReloadData();
+
+    /*******************************************
+* specification ;
+* name = ReloadData ;
+* Function = 表示するデータの再読み込みを行います ;
+* note = N/A ;
+* date = 07/04/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void ReloadData()
     {
       VM.ApiHolder = ApiHolder;
       ReloadShiftRequest();
       ReloadScheduledShift();
     }
+
+    /*******************************************
+* specification ;
+* name = ReloadShiftRequest ;
+* Function = 希望シフトリストを更新します ;
+* note = N/A ;
+* date = 07/04/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private async void ReloadShiftRequest()
     {
       var shiftReqs = await ApiHolder.Api.GetAllShiftRequestAsync();
@@ -58,6 +110,18 @@ namespace ShiftManager.Pages
       }
     }
 
+    /*******************************************
+* specification ;
+* name = ReloadScleduledShift ;
+* Function = 予定シフトリストを更新します ;
+* note = N/A ;
+* date = 07/03/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private async void ReloadScheduledShift()
     {
       var ret = await ApiHolder.Api.GetScheduledShiftByDateAsync(VM.TargetDate);
@@ -77,6 +141,18 @@ namespace ShiftManager.Pages
         VM.ScheduledShiftArray.Add(new SingleShiftData(i));
     }
 
+    /*******************************************
+* specification ;
+* name = UpdateScheduledShift ;
+* Function = 予定シフトの更新要求をサーバに送り, 情報更新を試行します ;
+* note = 更新に失敗した場合, MessageBoxが表示されます ;
+* date = 07/04/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private async void UpdateScheduledShift()
     {
       //シフトを登録
@@ -92,6 +168,19 @@ namespace ShiftManager.Pages
 
       UpdateShiftSchedulingState(targetDate);
     }
+
+    /*******************************************
+* specification ;
+* name = UpdateShiftSchedulingState ;
+* Function = 指定の日付のシフト編集状態を更新します ;
+* note = v1.0では未実装機能です ;
+* date = 07/05/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = 対象となる日付 ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void UpdateShiftSchedulingState(DateTime targetDate)
     {
       //実装準備状態とする
@@ -101,12 +190,61 @@ namespace ShiftManager.Pages
         if (MessageBox.Show("Error has occured\nErrorCode:" + stateUpdateResult.ResultCode.ToString() + "\nRetry?", "ShiftManager", MessageBoxButton.YesNo, MessageBoxImage.Error) == MessageBoxResult.Yes)
           UpdateShiftSchedulingState(targetDate);*/
     }
+
+    /*******************************************
+* specification ;
+* name = DataPicker_SelectedDateChanged ;
+* Function = 日付選択コントロールで日付の選択が更新された際に実行され, 表示中データの再読み込みを行います ;
+* note = N/A ;
+* date = 07/04/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = DataPickerインスタンス, イベント情報 ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e) => ReloadData();
 
+    /*******************************************
+* specification ;
+* name = ListView_Scroll ;
+* Function = ListViewでスクロールが行われた際に実行され, 表示位置の同期を行います ;
+* note = N/A ;
+* date = 07/04/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = ListViewインスタンス, イベント情報 ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void ListView_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e) => ScrollSyncer(sender);
 
+    /*******************************************
+* specification ;
+* name = ShiftRequestListView_MouseWheel ;
+* Function = ListViewでマウスホイールによる操作が行われた際に実行され, 表示位置の同期を行います ;
+* note = N/A ;
+* date = 07/04/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = ListViewインスタンス, イベント情報 ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void ShiftRequestListView_MouseWheel(object sender, MouseWheelEventArgs e) => ScrollSyncer(sender);
 
+    /*******************************************
+* specification ;
+* name = ScrollSyncer ;
+* Function = 2つのListView間で表示位置の同期を行います ;
+* note = N/A ;
+* date = 07/04/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = 変更のあったListViewインスタンス ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void ScrollSyncer(object sender)
     {
       static IScrollProvider GetScrollProvider(in UIElement uie)
@@ -138,6 +276,18 @@ namespace ShiftManager.Pages
 
     public static readonly ShiftSchedulingState[] ShiftSchedulingStateLabels = (ShiftSchedulingState[])Enum.GetValues(typeof(ShiftSchedulingState));
 
+    /*******************************************
+* specification ;
+* name = Page_Unloaded ;
+* Function = 本Pageから他のページに移動した際に実行され, サーバーに変更を送信します ;
+* note = N/A ;
+* date = 07/04/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = Pageインスタンス, イベント情報 ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void Page_Unloaded(object sender, RoutedEventArgs e) => UpdateScheduledShift();
   }
 
