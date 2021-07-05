@@ -8,6 +8,18 @@ namespace ShiftManager.Communication.InternalApiTest
 {
   public class PasswordTests
   {
+    /*******************************************
+  * specification ;
+  * name = PasswordTests ;
+  * Function = テストケースを生成します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = N/A ;
+  * output = N/A ;
+  * end of specification ;
+  *******************************************/
     static PasswordTests()
     {
       PasswordHashingTest_TestCases = new object[PasswordHashingTest_TestCasesCount];
@@ -15,11 +27,6 @@ namespace ShiftManager.Communication.InternalApiTest
         PasswordHashingTest_TestCases[i] = new object[] { Password_Samples[i], Salt_Samples[i], i == 5 ? 33 : STRETCH_COUNT, HashedPasswordExpectedResults[i] };
     }
     IInternalApi_Password TestTarget { get; } = new InternalApi();
-
-    [SetUp]
-    public void Setup()
-    {
-    }
 
     #region HashedPasswordGetter Test
     static object[] PasswordHashingTest_TestCases;
@@ -55,13 +62,50 @@ namespace ShiftManager.Communication.InternalApiTest
     };
 
 
+    /*******************************************
+  * specification ;
+  * name = PasswordHashingTest_Record ;
+  * Function = パスワードのハッシュ化が正常に動作するかを確認する ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = テストケース ;
+  * output = N/A ;
+  * end of specification ;
+  *******************************************/
     [TestCaseSource(nameof(PasswordHashingTest_TestCases))]
     public void PasswordHashingTest_Record(string rawPW, string saltBASE64, int stretchCount, string expected)
       => PasswordHashingTest(rawPW, new HashedPassword(string.Empty, saltBASE64, stretchCount), expected);
+
+    /*******************************************
+  * specification ;
+  * name = PasswordHashingTest_Interface ;
+  * Function = パスワードのハッシュ化が正常に動作するかを確認する ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = テストケース ;
+  * output = N/A ;
+  * end of specification ;
+  *******************************************/
     [TestCaseSource(nameof(PasswordHashingTest_TestCases))]
     public void PasswordHashingTest_Interface(string rawPW, string saltBASE64, int stretchCount, string expected)
       => PasswordHashingTest(rawPW, new HashedPassword_NotifyPropertyChanged() { Salt = saltBASE64, StretchCount = stretchCount }, expected);
 
+    /*******************************************
+  * specification ;
+  * name = PasswordHashingTest ;
+  * Function = パスワードのハッシュ化が正常に動作するかを確認する ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = テストケース ;
+  * output = N/A ;
+  * end of specification ;
+  *******************************************/
     private void PasswordHashingTest(string rawPW, IHashedPassword hashedPassword, string expected)
       => Assert.AreEqual(expected, InternalApi.HashedPasswordGetter(rawPW, hashedPassword).Hash);
     #endregion

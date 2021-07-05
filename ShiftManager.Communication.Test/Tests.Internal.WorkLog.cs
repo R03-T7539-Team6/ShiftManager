@@ -57,6 +57,18 @@ namespace ShiftManager.Communication.InternalApiTest
       }
     }
 
+    /*******************************************
+  * specification ;
+  * name = GetBreakTimeLengthTest ;
+  * Function = 休憩時間長の計算処理が正常に動作するかをテストする ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = テストケース ;
+  * output = テスト結果 ;
+  * end of specification ;
+  *******************************************/
     [TestCaseSource(nameof(GetBreakTimeLengthTest_TestCases))]
     public int GetBreakTimeLengthTest(in DateTime start, in DateTime end)
       => InternalApi.GetBreakTimeLength(start, end);
@@ -65,6 +77,19 @@ namespace ShiftManager.Communication.InternalApiTest
     {
       public DateTime CurrentTime { get; set; }
     }
+
+    /*******************************************
+  * specification ;
+  * name = AttendLeaveTest ;
+  * Function = 出勤と退勤を行った際に処理が正常に行われるかどうかを確認する ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = N/A ;
+  * output = N/A(非同期処理用情報) ;
+  * end of specification ;
+  *******************************************/
     [Test]
     public async Task AttendLeaveTest()
     {
@@ -77,6 +102,18 @@ namespace ShiftManager.Communication.InternalApiTest
       Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoWorkEndTimeLoggingAsync(new UserID("ID0000")));
     }
 
+    /*******************************************
+  * specification ;
+  * name = AttendBreakLeaveTest ;
+  * Function = 出勤と休憩, 退勤を行った際に処理が正常に行われるかどうかを確認する ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = N/A ;
+  * output = N/A(非同期処理用情報) ;
+  * end of specification ;
+  *******************************************/
     [Test]
     public async Task AttendBreakLeaveTest()
     {
