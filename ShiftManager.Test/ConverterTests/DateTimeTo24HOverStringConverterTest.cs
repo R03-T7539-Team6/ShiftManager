@@ -9,11 +9,6 @@ namespace ShiftManager.Test
   {
     DateTimeTo24HOverStringConverter target { get; } = new();
 
-    [SetUp]
-    public void Setup()
-    {
-    }
-
     public static IEnumerable Convert_TestCases
     {
       get
@@ -56,12 +51,36 @@ namespace ShiftManager.Test
       }
     }
 
+    /*******************************************
+  * specification ;
+  * name = ConvertTest ;
+  * Function = 時刻情報から文字列に正常に変換できるかどうかをテストする ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 変換対象の日時, 基準日 ;
+  * output = 変換結果の文字列 ;
+  * end of specification ;
+  *******************************************/
     [TestCaseSource(nameof(Convert_TestCases))]
     public string ConvertTest(in DateTime value, in DateTime parameter) => target.Convert(new object[] { value, parameter }, null, null, null) as string;
 
     /*[TestCaseSource(nameof(ConvertBack_TestCases))]
     public DateTime ConvertBackTest(in string value, in DateTime parameter) => (DateTime)target.ConvertBack(value, null, null, null)[0];*/
 
+    /*******************************************
+  * specification ;
+  * name = ConvertBackInvalidInputTest ;
+  * Function = 文字列から時刻情報に変換する際, 異常値入力に対し正常に例外を吐くかをテストする ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 変換対象の時刻表現文字列, 基準日情報, 期待される例外の型 ;
+  * output = N/A ;
+  * end of specification ;
+  *******************************************/
     [TestCaseSource(nameof(ConvertBack_InvalidInput_TestCases))]
     public void ConvertBackInvalidInputTest(string value, DateTime parameter, Type exception) => Assert.Throws(exception, () => target.ConvertBack(value, null, null, null));
 
