@@ -12,10 +12,6 @@ jobs:
       matrix:
         target-architecture: [x86, x64]
 
-    env:
-      ARTIFACT_NAME: Package_${{ matrix.target-architecture }}
-      RUNTIME_IDENTIFIER: win-${{ matrix.target-architecture }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -32,6 +28,9 @@ jobs:
 
       - name: Create the app package
         run: dotnet publish ShiftManager/ShiftManager.csproj -c Release -f net5.0-windows -o publish -p:PublishReadyToRun=true -p:PublishSingleFile=true --self-contained true -r {{ $env.RUNTIME_IDENTIFIER }}
+        env:
+          RUNTIME_IDENTIFIER: win-${{ matrix.target-architecture }}
+        
 
       - name: Upload build artifacts (X86)
         uses: actions/upload-artifact@v2
