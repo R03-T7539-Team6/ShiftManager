@@ -3,18 +3,6 @@ using System.Windows.Controls;
 
 namespace ShiftManager.Controls
 {
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public class PasswordStrengthVisualizerControl : Control
   {
     public string PasswordText { get => (string)GetValue(PasswordTextProperty); set => SetValue(PasswordTextProperty, value); }
@@ -29,10 +17,46 @@ namespace ShiftManager.Controls
     /// <summary>パスワードの強度における"最低限"の閾値</summary>
     public static double PWStrength_Least { get; } = 0.4;
 
+    /*******************************************
+* specification ;
+* name = PWChanged ;
+* Function = パスワード入力が更新された際に実行する ;
+* note = パスワードの強度の更新が行われる ;
+* date = 06/30/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = 対象のUI要素 ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     static void PWChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => (d as PasswordStrengthVisualizerControl).PasswordStrength = GetPasswordStrength(e.NewValue as string);
 
+    /*******************************************
+* specification ;
+* name = PasswordStrengthVisualizerControl ;
+* Function = クラスコンストラクタです.  デフォルトスタイル設定を更新します ;
+* note = N/A ;
+* date = 06/16/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     static PasswordStrengthVisualizerControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(PasswordStrengthVisualizerControl), new FrameworkPropertyMetadata(typeof(PasswordStrengthVisualizerControl)));
 
+    /*******************************************
+* specification ;
+* name = GetPasswordStrength;
+* Function = パスワード強度を測定します ;
+* note = Zxcvbnを使用して強度を測定しています ;
+* date = 06/30/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = 測定対象のパスワード文字列 ;
+* output = パスワード強度 (0.0 ~ 1.0) ;
+* end of specification ;
+*******************************************/
     static public double GetPasswordStrength(in string s) => string.IsNullOrWhiteSpace(s) ? 0.1 : 0.2 + (double)Zxcvbn.Core.EvaluatePassword(s as string).Score / 5;//Scoreの最大値が4のため
   }
 }
