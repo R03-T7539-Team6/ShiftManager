@@ -5,18 +5,6 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public interface InternalApi_ShiftRequest
   {
     ApiResult AddShiftRequest(ISingleShiftData singleShiftData);
@@ -25,23 +13,23 @@ namespace ShiftManager.Communication
     Task<ApiResult> UpdateShiftRequestAsync(ISingleShiftData singleShiftData);
   }
 
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public partial class InternalApi : InternalApi_ShiftRequest
   {
     /// <summary>シフト希望を追加します  初めての追加の場合は, コレクションにユーザのデータが生成されたうえで追加されます</summary>
     /// <param name="singleShiftData">追加する単一シフトデータ</param>
     /// <returns>実行結果</returns>
+    /*******************************************
+  * specification ;
+  * name = AddShiftRequest ;
+  * Function = シフト希望を追加します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 追加する単一日シフト希望情報 ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public ApiResult AddShiftRequest(ISingleShiftData singleShiftData)
     {
       UserID targetUserID = new(singleShiftData.UserID);
@@ -73,21 +61,34 @@ namespace ShiftManager.Communication
         }
       }
     }
+
+    /*******************************************
+  * specification ;
+  * name = AddShiftRequestAsync ;
+  * Function = AddShiftRequestを非同期に実行します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = シフト希望情報 ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult> AddShiftRequestAsync(ISingleShiftData singleShiftData)
       => Task.Run(() => AddShiftRequest(singleShiftData));
 
     /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
+  * specification ;
+  * name = GetShiftRequestByDateAsync ;
+  * Function = 日付を指定してシフト希望を取得します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 指定する日付 ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult<SingleShiftData>> GetShiftRequestByDateAsync(DateTime date) => Task.Run<ApiResult<SingleShiftData>>(() =>
     {
       if (CurrentUserData is null)
@@ -102,6 +103,18 @@ namespace ShiftManager.Communication
         return new(true, ApiResultCodes.Success, new(singleShiftData));
     });
 
+    /*******************************************
+  * specification ;
+  * name = UpdateShiftRequestAsync ;
+  * Function = シフト希望を更新します ;
+  * note = AddShiftRequestAsyncに同一の機能があります. ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = シフト情報 ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     [Obsolete("Please use AddShiftRequestAsync Method")]
     public Task<ApiResult> UpdateShiftRequestAsync(ISingleShiftData singleShiftData)
       => AddShiftRequestAsync(singleShiftData);

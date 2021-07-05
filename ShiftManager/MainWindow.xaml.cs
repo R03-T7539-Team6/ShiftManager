@@ -15,23 +15,23 @@ namespace ShiftManager
   /// <summary>
   /// Interaction logic for MainWindow.xaml
   /// </summary>
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public partial class MainWindow : Window, IContainsApiHolder
   {
     public IApiHolder ApiHolder { get; set; } = new ApiHolder();
     private MainWindowViewModel MWVM { get; }
 
+    /*******************************************
+* specification ;
+* name = MainWindow ;
+* Function = MainWindowのインスタンスを初期化します ;
+* note = N/A ;
+* date = 07/03/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = ListViewインスタンス, イベント情報 ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     public MainWindow()
     {
       InitializeComponent();
@@ -45,14 +45,14 @@ namespace ShiftManager
     /// <param name="e">イベント引数</param>
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = SignInPageElem_Login ;
+* Function = サインイン成功時に実行され, 表示の更新を行います ;
+* note = N/A ;
+* date = 07/04/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = SignInコントロールインスタンス, イベント情報 ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
     private void SignInPageElem_Login(object sender, EventArgs e)
@@ -63,14 +63,14 @@ namespace ShiftManager
 
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = MainFrame_Navigating ;
+* Function = ページ移動時に呼び出され, API参照用インスタンスをセットします ;
+* note = N/A ;
+* date = 06/29/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = Frameのインスタンス, イベント情報 ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
     private void MainFrame_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e)
@@ -81,14 +81,14 @@ namespace ShiftManager
 
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = SignOutClicked ;
+* Function = サインアウトボタン押下時に実行され, サインアウト処理を実行します ;
+* note = N/A ;
+* date = 07/03/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = Buttonのインスタンス, イベント情報 ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
     private async void SignOutClicked(object sender, RoutedEventArgs e)
@@ -130,18 +130,6 @@ namespace ShiftManager
     }
   }
 
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   internal class MainWindowViewModel
   {
     public FramePageChanger MainFramePageChanger { get; init; }
@@ -156,18 +144,6 @@ namespace ShiftManager
   }
 
   /// <summary>指定のFrameに, CommandParmeterで指定された型のPageを表示する</summary>
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   internal class FramePageChanger : ICommand
   {
     public event EventHandler CanExecuteChanged;

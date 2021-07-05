@@ -7,18 +7,6 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public interface InternalApi_ScheduledShift
   {
     Task<ApiResult<SingleShiftData>> GetScheduledShiftByIDAsync(DateTime targetDate, IUserID userID);
@@ -27,24 +15,24 @@ namespace ShiftManager.Communication
     Task<ApiResult> UpdateRequiredWorkerCountListAsync(DateTime targetDate, IReadOnlyCollection<int> singleShiftDatas);
   }
 
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public partial class InternalApi : InternalApi_ScheduledShift
   {
     /// <summary>指定日の予定シフトを, ユーザID指定で取得します</summary>
     /// <param name="targetDate">取得する予定シフトの対象日</param>
     /// <param name="userID">取得する予定シフトのユーザID</param>
     /// <returns>実行結果</returns>
+    /*******************************************
+  * specification ;
+  * name = GetScheduledShiftByIDAsync ;
+  * Function = 予定シフトの取得を試行します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 取得する日付, ユーザID ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult<SingleShiftData>> GetScheduledShiftByIDAsync(DateTime targetDate, IUserID userID) => Task.Run<ApiResult<SingleShiftData>>(() =>
     {
       if (!TestD.ScheduledShiftDictionary.TryGetValue(targetDate, out IScheduledShift? scheduledShift) || scheduledShift is null)
@@ -65,27 +53,63 @@ namespace ShiftManager.Communication
       }
     });
 
+    /*******************************************
+  * specification ;
+  * name = UpdateRequiredWorkerCountListAsync ;
+  * Function = 予定シフトの, 計画人数情報を更新します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 更新対象の日付, 計画人数情報 ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult> UpdateRequiredWorkerCountListAsync(DateTime targetDate, IReadOnlyCollection<int> requiredWorkerCountList)
       => Task.Run(() => UpdateScheduledShift(targetDate, (i) => new ScheduledShift(i) with { RequiredWorkerCountList = new(requiredWorkerCountList) }));
 
+    /*******************************************
+  * specification ;
+  * name = UpdateShiftSchedulingStateAsync ;
+  * Function = 予定シフトの, 操作状態を更新します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 更新対象の日付, 操作状態 ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult> UpdateShiftSchedulingStateAsync(DateTime targetDate, ShiftSchedulingState shiftSchedulingState)
       => Task.Run(() => UpdateScheduledShift(targetDate, (i) => new ScheduledShift(i) with { SchedulingState = shiftSchedulingState }));
 
+    /*******************************************
+  * specification ;
+  * name = UpdateSingleScheduledShiftListAsync ;
+  * Function = 予定シフトの, 勤務予定リストを更新します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 更新対象の日付, 勤務予定リスト ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult> UpdateSingleScheduledShiftListAsync(DateTime targetDate, IReadOnlyCollection<ISingleShiftData> singleShiftDatas)
       => Task.Run(() => UpdateScheduledShift(targetDate, (i) => new ScheduledShift(i) with { ShiftDictionary = singleShiftDatas.ToDictionary(i => new UserID(i.UserID)) }));
 
     /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
+  * specification ;
+  * name = UpdateScheduledShift ;
+  * Function = 予定シフト情報を更新します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 更新対象の日付, 予定シフト情報更新用メソッド ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     private ApiResult UpdateScheduledShift(DateTime targetDate, Func<IScheduledShift, ScheduledShift> DataUpdater)
     {
       if (!TestD.ScheduledShiftDictionary.TryGetValue(targetDate, out IScheduledShift? scheduledShift) || scheduledShift is null)

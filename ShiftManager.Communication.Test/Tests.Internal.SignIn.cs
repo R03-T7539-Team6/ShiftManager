@@ -9,10 +9,6 @@ namespace ShiftManager.Communication.InternalApiTest
 {
   public class SignInTests
   {
-    [SetUp]
-    public void Setup()
-    {
-    }
     static IEnumerable SignInAsyncTest_TestCase
     {
       get
@@ -77,6 +73,18 @@ namespace ShiftManager.Communication.InternalApiTest
       }
     }
 
+    /*******************************************
+  * specification ;
+  * name = SignInAsyncTest ;
+  * Function = サインイン処理が正常に動作するかをテストする ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = テストケース ;
+  * output = テスト結果 ;
+  * end of specification ;
+  *******************************************/
     [TestCaseSource(nameof(SignInAsyncTest_TestCase))]
     public async Task<ApiResult> SignInAsyncTest(UserID userID, HashedPassword hashedPassword) => await new InternalApi().SignInAsync(userID, hashedPassword);
 
@@ -110,6 +118,18 @@ namespace ShiftManager.Communication.InternalApiTest
     /// <param name="userID">入力ID</param>
     /// <param name="rawPassword">入力パスワード</param>
     /// <returns>APIからの返り値</returns>
+    /*******************************************
+  * specification ;
+  * name = SignInAsyncTest_WithIDAndPassword ;
+  * Function = サインイン処理が正常に動作するかをテストする ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = テストケース(ユーザID文字列, 生パスワード) ;
+  * output = テスト結果 ;
+  * end of specification ;
+  *******************************************/
     [TestCaseSource(nameof(SignInAsyncTest_WithIDAndPassword_TestCase))]
     public async Task<ApiResult> SignInAsyncTest_WithIDAndPassword(string userID, string rawPassword)
     {

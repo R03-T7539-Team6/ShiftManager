@@ -15,7 +15,32 @@ namespace ShiftManager.Communication
   /// <summary>内部で使用するAPI</summary>
   public partial class RestApiBroker : IInternalApi_StoreData
   {
+    /*******************************************
+  * specification ;
+  * name = DeleteUserDataAsync ;
+  * Function = ユーザを削除します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 削除対象のUserID (インターフェイス経由のアクセス) ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult> DeleteUserDataAsync(IUserID userID) => DeleteUserDataAsync(new(userID));//NULLが渡されるとぶっ壊れるので注意
+
+    /*******************************************
+  * specification ;
+  * name = DeleteUserDataAsync ;
+  * Function = ユーザを削除します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 削除対象のUserID ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public async Task<ApiResult> DeleteUserDataAsync(UserID userID)
     {
       if (userID?.Value?.Length != 8)
@@ -29,6 +54,19 @@ namespace ShiftManager.Communication
       return new(result.StatusCode == HttpStatusCode.OK, ToApiRes(result.StatusCode));
     }
 
+
+    /*******************************************
+  * specification ;
+  * name = GenerateScheduledShiftAsync ;
+  * Function = 日付を指定して予定シフトを作成します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 作成する日付 ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public async Task<ApiResult<ScheduledShift>> GenerateScheduledShiftAsync(DateTime dateTime)
     {
       if (!IsLoggedIn || CurrentUserData is null)
@@ -46,7 +84,32 @@ namespace ShiftManager.Communication
       return new(res.IsSuccess, res.ResultCode, res.ReturnData?.ToScheduledShift());
     }
 
+    /*******************************************
+  * specification ;
+  * name = GenerateShiftRequestAsync ;
+  * Function = UserIDを指定してシフト希望ファイルを作成します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 作成するユーザのID (インターフェイス経由のアクセス) ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult<ShiftRequest>> GenerateShiftRequestAsync(IUserID userID) => GenerateShiftRequestAsync(new(userID));
+
+    /*******************************************
+  * specification ;
+  * name = GenerateShiftRequestAsync ;
+  * Function = UserIDを指定してシフト希望ファイルを作成します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 作成するユーザのID ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public async Task<ApiResult<ShiftRequest>> GenerateShiftRequestAsync(UserID userID)
     {
       if (!IsLoggedIn || CurrentUserData is null)
@@ -63,6 +126,18 @@ namespace ShiftManager.Communication
       return new(res.IsSuccess, res.ResultCode, res.ReturnData?.ToShiftRequest());
     }
 
+    /*******************************************
+  * specification ;
+  * name = GetAllShiftRequestAsync ;
+  * Function = 全ユーザのシフト希望を取得します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = N/A ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public async Task<ApiResult<ImmutableArray<ShiftRequest>>> GetAllShiftRequestAsync()
     {
       var res = await Api.GetDataAsync<RestStore>("/stores/0000");
@@ -73,6 +148,18 @@ namespace ShiftManager.Communication
       return new(true, res.ResultCode, res.ReturnData.shift_requests.Select(i => i.ToShiftRequest()).ToImmutableArray());
     }
 
+    /*******************************************
+  * specification ;
+  * name = GetAllUserAsync ;
+  * Function = 現在サインイン中のユーザが所属する店舗に所属する全従業員の情報を取得する ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input =  ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public async Task<ApiResult<ImmutableArray<UserData>>> GetAllUserAsync()
     {
       var res = await Api.GetDataAsync<RestUser[]>("/users");
@@ -83,9 +170,34 @@ namespace ShiftManager.Communication
 
       return new(res.IsSuccess, res.ResultCode, res.ReturnData.Select(i => i.ToUserData()).ToImmutableArray());
     }
+
+    /*******************************************
+  * specification ;
+  * name = GetIsScheduledShiftFinalVersionAsync ;
+  * Function = 指定日の予定シフトが確定済みかどうかを取得します ;
+  * note = v1.0では未対応 ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 確認する日付 ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult<bool>> GetIsScheduledShiftFinalVersionAsync(DateTime date)
       => throw new NotSupportedException();
 
+    /*******************************************
+  * specification ;
+  * name = GetScheduledShiftByDateAsync ;
+  * Function = 指定日の予定シフトを取得します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 取得する予定シフトの日付 ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public async Task<ApiResult<ScheduledShift>> GetScheduledShiftByDateAsync(DateTime dateTime)
     {
       var res = await Api.GetDataAsync<RestStore>("/stores/0000");
@@ -98,7 +210,32 @@ namespace ShiftManager.Communication
       return new(true, res.ResultCode, ret);
     }
 
+    /*******************************************
+  * specification ;
+  * name = GetShiftRequestByIDAsync ;
+  * Function = 指定ユーザの予定シフト情報を取得します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 取得するユーザのID (インターフェイス経由のアクセス) ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult<ShiftRequest>> GetShiftRequestByIDAsync(IUserID userID) => GetShiftRequestByIDAsync(new(userID));
+
+    /*******************************************
+  * specification ;
+  * name = GetShiftRequestByIDAsync ;
+  * Function = 指定ユーザの予定シフト情報を取得します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 取得するユーザのID ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public async Task<ApiResult<ShiftRequest>> GetShiftRequestByIDAsync(UserID userID)
     {
       var apires = await GetAllShiftRequestAsync();
@@ -112,7 +249,32 @@ namespace ShiftManager.Communication
       return new(true, ApiResultCodes.Success, res);
     }
 
+    /*******************************************
+  * specification ;
+  * name = GetByIDAsync ;
+  * Function = 指定ユーザのユーザ情報を取得します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 取得するユーザのID (インターフェイス経由のアクセス) ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult<UserData>> GetUserDataByIDAsync(IUserID userID) => GetUserDataByIDAsync(new(userID));
+
+    /*******************************************
+  * specification ;
+  * name = GetByIDAsync ;
+  * Function = 指定ユーザのユーザ情報を取得します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 取得するユーザのID ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult<UserData>> GetUserDataByIDAsync(UserID userID) => Task.Run<ApiResult<UserData>>(async () =>
     {
       if (userID.Value?.Length != 8)
@@ -125,12 +287,48 @@ namespace ShiftManager.Communication
       return new(true, ApiResultCodes.Success, result.ReturnData.ToUserData());
     });
 
+    /*******************************************
+  * specification ;
+  * name = GetUsersByUserGroupAsync ;
+  * Function = 指定のUserGroupに所属するユーザの情報を取得します ;
+  * note = v1.0では未対応 ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 条件とするUserGroup ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserGroupAsync(UserGroup userGroup = UserGroup.None)
       => throw new NotSupportedException();
 
+    /*******************************************
+  * specification ;
+  * name = GetUsersByUserStateAsync ;
+  * Function = 指定のUserStateに所属するのユーザ情報を取得します ;
+  * note = v1.0では未対応 ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 条件とするUserState ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserStateAsync(UserState userState = UserState.Normal)
       => throw new NotSupportedException();
 
+    /*******************************************
+  * specification ;
+  * name = SignUpAsync ;
+  * Function = 新規ユーザを追加します ;
+  * note = N/A ;
+  * date = 07/05/2021 ;
+  * author = 藤田一範 ;
+  * History = v1.0:新規作成 ;
+  * input = 追加するユーザのID ;
+  * output = 実行結果 ;
+  * end of specification ;
+  *******************************************/
     public async Task<ApiResult> SignUpAsync(IUserData userData)
     {
       var res = await Api.ExecuteWithDataAsync<RestUser, RestUser>("/signup", new RestUser().FromUserData(userData));

@@ -53,11 +53,11 @@ namespace ShiftManager.Pages
     /*******************************************
     * specification ;
     * name = SignInAsyncTest_WithIDAndPassword ;
-    * Function = ログインを試行する ;
-    * note = 補足説明 ;
+    * Function = ユーザID文字列と生パスワードを受け取り, サインインを試行する ;
+    * note = テストプロジェクトからコピーして利用 ;
     * date = 07/03/2021 ;
-    * author = 佐藤真通 ;
-    * History = 更新履歴 ;
+    * author = 藤田一範, 佐藤真通 ;
+    * History = v1.0:新規作成 ;
     * input = ユーザID、生パスワード ;
     * output = 試行結果 ;
     * end of specification ;

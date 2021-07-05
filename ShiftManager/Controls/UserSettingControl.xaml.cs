@@ -11,18 +11,6 @@ namespace ShiftManager.Controls
   /// <summary>
   /// Interaction logic for UserSettingControl.xaml
   /// </summary>
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public partial class UserSettingControl : UserControl
   {
     public event EventHandler SavePushed;
@@ -88,14 +76,14 @@ namespace ShiftManager.Controls
 
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = PasswordCoerceCallback ;
+* Function = パスワードの文字列長が制約にかからないかを確認します ;
+* note = 文字列長が長すぎる場合, 自動で制約の範囲内になるように文字列が削除されます ;
+* date = 06/23/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = UI要素インスタンス, 入力値 ;
+* output = 制約適用済みな入力値 ;
 * end of specification ;
 *******************************************/
     static object PasswordCoerceCallback(DependencyObject d, object baseValue)
@@ -108,14 +96,14 @@ namespace ShiftManager.Controls
 
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = UpdatePWBoxText ;
+* Function = パスワード表示用TextBoxの入力値をPasswordBoxに反映させます ;
+* note = 逆向きの更新は自動で行われるので大丈夫です ;
+* date = 06/23/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = PasswordBoxのインスタンス, TextBoxに入力されたパスワード ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
     static void UpdatePWBoxText(PasswordBox target, object newValue)
@@ -125,19 +113,20 @@ namespace ShiftManager.Controls
           target.Password = s;
     }
 
+    IUserData InitialUserData { get; set; }
+
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = SetData ;
+* Function = IUserData型インスタンスに記録されたデータをこのUIに反映させます ;
+* note = N/A ;
+* date = 06/23/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = 情報のソースとなるインスタンス ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
-    IUserData InitialUserData { get; set; }
     public void SetData(IUserData userData)
     {
       InitialUserData = userData;
@@ -152,14 +141,14 @@ namespace ShiftManager.Controls
 
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = UserSettingControl ;
+* Function = UserSettingControlのインスタンスを初期化します ;
+* note = ComboBoxの要素表示の設定もここで行っています ;
+* date = 07/03/2021 ;
+* author = 藤田一範, 佐藤真通 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
     public UserSettingControl()
@@ -186,14 +175,14 @@ namespace ShiftManager.Controls
 
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = PasswordBox_PasswordChanged ;
+* Function = PasswordBoxへの入力が更新された際に実行され, インスタンスのパスワード文字列記録を更新します ;
+* note = PasswordBox.PasswordChangedイベントをハンドリングしています ;
+* date = 06/24/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = 入力値更新があったPasswordBoxのインスタンス, イベントに関する情報 ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
     private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
@@ -202,7 +191,32 @@ namespace ShiftManager.Controls
         PasswordText = pb.Password;
     }
 
+    /*******************************************
+* specification ;
+* name = GeneratePW ;
+* Function = パスワード文字列を自動生成する処理を呼びます ;
+* note = ボタン押下イベントをハンドリングしています ;
+* date = 06/24/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = 入力のあったボタンのインスタンス, イベントに関する情報 ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void GeneratePW(object sender, RoutedEventArgs e) => GeneratePW();
+
+    /*******************************************
+* specification ;
+* name = GeneratePW ;
+* Function = パスワード文字列を自動生成します ;
+* note = パスワードは16文字のものが生成されます ;
+* date = 06/24/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void GeneratePW()
     {
       var r = new RNGCryptoServiceProvider();
@@ -239,14 +253,14 @@ namespace ShiftManager.Controls
 
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = PrintClicked ;
+* Function = 印刷ボタン押下時の処理が実行されます ;
+* note = v1.0現在未実装です ;
+* date = 06/23/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = 押下されたボタンのインスタンス, イベント情報 ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
     private void PrintClicked(object sender, RoutedEventArgs e)
@@ -254,12 +268,36 @@ namespace ShiftManager.Controls
       throw new NotImplementedException();
     }
 
+    /*******************************************
+* specification ;
+* name = DiscardChanges ;
+* Function = 変更を破棄するボタンが押下された際に実行され, ユーザへの確認ののち入力された変更を破棄します ;
+* note = 変更を破棄するボタンのClickイベントをハンドリングしています ;
+* date = 06/24/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = 押下されたボタンのインスタンス, イベント情報 ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void DiscardChanges(object sender, RoutedEventArgs e)
     {
       if (MessageBox.Show("変更内容が破棄されます.  よろしいですか?", "ShiftManager", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
         SetData(InitialUserData);
     }
 
+    /*******************************************
+* specification ;
+* name = SaveChanges ;
+* Function = 保存ボタンが押下された際に実行され, 変更を保存するボタンが押下されたことを通知するイベントを発火させます ;
+* note = 保存ボタンのClickイベントをハンドリングしています ;
+* date = 07/03/2021 ;
+* author = 藤田一範, 佐藤真通 ;
+* History = v1.0:新規作成 ;
+* input = 押下されたボタンのインスタンス, イベント情報 ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void SaveChanges(object sender, RoutedEventArgs e)
     {
       if (!string.IsNullOrWhiteSpace(PasswordText) && PWStrengthVisualizer.PasswordStrength < PasswordStrengthVisualizerControl.PWStrength_Least)

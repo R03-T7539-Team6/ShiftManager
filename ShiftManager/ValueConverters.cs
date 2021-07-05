@@ -8,18 +8,6 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager
 {
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public class IntEquallyCheckConverter : IValueConverter
   {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -36,18 +24,6 @@ namespace ShiftManager
   }
 
   //ref : https://oita.oika.me/2018/04/15/pilevalueconverter/
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public class ValueConverterGroup : IValueConverter
   {
     public List<IValueConverter> Converters { get; } = new();
@@ -67,18 +43,6 @@ namespace ShiftManager
     }
   }
 
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public class LinearColorChangeConverter : IValueConverter
   {
     public SolidColorBrush ColorFrom { get; set; }
@@ -105,18 +69,6 @@ namespace ShiftManager
     }
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
   }
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public class MultiDoubleValueMultiplConverter : IMultiValueConverter
   {
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
@@ -140,18 +92,6 @@ namespace ShiftManager
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
   }
 
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public class DateTimeTo24HOverStringConverter : IMultiValueConverter
   {
     public DateTime BaseDate { get; set; } //受け取ったデータをそのまま保管する=>ConvertBackで返す時のため
@@ -170,18 +110,6 @@ namespace ShiftManager
     /// <summary>DateTimeを24時以降も25時等と表記するタイプのstringに変換します</summary>
     /// <param name="value">表現する時間</param>
     /// <returns>HH:MM形式の文字列</returns>
-    /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
     public string Convert(in DateTime value)
     {
       int HH = value.Hour + (int)(value.Date - BaseDate.Date).TotalHours;
@@ -197,18 +125,6 @@ namespace ShiftManager
       return LastView;
     }
 
-    /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
     public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture) => new object[] { ConvertBack(value as string), BaseDate };
     /// <summary>25時以降が存在する時刻表現文字列をDateTimeに変換します</summary>
     /// <param name="value">変換する時刻表現(HH:MM)</param>
@@ -226,18 +142,6 @@ namespace ShiftManager
       return BaseDate.Date + new TimeSpan(v.HH, v.MM, 0);
     }
 
-    /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
     public static (int HH, int MM) HHMMStrToInt(in string value)
     {
       if (value is null)
@@ -269,18 +173,6 @@ namespace ShiftManager
     }
   }
 
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public class TimeSpanTo24HOverStringConverter : IValueConverter
   {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -298,18 +190,6 @@ namespace ShiftManager
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
   }
 
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public class UserIDToNameStringConverter : IMultiValueConverter
   {
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)

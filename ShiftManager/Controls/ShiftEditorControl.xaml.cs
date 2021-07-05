@@ -65,20 +65,34 @@ namespace ShiftManager.Controls
 
     static ShiftEditorControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(ShiftEditorControl), new FrameworkPropertyMetadata(typeof(ShiftEditorControl)));
 
-    public ShiftEditorControl() { }
-    public ShiftEditorControl(ISingleShiftData i) => SingleShiftData = i;
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = ShiftEditorControl ;
+* Function = コンストラクタです.  引数なしでインスタンスを生成できるようにするために置いています ;
+* note = N/A ;
+* date = 06/29/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
+    public ShiftEditorControl() { }
+
+    /*******************************************
+* specification ;
+* name = ShiftEditorControl ;
+* Function = コンストラクタです.  指定のインスタンスに含まれる情報を用いてインスタンスを初期化します ;
+* note = N/A ;
+* date = 06/29/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = 情報源となるインスタンス ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
+    public ShiftEditorControl(ISingleShiftData i) => SingleShiftData = i;
+
     public ISingleShiftData SingleShiftData
     {
       get => new SingleShiftData(this);
@@ -96,14 +110,14 @@ namespace ShiftManager.Controls
 
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = BreakTimePopupOpenButtonClicked ;
+* Function = 休憩情報表示ポップアップを表示します. ;
+* note = 休憩時間表示ボタン押下時に実行されます ;
+* date = 07/03/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
     private void BreakTimePopupOpenButtonClicked()
@@ -114,10 +128,47 @@ namespace ShiftManager.Controls
       BreakTimePopupState //表示 == TRUEにするのは, 
         = VisibleElements.HasFlag(ShiftEditorElements.BreakTime); //休憩時間コントロールが可視状態である場合のみ
     }
+
+    /*******************************************
+* specification ;
+* name = DeleteButtinClicked ;
+* Function = 情報削除ボタン押下時に実行され, シフト情報を初期化します ;
+* note = N/A ;
+* date = 07/03/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void DeleteButtonClicked() => SingleShiftData = new SingleShiftData(null);
 
+    /*******************************************
+* specification ;
+* name = ChangeWorkTimeLen ;
+* Function = 勤務時間長を更新します ;
+* note = 退勤時間から出勤時間を引いているだけです ;
+* date = 07/03/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void ChangeWorkTimeLen() => WorkTimeLength = LeavingTime - AttendanceTime;
 
+    /*******************************************
+* specification ;
+* name = OnWorkTimeLenChanged ;
+* Function = 勤務時間長が更新された際に実行されます.  勤務時間長が負の値になった際に赤字にする機能が含まれます ;
+* note = N/A ;
+* date = 07/03/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void OnWorkTimeLenChanged()
     {
       if (WorkTimeLength != (LeavingTime - AttendanceTime))

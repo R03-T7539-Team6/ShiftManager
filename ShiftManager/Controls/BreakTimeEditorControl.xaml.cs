@@ -10,18 +10,6 @@ using System.Windows.Input;
 
 namespace ShiftManager.Controls
 {
-  /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
   public class BreakTimeEditorControl : Control, INotifyPropertyChanged
   {
     public event PropertyChangedEventHandler PropertyChanged;
@@ -40,18 +28,6 @@ namespace ShiftManager.Controls
     public ObservableCollection<BreakTimeDataSource> BreakTimeList { get => (ObservableCollection<BreakTimeDataSource>)GetValue(BreakTimeListProperty); set => SetValue(BreakTimeListProperty, value); }
     public static readonly DependencyProperty BreakTimeListProperty = DependencyProperty.Register(nameof(BreakTimeList), typeof(ObservableCollection<BreakTimeDataSource>), typeof(BreakTimeEditorControl));
 
-    /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
     public string SelectionText
     {
       get => _SelectionText;
@@ -65,16 +41,19 @@ namespace ShiftManager.Controls
 
     private BreakTimeDataSource LastSelectionTextObject;
 
+    /// <summary>休憩リスト表示の行選択が変更された際に, SelectionTextを更新したり, 削除のために選択中要素情報を更新します.</summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = OnSelectionChanged ;
+* Function = 休憩リスト表示の行選択が変更された際に, SelectionTextを更新したり, 削除のために選択中要素情報を更新します. ;
+* note = ListView.SelectionChangedイベントのイベントハンドラです ;
+* date = 06/30/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = TargetのListView, イベント発火の状況 ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
     private void _OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -118,16 +97,19 @@ namespace ShiftManager.Controls
       }
     }
 
+    /// <summary>最後に選択された休憩情報UI要素に関するテキストを, SelectionTextにセットします</summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = LastSelectionTextObject_PropertyChanged ;
+* Function = 最後に選択された休憩情報UI要素に関するテキストをSelectionTextにセットする ;
+* note = 主に削除が行われた後等に実行されます ;
+* date = 07/03/2021 ;
+* author = 藤田一範 ;
+* History = v1.0新規作成 ;
+* input = イベント発行者 ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
     private void LastSelectionTextObject_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -136,8 +118,32 @@ namespace ShiftManager.Controls
         SelectionText = $"[{newV.Index + 1:D2}/{BreakTimeDictionary.Count:D2}] {newV.StartTime:HH:mm} ~ {newV.EndTime:HH:mm}";
     }
 
+    /*******************************************
+* specification ;
+* name = BreakTimeEditorControl ;
+* Function = デフォルトスタイルを変更する ;
+* note = プロセスで初めて使用された際の1度のみ呼び出される ;
+* date = 06/29/2021 ;
+* author = 藤田一範 ;
+* History = v1.0新規作成 ;
+* input = N/A ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     static BreakTimeEditorControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(BreakTimeEditorControl), new FrameworkPropertyMetadata(typeof(BreakTimeEditorControl)));
 
+    /*******************************************
+* specification ;
+* name = OnApplyTemplate ;
+* Function = テンプレート反映後に実行され, BreakTimeListViewのインスタンスを取得する ;
+* note = N/A ;
+* date = 06/30/2021 ;
+* author = 藤田一範 ;
+* History = v1.0新規作成 ;
+* input = N/A ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     public override void OnApplyTemplate()
     {
       base.OnApplyTemplate();
@@ -148,14 +154,14 @@ namespace ShiftManager.Controls
 
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = BreakTimeDictionaryUpdated ;
+* Function = 休憩時間情報のソースとなるインスタンスが変更された際に, ListViewの表示も変更する ;
+* note = N/A ;
+* date = 07/4/2021 ;
+* author = 藤田一範 ;
+* History = v1.0新規作成 ;
+* input = N/A ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
     private void BreakTimeDictionaryUpdated()
@@ -165,6 +171,18 @@ namespace ShiftManager.Controls
         BreakTimeList.Add(new(i, BreakTimeDictionary, TargetDate));
     }
 
+    /*******************************************
+* specification ;
+* name = AddBreakTime ;
+* Function = 休憩情報追加ボタン押下時に呼ばれ, 休憩情報を追加する ;
+* note = N/A ;
+* date = 07/4/2021 ;
+* author = 藤田一範 ;
+* History = v1.0新規作成 ;
+* input = N/A ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     private void AddBreakTime()
     {
       BreakTimeDictionary ??= new(); //BreakTimeDicがNULLなら, 新規インスタンスを割り当てる
@@ -180,14 +198,14 @@ namespace ShiftManager.Controls
 
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = RemoveBreakTIme ;
+* Function = 休憩情報削除ボタン押下時に呼ばれ, 選択された休憩情報を削除する ;
+* note = N/A ;
+* date = 06/30/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
     private void RemoveBreakTime()
@@ -214,18 +232,31 @@ namespace ShiftManager.Controls
 
     /*******************************************
 * specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
+* name = OnPropertyChanged ;
+* Function = PropertyChangedイベントを発行するためのメソッド ;
+* note = N/A ;
+* date = 06/30/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = プロパティ名 ;
+* output = N/A ;
 * end of specification ;
 *******************************************/
     private void OnPropertyChanged(in string propName) => PropertyChanged?.Invoke(this, new(propName));
     public Dictionary<DateTime, int> BreakTimeDictionary { get; }
+
+    /*******************************************
+* specification ;
+* name = BreakTimeDataSource ;
+* Function = 引数で指定された情報を用いてインスタンスを初期化する ;
+* note = N/A ;
+* date = 07/03/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = 設定するプロパティ ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     public BreakTimeDataSource(in KeyValuePair<DateTime, int> keyValuePair, in Dictionary<DateTime, int> breakTimeDic, in DateTime baseDate)
     {
       BreakTimeDictionary = breakTimeDic;
@@ -250,24 +281,24 @@ namespace ShiftManager.Controls
       }
     }
 
+    /*******************************************
+* specification ;
+* name = UpdateIndex ;
+* Function = 要素の削除等によりIndexの変更が必要になった際に, Index情報を修正する ;
+* note = N/A ;
+* date = 06/30/2021 ;
+* author = 藤田一範 ;
+* History = v1.0:新規作成 ;
+* input = N/A ;
+* output = N/A ;
+* end of specification ;
+*******************************************/
     public void UpdateIndex() => Index = BreakTimeDictionary.Keys.ToList().IndexOf(StartTime);
 
     private Dictionary<string, List<string>> ErrorsDic = new() { { nameof(StartTime), new() } };
     public IEnumerable GetErrors(string propertyName) => ErrorsDic[propertyName];
 
     private int _Index;
-    /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
     public int Index
     {
       get => _Index;
@@ -280,18 +311,6 @@ namespace ShiftManager.Controls
 
     const string SAME_DATE_ERROR = "Error: Same Date is already existing";
     private DateTime _StartTime;
-    /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
     public DateTime StartTime
     {
       get => _StartTime;
@@ -332,18 +351,6 @@ namespace ShiftManager.Controls
     }
 
     private DateTime _EndTime;
-    /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
     public DateTime EndTime
     {
       get => _EndTime;
@@ -360,18 +367,6 @@ namespace ShiftManager.Controls
     }
 
     private TimeSpan _TimeLen;
-    /*******************************************
-* specification ;
-* name = メソッド名 ;
-* Function = メソッドの説明 ;
-* note = 補足説明 ;
-* date = 最終更新(MM/DD/YYYY) ;
-* author = 作成者 ;
-* History = 更新履歴 ;
-* input = 入力 ;
-* output = 出力 ;
-* end of specification ;
-*******************************************/
     public TimeSpan TimeLen
     {
       get => _TimeLen;
