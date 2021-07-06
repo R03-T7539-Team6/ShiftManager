@@ -6,11 +6,12 @@ using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Authenticators;
 
-
 namespace ShiftManager.Communication
 {
   public class RestAPI
   {
+    public event EventHandler? UnauthorizedDetected;
+
     /// <summary>現在使用しているトークン</summary>
     public string Token { get; set; } = string.Empty;
 
@@ -46,13 +47,13 @@ namespace ShiftManager.Communication
     /// <param name="data">送るデータ</param>
     /// <param name="reqType">リクエストタイプ</param>
     /// <returns>レスポンスの情報, 受け取ったデータ</returns>
-    public async Task<(IRestResponse res, TResult? content)> ExecuteWithDataAsync<TPost, TResult>(string path, TPost data, Method reqType = Method.POST)
+    public async Task<ServerResponse<TResult>> ExecuteWithDataAsync<TPost, TResult>(string path, TPost data, Method reqType = Method.POST)
       where TPost : class
       where TResult : class
     {
       var result = await ExecuteWithDataAsync(path, data, reqType);
 
-      return (result, FromJson<TResult>(result.Content));
+      return new(result.Response, FromJson<TResult>(result.Response.Content));
     }
 
     /// <summary>サーバにリクエストを打ちます</summary>
@@ -61,19 +62,26 @@ namespace ShiftManager.Communication
     /// <param name="data">送るデータ</param>
     /// <param name="reqType">リクエストタイプ</param>
     /// <returns>レスポンスの情報</returns>
-    public async Task<IRestResponse> ExecuteWithDataAsync<T>(string path, T data, Method reqType = Method.POST) where T : class
+    public async Task<ServerResponse> ExecuteWithDataAsync<T>(string path, T data, Method reqType = Method.POST) where T : class
       => await ExecuteAsync(new RestRequest(path, reqType).AddParameter(application_json, ToJson(data), ParameterType.RequestBody));
     
+    public async Task<ServerResponse<TRes>> ExecuteAsync<TRes>(string path, Method reqType = Method.GET) where TRes : class
+    {
+      var res = await ExecuteAsync(path, reqType);
+
+      return new(res.Response, FromJson<TRes>(res.Response.Content));
+    }
+
     /// <summary>サーバにリクエストを打ちます</summary>
     /// <param name="path">エンドポイント</param>
     /// <param name="reqType">リクエストタイプ</param>
     /// <returns>レスポンスの情報</returns>
-    public Task<IRestResponse> ExecuteAsync(string path, Method reqType = Method.GET) => ExecuteAsync(new RestRequest(path, reqType));
+    public Task<ServerResponse> ExecuteAsync(string path, Method reqType = Method.GET) => ExecuteAsync(new RestRequest(path, reqType));
 
     /// <summary>サーバにリクエストを打ちます</summary>
     /// <param name="request">リクエストの情報</param>
     /// <returns>レスポンスの情報</returns>
-    public async Task<IRestResponse> ExecuteAsync(IRestRequest request)
+    public async Task<ServerResponse> ExecuteAsync(IRestRequest request)
     {
       RestClient client = new(TargetURL);
       client.Timeout = TimeOut;
@@ -84,8 +92,14 @@ namespace ShiftManager.Communication
       request.AddHeader("Content-Type", "application/json");
 
       var res = await client.ExecuteAsync(request);
-      
-      return res;
+
+      if (res.StatusCode == System.Net.HttpStatusCode.Unauthorized && !string.IsNullOrWhiteSpace(Token))
+      {
+        Token = string.Empty; //未認証状態を受け取ったらトークンを削除する
+        UnauthorizedDetected?.Invoke(this, EventArgs.Empty);
+      }
+
+      return new(res);
     }
   }
 }
