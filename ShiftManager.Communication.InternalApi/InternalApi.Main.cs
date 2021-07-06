@@ -2,7 +2,7 @@
 
 using ShiftManager.DataClasses;
 
-[assembly: InternalsVisibleTo("ShiftManager.Communication.Test")]
+[assembly: InternalsVisibleTo("ShiftManager.Communication.InternalApi.Test")]
 
 namespace ShiftManager.Communication
 {

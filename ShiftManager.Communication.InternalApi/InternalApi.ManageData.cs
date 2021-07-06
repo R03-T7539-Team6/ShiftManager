@@ -3,13 +3,6 @@ using System.Threading.Tasks;
 
 namespace ShiftManager.Communication
 {
-  public interface InternalApi_ManageData
-  {
-    Task<ApiResult<ImmutableDictionary<string, ImmutableArray<string>>>> GetDataListAsync();
-    Task<ApiResult<T>> DownloadDataAsync<T>(string Category, string DataName);
-    Task<ApiResult> UploadDataAsync<T>(string Category, string DataName, T Data);
-  }
-
   public partial class InternalApi : InternalApi_ManageData
   {
     /*******************************************

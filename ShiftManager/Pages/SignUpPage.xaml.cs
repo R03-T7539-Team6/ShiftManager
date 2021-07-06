@@ -55,7 +55,7 @@ namespace ShiftManager.Pages
         string rawPassword = USC.PasswordText;
         string Salt = "eiofjrueahrgheirugha";//Base64
         int StretchCount = 33;//適当な数字
-        HashedPassword Hash = InternalApi.HashedPasswordGetter(rawPassword, new HashedPassword(string.Empty, Salt, StretchCount));
+        HashedPassword Hash = HashedPasswordGetter.Get(rawPassword, new HashedPassword(string.Empty, Salt, StretchCount));
         WorkLog wl = new(userID, new());
         UserData userData = new(userID, Hash, new NameData(USC.FirstNameText, USC.LastNameText), ApiHolder.CurrentStoreID, USC.SelectedUserGroup, USC.SelectedUserState, wl, new UserSetting(userID, NotificationPublishTimings.None, new()));
         ApiHolder.Api.SignUpAsync(userData);

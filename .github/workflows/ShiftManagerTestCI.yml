@@ -1,4 +1,4 @@
-name: ShiftManager.Communication.Test (on Ubuntu)
+name: Test (on Ubuntu)
 
 on:
   push:
@@ -9,6 +9,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        test-projects:
+          [
+            ShiftManager.Communication.InternalApi.Test,
+            ShiftManager.Communication.RestApiBroker.Test,
+          ]
 
     steps:
       - name: Checkout
@@ -22,4 +30,4 @@ jobs:
           dotnet-version: 5.0.x
 
       - name: Execute unit tests
-        run: dotnet test ShiftManager.Communication.Test
+        run: dotnet test ${{ matrix.test-projects }}

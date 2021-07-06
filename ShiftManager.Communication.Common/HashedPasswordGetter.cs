@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
@@ -7,12 +6,7 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
-  public interface IInternalApi_Password
-  {
-    Task<ApiResult<HashedPassword>> GetPasswordHashingDataAsync(IUserID userID);
-  }
-
-  public partial class InternalApi : IInternalApi_Password
+  static public class HashedPasswordGetter
   {
     const int HASH_SIZE = 64;
 
@@ -33,7 +27,7 @@ namespace ShiftManager.Communication
   * output = ハッシュ化パスワードおよびソルト, ストレッチ回数 ;
   * end of specification ;
   *******************************************/
-    static public HashedPassword HashedPasswordGetter(in string rawPassword, in IHashedPassword hashedPasswordInfo)
+    static public HashedPassword Get(in string rawPassword, in IHashedPassword hashedPasswordInfo)
     {
       if (hashedPasswordInfo is null)
         return new(string.Empty, string.Empty, 0);//nullなら計算するまでもなく無効値を返す
@@ -50,28 +44,5 @@ namespace ShiftManager.Communication
       };
     }
 
-
-    /// <summary>パスワードのハッシュ化に必要な情報を取得します</summary>
-    /// <param name="userID">ユーザID</param>
-    /// <returns>パスワードのハッシュ化に必要な情報</returns>
-    /*******************************************
-  * specification ;
-  * name = GetPasswordHashingDataAsync ;
-  * Function = サーバよりパスワードのハッシュ化に必要なデータの取得を試行する ;
-  * note = N/A ;
-  * date = 07/05/2021 ;
-  * author = 藤田一範 ;
-  * History = v1.0:新規作成 ;
-  * input = ユーザID ;
-  * output = 実行結果 ;
-  * end of specification ;
-  *******************************************/
-    public Task<ApiResult<HashedPassword>> GetPasswordHashingDataAsync(IUserID userID) => Task.Run<ApiResult<HashedPassword>>(() =>
-    {
-      if (!TestD.UserDataDictionary.TryGetValue(new(userID), out IUserData? userD) || userD is null)
-        return new(false, ApiResultCodes.UserID_Not_Found, null);
-      else
-        return new(true, ApiResultCodes.Success, new HashedPassword(userD.HashedPassword) with { Hash = string.Empty });
-    });
   }
 }

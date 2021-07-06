@@ -7,14 +7,6 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
-  public interface InternalApi_ScheduledShift
-  {
-    Task<ApiResult<SingleShiftData>> GetScheduledShiftByIDAsync(DateTime targetDate, IUserID userID);
-    Task<ApiResult> UpdateShiftSchedulingStateAsync(DateTime targetDate, ShiftSchedulingState shiftSchedulingState);
-    Task<ApiResult> UpdateSingleScheduledShiftListAsync(DateTime targetDate, IReadOnlyCollection<ISingleShiftData> singleShiftDatas);
-    Task<ApiResult> UpdateRequiredWorkerCountListAsync(DateTime targetDate, IReadOnlyCollection<int> singleShiftDatas);
-  }
-
   public partial class InternalApi : InternalApi_ScheduledShift
   {
     /// <summary>指定日の予定シフトを, ユーザID指定で取得します</summary>
