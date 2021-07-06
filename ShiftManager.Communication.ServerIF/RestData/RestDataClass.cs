@@ -75,4 +75,9 @@ namespace ShiftManager.Communication.RestData
     public DateTime? start_break_time { get; set; }
     public DateTime? end_break_time { get; set; }
   }
+
+  public class RestTokenResponse
+  {
+    public string token { get; set; } = string.Empty;
+  }
 }
