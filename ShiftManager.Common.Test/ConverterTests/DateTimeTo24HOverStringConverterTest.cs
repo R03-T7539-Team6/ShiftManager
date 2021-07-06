@@ -7,7 +7,7 @@ namespace ShiftManager.Test
 {
   public class DateTimeTo24HOverStringConverterTests
   {
-    DateTimeTo24HOverStringConverter target { get; } = new();
+    DateTimeTo24HOverStringConverterBase target { get; } = new();
 
     public static IEnumerable Convert_TestCases
     {

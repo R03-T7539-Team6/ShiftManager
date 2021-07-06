@@ -14,6 +14,7 @@ jobs:
       matrix:
         test-projects:
           [
+            ShiftManager.Common.Test,
             ShiftManager.Communication.InternalApi.Test,
             ShiftManager.Communication.RestApiBroker.Test,
           ]
