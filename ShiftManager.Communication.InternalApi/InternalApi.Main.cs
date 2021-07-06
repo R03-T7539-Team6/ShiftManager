@@ -6,7 +6,7 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
-  public partial class InternalApi
+  public partial class InternalApi : IApi
   {
     public IUserData? CurrentUserData { get; private set; } = null;
 
