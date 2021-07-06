@@ -17,7 +17,7 @@ namespace ShiftManager
   /// </summary>
   public partial class MainWindow : Window, IContainsApiHolder
   {
-    public IApiHolder ApiHolder { get; set; } = new ApiHolder();
+    public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.RestApiBroker() };
     private MainWindowViewModel MWVM { get; }
 
     /*******************************************

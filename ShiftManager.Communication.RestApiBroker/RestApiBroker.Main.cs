@@ -14,7 +14,7 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
-  public partial class RestApiBroker
+  public partial class RestApiBroker : IApi
   {
     internal RemoteApi Api { get; } = new();
     public IUserData? CurrentUserData { get; private set; } = null;

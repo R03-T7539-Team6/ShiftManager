@@ -7,6 +7,9 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
+  public interface IApi : InternalApi_ManageData, InternalApi_ScheduledShift, InternalApi_ShiftRequest, InternalApi_WorkLog, IInternalApi_SignIn, IInternalApi_StoreData, IInternalApi_UserData, IInternalApi_Password
+  { }
+
   public interface InternalApi_ManageData
   {
     Task<ApiResult<ImmutableDictionary<string, ImmutableArray<string>>>> GetDataListAsync();
