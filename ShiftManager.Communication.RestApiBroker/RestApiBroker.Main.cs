@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
@@ -7,6 +8,8 @@ using RestSharp;
 using RestSharp.Authenticators;
 
 using ShiftManager.DataClasses;
+
+[assembly: InternalsVisibleTo("ShiftManager.Communication.RestApiBroker.Test")]
 
 
 namespace ShiftManager.Communication

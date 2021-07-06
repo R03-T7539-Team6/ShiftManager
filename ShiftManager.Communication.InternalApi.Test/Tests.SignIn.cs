@@ -150,7 +150,7 @@ namespace ShiftManager.Communication.InternalApiTest
       //ハッシュ化用情報を取得できていた場合のみ, 次に進みます
 
       //生パスワードを, ハッシュ化するために必要な情報と一緒にHashedPasswordGetterに投げます
-      HashedPassword hashedPassword = InternalApi.HashedPasswordGetter(rawPassword, passwordHashingDataRequestResult.ReturnData);
+      HashedPassword hashedPassword = HashedPasswordGetter.Get(rawPassword, passwordHashingDataRequestResult.ReturnData);
 
       //ハッシュ化パスワードとともに, サインインを試行します
       //API側で削られる情報ではありますが, 念のためSaltとStretchCountの情報は削除しておきましょう.  削除せずに渡しても動作に問題はありません.
