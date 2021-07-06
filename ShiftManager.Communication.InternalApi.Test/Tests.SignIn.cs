@@ -9,7 +9,14 @@ namespace ShiftManager.Communication.InternalApiTest
 {
   public class SignInTests
   {
-    static IEnumerable SignInAsyncTest_TestCase
+    const string Category_VALID = "Valid Input";
+    const string Category_INVALID = "Invalid Input";
+    const string Category_NULL_Input = "Null Input";
+    const string Category_Empty_Input = "Empty Input";
+    const string Category_WhiteSpace_Input = "WhiteSpace Input";
+    const string Category_ZenkakuWhiteSpace_Input = "Zenkaku WhiteSpace Input";
+
+    static public IEnumerable SignInAsyncTest_TestCase
     {
       get
       {
@@ -19,56 +26,56 @@ namespace ShiftManager.Communication.InternalApiTest
           //HashedPasswordについて, SaltとStretchCountの値は何でも構いません.
           //APIは当該フィールドを読み取りませんが, 念のため無意味なデータに置換してAPIに渡すことをお勧めします
           new HashedPassword("xMIjIuiIPYrmBoQqskJHHYlL2hc0TvKsdjbifXICxPzvUkh5/weTbWCoFECQabYZeVP+awQ9Cv+txfWzLtFxQQ==", string.Empty, 0)
-        ).Returns(new ApiResult(true, ApiResultCodes.Success)).SetName(nameof(SignInAsyncTest) + " : Valid UserData (ID0001)");
+        ).Returns(new ApiResult(true, ApiResultCodes.Success)).SetCategory(Category_VALID);
 
         yield return new TestCaseData(
           new UserID("ID0002"),
           new HashedPassword("bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==", string.Empty, 0)
-        ).Returns(new ApiResult(true, ApiResultCodes.Success)).SetName(nameof(SignInAsyncTest) + " : Valid UserData (ID0002)");
+        ).Returns(new ApiResult(true, ApiResultCodes.Success)).SetCategory(Category_VALID);
 
         /**********************************************************************/
         //Invalid Input Test
         yield return new TestCaseData(
           new UserID("INVALID_USER_ID"),
           new HashedPassword("bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==", string.Empty, 0)
-        ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName(nameof(SignInAsyncTest) + " : Invalid UserID");
+        ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_INVALID);
 
         yield return new TestCaseData(
           new UserID("ID0001"),
           new HashedPassword("bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==", string.Empty, 0)
-        ).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetName(nameof(SignInAsyncTest) + " : Invalid Password Hash");
+        ).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetCategory(Category_INVALID);
 
 
         //空白やNULL, EmptyなID/ハッシュが渡された場合は, 通信せずにエラーを返します
         yield return new TestCaseData(
           new UserID((string)null),
           new HashedPassword("bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==", string.Empty, 0)
-        ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName(nameof(SignInAsyncTest) + " : Invalid UserID (UserID string is NULL)");
+        ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_NULL_Input);
 
         yield return new TestCaseData(
           new UserID("ID0001"),
           new HashedPassword(null, string.Empty, 0)
-        ).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetName(nameof(SignInAsyncTest) + " : Invalid Password Hash (Password Hash is NULL)");
+        ).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetCategory(Category_NULL_Input);
 
         yield return new TestCaseData(
           new UserID(string.Empty),
           new HashedPassword("bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==", string.Empty, 0)
-        ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName(nameof(SignInAsyncTest) + " : Invalid UserID (UserID string is Empty String)");
+        ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_Empty_Input);
 
         yield return new TestCaseData(
           new UserID("ID0001"),
           new HashedPassword(string.Empty, string.Empty, 0)
-        ).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetName(nameof(SignInAsyncTest) + " : Invalid Password Hash (Password Hash is Empty String)");
+        ).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetCategory(Category_Empty_Input);
 
         yield return new TestCaseData(
           new UserID("           "),
           new HashedPassword("bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==", string.Empty, 0)
-        ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName(nameof(SignInAsyncTest) + " : Invalid UserID (UserID string contains Only WhiteSpace(Hankaku))");
+        ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_WhiteSpace_Input);
 
         yield return new TestCaseData(
           new UserID("　　　　　"),
           new HashedPassword("bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==", string.Empty, 0)
-        ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName(nameof(SignInAsyncTest) + " : Invalid UserID (UserID string contains Only WhiteSpace(Zenkaku))");
+        ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_ZenkakuWhiteSpace_Input);
 
       }
     }
@@ -94,23 +101,23 @@ namespace ShiftManager.Communication.InternalApiTest
     {
       get
       {
-        yield return new TestCaseData("ID0001", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(true, ApiResultCodes.Success)).SetName("SignIn-ID/PW (Valid ID/PW) (ID0001)");
-        yield return new TestCaseData("ID0002", "i1KgfuhDy41yGy8x").Returns(new ApiResult(true, ApiResultCodes.Success)).SetName("SignIn-ID/PW (Valid ID/PW) (ID0002)");
+        yield return new TestCaseData("ID0001", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(true, ApiResultCodes.Success)).SetCategory(Category_VALID);
+        yield return new TestCaseData("ID0002", "i1KgfuhDy41yGy8x").Returns(new ApiResult(true, ApiResultCodes.Success)).SetCategory(Category_VALID);
 
         /**********************************************************************/
         //Invalid Input Tests
-        yield return new TestCaseData("INVALID_ID", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName("SignIn-ID/PW (ID is Inalid)");
-        yield return new TestCaseData("ID0002", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetName("SignIn-ID/PW (PW is Inalid)");
+        yield return new TestCaseData("INVALID_ID", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_INVALID);
+        yield return new TestCaseData("ID0002", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetCategory(Category_INVALID);
 
-        yield return new TestCaseData(null, "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName("SignIn-ID/PW (ID is NULL)");
-        yield return new TestCaseData("ID0002", null).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetName("SignIn-ID/PW (PW is NULL)");
-        yield return new TestCaseData(string.Empty, "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName("SignIn-ID/PW (ID is Empty)");
-        yield return new TestCaseData("ID0002", string.Empty).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetName("SignIn-ID/PW (PW is Empty)");
+        yield return new TestCaseData(null, "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_NULL_Input);
+        yield return new TestCaseData("ID0002", null).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetCategory(Category_NULL_Input);
+        yield return new TestCaseData(string.Empty, "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_Empty_Input);
+        yield return new TestCaseData("ID0002", string.Empty).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetCategory(Category_Empty_Input);
 
-        yield return new TestCaseData("              ", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName("SignIn-ID/PW (ID is WhiteSpace(Hankaku))");
-        yield return new TestCaseData("ID0002", "              ").Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetName("SignIn-ID/PW (PW is WhiteSpace(Hankaku))");
-        yield return new TestCaseData("　　　　　　　　　　　　", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetName("SignIn-ID/PW (ID is WhiteSpace(Zenkaku))");
-        yield return new TestCaseData("ID0002", "　　　　　　　　　　").Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetName("SignIn-ID/PW (PW is WhiteSpace(Zenkaku))");
+        yield return new TestCaseData("              ", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_WhiteSpace_Input);
+        yield return new TestCaseData("ID0002", "              ").Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetCategory(Category_WhiteSpace_Input);
+        yield return new TestCaseData("　　　　　　　　　　　　", "HWRnwOCy4HMiGPTA").Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_ZenkakuWhiteSpace_Input);
+        yield return new TestCaseData("ID0002", "　　　　　　　　　　").Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetCategory(Category_ZenkakuWhiteSpace_Input);
       }
     }
 
