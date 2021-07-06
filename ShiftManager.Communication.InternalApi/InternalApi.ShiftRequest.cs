@@ -5,14 +5,6 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
-  public interface InternalApi_ShiftRequest
-  {
-    ApiResult AddShiftRequest(ISingleShiftData singleShiftData);
-    Task<ApiResult> AddShiftRequestAsync(ISingleShiftData singleShiftData);
-    Task<ApiResult<SingleShiftData>> GetShiftRequestByDateAsync(DateTime date);
-    Task<ApiResult> UpdateShiftRequestAsync(ISingleShiftData singleShiftData);
-  }
-
   public partial class InternalApi : InternalApi_ShiftRequest
   {
     /// <summary>シフト希望を追加します  初めての追加の場合は, コレクションにユーザのデータが生成されたうえで追加されます</summary>

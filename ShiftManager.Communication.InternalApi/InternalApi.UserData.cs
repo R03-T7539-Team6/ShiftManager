@@ -4,15 +4,6 @@ using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
-  public interface IInternalApi_UserData
-  {
-    Task<ApiResult> UpdatePasswordAsync(IHashedPassword hashedPassword);
-    Task<ApiResult> UpdatePasswordAsync(IUserID userID, INameData nameData, IHashedPassword hashedPassword);
-
-    Task<ApiResult<WorkLog>> GetWorkLogAsync();
-    Task<ApiResult<UserSetting>> GetUserSettingAsync();
-  }
-
   public partial class InternalApi : IInternalApi_UserData
   {
     /*******************************************

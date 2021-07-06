@@ -107,7 +107,7 @@ namespace ShiftManager.Communication.InternalApiTest
   * end of specification ;
   *******************************************/
     private void PasswordHashingTest(string rawPW, IHashedPassword hashedPassword, string expected)
-      => Assert.AreEqual(expected, InternalApi.HashedPasswordGetter(rawPW, hashedPassword).Hash);
+      => Assert.AreEqual(expected, HashedPasswordGetter.Get(rawPW, hashedPassword).Hash);
     #endregion
 
     #region GetPasswordHashingDataAsync

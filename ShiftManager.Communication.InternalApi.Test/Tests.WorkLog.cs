@@ -71,7 +71,7 @@ namespace ShiftManager.Communication.InternalApiTest
   *******************************************/
     [TestCaseSource(nameof(GetBreakTimeLengthTest_TestCases))]
     public int GetBreakTimeLengthTest(in DateTime start, in DateTime end)
-      => InternalApi.GetBreakTimeLength(start, end);
+      => SharedFuncs.GetBreakTimeLength(start, end);
 
     public class CurrentTimeMock : ICurrentTimeProvider
     {
