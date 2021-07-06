@@ -11,7 +11,7 @@
     <PackageReference Include="RestSharp.Serializers.NewtonsoftJson" Version="106.11.7" />
     <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
     <PackageReference Include="System.Runtime.Caching" Version="5.0.0" />
-    <ProjectReference Include="..\ShiftManager.Communication.Shared\ShiftManager.Communication.Shared.csproj" />
+    <ProjectReference Include="..\ShiftManager.Communication.Common\ShiftManager.Communication.Common.csproj" />
     <ProjectReference Include="..\ShiftManager.DataClasses\ShiftManager.DataClasses.csproj" />
   </ItemGroup>
 

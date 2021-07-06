@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator\RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\ShiftManager.Communication.Common\ShiftManager.Communication.Common.csproj" />
     <ProjectReference Include="..\ShiftManager.Communication.InternalApi\ShiftManager.Communication.InternalApi.csproj" />
     <ProjectReference Include="..\ShiftManager.Communication.RestApiBroker\ShiftManager.Communication.RestApiBroker.csproj" />
     <ProjectReference Include="..\ShiftManager.DataClasses\ShiftManager.DataClasses.csproj" />

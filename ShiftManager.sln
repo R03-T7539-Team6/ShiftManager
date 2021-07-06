@@ -26,7 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.Communication.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.Communication.RestApiBroker.Test", "ShiftManager.Communication.RestApiBroker.Test\ShiftManager.Communication.RestApiBroker.Test.csproj", "{6B2AA7E2-4852-401B-9546-00FC526D9645}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShiftManager.Communication.Shared", "ShiftManager.Communication.Shared\ShiftManager.Communication.Shared.csproj", "{76A6183C-665A-4166-AD1F-4A2B28166AD3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShiftManager.Communication.Common", "ShiftManager.Communication.Common\ShiftManager.Communication.Common.csproj", "{76A6183C-665A-4166-AD1F-4A2B28166AD3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
