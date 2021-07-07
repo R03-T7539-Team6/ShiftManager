@@ -105,6 +105,10 @@
     /// <summary>許可されていない操作 (権限不足)</summary>
     Not_Allowed_Control,
 
+    Request_Time_Out,
+
+    Delete_Success,
+
     E204_No_Content,
     E400_Bad_Request,
     E403_Forbidded,
