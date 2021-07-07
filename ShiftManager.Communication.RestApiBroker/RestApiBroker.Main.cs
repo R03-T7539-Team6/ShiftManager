@@ -18,10 +18,12 @@ namespace ShiftManager.Communication
     static ApiResultCodes ToApiRes(in HttpStatusCode statusCode) => statusCode switch
     {
       HttpStatusCode.OK => ApiResultCodes.Success,
-      HttpStatusCode.NoContent => ApiResultCodes.E204_No_Content,
+      HttpStatusCode.NoContent => ApiResultCodes.Delete_Success,
       HttpStatusCode.BadRequest => ApiResultCodes.E400_Bad_Request,
+      HttpStatusCode.Unauthorized => ApiResultCodes.Not_Logged_In,
       HttpStatusCode.Forbidden => ApiResultCodes.E403_Forbidded,
       HttpStatusCode.NotFound => ApiResultCodes.E404_Not_Found,
+      0 => ApiResultCodes.Request_Time_Out,
       _ => ApiResultCodes.Unknown_Error
     };
   }
