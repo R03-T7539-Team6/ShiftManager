@@ -31,7 +31,9 @@ namespace ShiftManager.Communication
 
       return res;
     }
+    #endregion
 
+    #region ユーザに関する操作
     public Task<ServerResponse<RestUser>> GetCurrentUserDataAsync() => Api.ExecuteAsync<RestUser>("/users", RestSharp.Method.GET);
 
     public Task<ServerResponse<RestUser>> AddUserAsync(RestUser user) => Api.ExecuteWithDataAsync<RestUser, RestUser>("/users", user, RestSharp.Method.POST);
@@ -41,14 +43,40 @@ namespace ShiftManager.Communication
     public Task<ServerResponse> DeleteCurrentUserAsync() => Api.ExecuteAsync("/users", RestSharp.Method.DELETE);
     #endregion
 
-    #region シフトに関する操作
 
+
+    #region シフトに関する操作
+    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftRequestsAsync() => Api.ExecuteAsync<RestShift[]>("/shifts?is_request=true", RestSharp.Method.GET);
+
+    public Task<ServerResponse<RestShift>> CreateSingleShiftAsync(RestShift shift) => Api.ExecuteWithDataAsync<RestShift, RestShift>("/shifts", shift, RestSharp.Method.POST);
+
+    //public Task<ServerResponse<RestShift>> UpdateShiftAsync(RestShift shift) => Api.ExecuteWithDataAsync<RestShift, RestShift>($"/shifts/{shift.id}",shift, RestSharp.Method.PUT); //変えたい情報だけをJsonに含める方法を検討する
+
+    public Task<ServerResponse> DeleteSingleShiftAsync(int shiftID) => Api.ExecuteAsync($"/shifts/{shiftID}", RestSharp.Method.DELETE);
+
+    public Task<ServerResponse<RestShiftRequest>> GetCurrentUserShiftRequestFileAsync() => Api.ExecuteAsync<RestShiftRequest>("/shifts/requests", RestSharp.Method.GET);
+
+    public Task<ServerResponse<RestShiftRequest>> CreateCurrentUserShiftRequestFileAsync(RestShiftRequest shift) => Api.ExecuteWithDataAsync<RestShiftRequest, RestShiftRequest>("/shifts/requests", shift, RestSharp.Method.POST);
+
+    //public Task<ServerResponse> DeleteCurrentUserShiftRequestFileAsync(int id); //Serverの実装待ち
+
+    public Task<ServerResponse<RestShiftSchedule>> GetCurrentStoreShiftScheduleFileAsync(int storeID) => Api.ExecuteAsync<RestShiftSchedule>($"/shifts/schedule/{storeID}", RestSharp.Method.GET);
+
+    //public Task<ServerResponse<RestShiftSchedule>> CreateStoreShiftScheduleFileAsync() //変えたい情報だけをJsonに含める
     #endregion
 
     #region お店情報に関する操作
+    public Task<ServerResponse<RestStore>> GetStoreFileAsync(int storeID) => Api.ExecuteAsync<RestStore>($"/stores/{storeID}", RestSharp.Method.GET);
+
+    public Task<ServerResponse<RestStore>> CreateStoreFileAsync(RestStore store) => Api.ExecuteWithDataAsync<RestStore, RestStore>("/stores", store, RestSharp.Method.POST);
     #endregion
 
     #region ログに関する操作
+    public Task<ServerResponse<RestWorkLog[]>> GetCurrentUserWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLog[]>("/logs", log, RestSharp.Method.GET);
+
+    public Task<ServerResponse<RestWorkLog>> CreateWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLog>("/logs", log, RestSharp.Method.POST);
+
+    //public Task<ServerResponse<RestWorkLog>> UpdateWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLog>("/logs", log, RestSharp.Method.PUT); //変えたい情報だけをJsonに含める
     #endregion
   }
 }
