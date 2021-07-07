@@ -49,9 +49,9 @@ namespace ShiftManager.Communication
       if (CurrentUserData?.UserGroup != UserGroup.SystemAdmin)
         return new(false, ApiResultCodes.Not_Allowed_Control);
 
-      var result = await Api.ExecuteApiAsync(new RestRequest("/users", Method.DELETE));
+      var result = await Sv.DeleteCurrentUserAsync();
 
-      return new(result.StatusCode == HttpStatusCode.OK, ToApiRes(result.StatusCode));
+      return new(result.Response.StatusCode == HttpStatusCode.NoContent, ToApiRes(result.Response.StatusCode));
     }
 
 
@@ -71,17 +71,17 @@ namespace ShiftManager.Communication
     {
       if (!IsLoggedIn || CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In, null);
-
-      var res = await Api.ExecuteWithDataAsync<RestShiftSchedule, RestShiftSchedule>("/shifts/schedule", new()
+      throw new NotSupportedException();
+      /*var res = await Sv.(new() //サーバー側の実装を確認する
       {
         store_id = CurrentUserData.StoreID.Value,
         target_date = dateTime.Date,
         start_of_schedule = dateTime.Date,
         end_of_schedule = dateTime.Date,
         worker_num = 1
-      });
+      });*/
 
-      return new(res.IsSuccess, res.ResultCode, res.ReturnData?.ToScheduledShift());
+      //return new(res.IsSuccess, res.ResultCode, res.ReturnData?.ToScheduledShift());
     }
 
     /*******************************************
