@@ -27,7 +27,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
 
       - name: Create the app package
-        run: dotnet publish ShiftManager/ShiftManager.csproj -c Release -f net5.0-windows -o publish --self-contained true -r ${{ matrix.target-architecture }}
+        run: dotnet publish ShiftManager/ShiftManager.csproj -c Release -f net5.0-windows -o publish -p:PublishSingleFile=true --self-contained true -r ${{ matrix.target-architecture }}
         
 
       - name: Upload build artifacts (X86)
