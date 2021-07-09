@@ -61,13 +61,13 @@ namespace ShiftManager.Communication
 
     public Task<ServerResponse> DeleteCurrentUserShiftRequestFileAsync(int id) => throw new NotSupportedException(); //Serverの実装待ち
 
-    public Task<ServerResponse<RestShiftSchedule>> GetCurrentStoreShiftScheduleFileAsync(int storeID) => Api.ExecuteAsync<RestShiftSchedule>($"/shifts/schedule/{storeID}", RestSharp.Method.GET);
+    public Task<ServerResponse<RestShiftSchedule>> GetCurrentStoreShiftScheduleFileAsync(string storeID) => Api.ExecuteAsync<RestShiftSchedule>($"/shifts/schedule/{storeID}", RestSharp.Method.GET);
 
     public Task<ServerResponse<RestShiftSchedule>> CreateStoreShiftScheduleFileAsync() => throw new NotSupportedException();  //変えたい情報だけをJsonに含める
     #endregion
 
     #region お店情報に関する操作
-    public Task<ServerResponse<RestStore>> GetStoreFileAsync(int storeID) => Api.ExecuteAsync<RestStore>($"/stores/{storeID}", RestSharp.Method.GET);
+    public Task<ServerResponse<RestStore>> GetStoreFileAsync(string storeID) => Api.ExecuteAsync<RestStore>($"/stores/{storeID}", RestSharp.Method.GET);
 
     public Task<ServerResponse<RestStore>> CreateStoreFileAsync(RestStore store) => Api.ExecuteWithDataAsync<RestStore, RestStore>("/stores", store, RestSharp.Method.POST);
     #endregion
