@@ -101,7 +101,7 @@ namespace ShiftManager.Communication
     /*******************************************
   * specification ;
   * name = GenerateShiftRequestAsync ;
-  * Function = UserIDを指定してシフト希望ファイルを作成します ;
+  * Function = UserIDを指定してシフト希望ファイルを作成します 既存の場合は作成済みのものが返ります ;
   * note = N/A ;
   * date = 07/05/2021 ;
   * author = 藤田一範 ;
@@ -115,15 +115,21 @@ namespace ShiftManager.Communication
       if (!IsLoggedIn || CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In, null);
 
-      var res = await Api.ExecuteWithDataAsync<GenShiftReqFilePOSTData, RestShiftRequest>("/shifts/requests", new()
-      {
-        user_id = CurrentUserData.UserID.Value,
-        store_id = CurrentUserData.StoreID.Value,
-        last_update = DateTime.Now,
-        shift_request = null
-      });
+      var shiftReq = await Sv.GetCurrentUserShiftRequestFileAsync(); //既存のものが無いか確認する
 
-      return new(res.IsSuccess, res.ResultCode, res.ReturnData?.ToShiftRequest());
+      if(shiftReq.Response.StatusCode != HttpStatusCode.OK) //存在しなかった場合のみ生成を行う
+      {
+        shiftReq = await Sv.CreateCurrentUserShiftRequestFileAsync(new()
+        {
+          store_id = CurrentUserData.StoreID.Value,
+          user_id = CurrentUserData.UserID.Value,
+          last_update = DateTime.Now,
+          shifts = Array.Empty<RestShift>()
+        });
+      }
+
+
+      return new(shiftReq.Response.StatusCode == HttpStatusCode.OK, ToApiRes(shiftReq.Response.StatusCode), shiftReq.Content?.ToShiftRequest());
     }
 
     /*******************************************
@@ -140,12 +146,18 @@ namespace ShiftManager.Communication
   *******************************************/
     public async Task<ApiResult<ImmutableArray<ShiftRequest>>> GetAllShiftRequestAsync()
     {
-      var res = await Api.GetDataAsync<RestStore>("/stores/0000");
+      if (!IsLoggedIn || CurrentUserData is null)
+        return new(false, ApiResultCodes.Not_Logged_In, new ImmutableArray<ShiftRequest>());
 
-      if (res.IsSuccess || res.ReturnData is null)
-        return new(false, res.ResultCode, new ImmutableArray<ShiftRequest>());
+      var res = await Sv.GetStoreFileAsync(CurrentUserData.StoreID.Value); //非効率なような気もする
 
-      return new(true, res.ResultCode, res.ReturnData.shift_requests.Select(i => i.ToShiftRequest()).ToImmutableArray());
+      var resCode = ToApiRes(res.Response.StatusCode);
+
+      if (res.Response.StatusCode != HttpStatusCode.OK || res.Content is null)
+        return new(false, resCode, new ImmutableArray<ShiftRequest>());
+
+
+      return new(true, resCode, res.Content.shift_requests.Select(i => i.ToShiftRequest()).ToImmutableArray());
     }
 
     /*******************************************
@@ -162,13 +174,17 @@ namespace ShiftManager.Communication
   *******************************************/
     public async Task<ApiResult<ImmutableArray<UserData>>> GetAllUserAsync()
     {
-      var res = await Api.GetDataAsync<RestUser[]>("/users");
-      if (!res.IsSuccess)
-        return new(res.IsSuccess, res.ResultCode, Array.Empty<UserData>().ToImmutableArray());
-      if (res.ReturnData is null)
+      if (!IsLoggedIn || CurrentUserData is null)
+        return new(false, ApiResultCodes.Not_Logged_In, new ImmutableArray<UserData>());
+
+      var res = await Sv.GetStoreFileAsync(CurrentUserData.StoreID.Value); //非効率なような気もする
+      var retCode = ToApiRes(res.Response.StatusCode);
+      if (retCode != ApiResultCodes.Success)
+        return new(false, retCode, Array.Empty<UserData>().ToImmutableArray());
+      if (res.Content is null)
         return new(false, ApiResultCodes.Data_Not_Found, Array.Empty<UserData>().ToImmutableArray());
 
-      return new(res.IsSuccess, res.ResultCode, res.ReturnData.Select(i => i.ToUserData()).ToImmutableArray());
+      return new(true, retCode, res.Content.worker_lists.Select(i => i.ToUserData()).ToImmutableArray());
     }
 
     /*******************************************
@@ -183,8 +199,12 @@ namespace ShiftManager.Communication
   * output = 実行結果 ;
   * end of specification ;
   *******************************************/
-    public Task<ApiResult<bool>> GetIsScheduledShiftFinalVersionAsync(DateTime date)
-      => throw new NotSupportedException();
+    public async Task<ApiResult<bool>> GetIsScheduledShiftFinalVersionAsync(DateTime date)
+    {
+      var res = await GetScheduledShiftByDateAsync(date);
+
+      return new(res.IsSuccess, res.ResultCode, res.IsSuccess && res.ReturnData?.SchedulingState == ShiftSchedulingState.FinalVersion);
+    }
 
     /*******************************************
   * specification ;
@@ -200,12 +220,17 @@ namespace ShiftManager.Communication
   *******************************************/
     public async Task<ApiResult<ScheduledShift>> GetScheduledShiftByDateAsync(DateTime dateTime)
     {
-      var res = await Api.GetDataAsync<RestStore>("/stores/0000");
+      if (!IsLoggedIn || CurrentUserData is null)
+        return new(false, ApiResultCodes.Not_Logged_In, null);
 
-      if (res.IsSuccess || res.ReturnData is null)
-        return new(false, res.ResultCode, null);
+      var res = await Sv.GetCurrentStoreShiftScheduleFileAsync(CurrentUserData.StoreID.Value); //StoreFileから取得しないと無理かも?
 
-      var ret = res.ReturnData.shift_schedules.Select(i => i.ToScheduledShift()).Where(i => i.TargetDate == dateTime.Date).FirstOrDefault();
+      var retCode = ToApiRes(res.Response.StatusCode);
+
+      if (res.Response.StatusCode != HttpStatusCode.OK || res.Content is null)
+        return new(false, retCode, null);
+
+      var ret = res.Content.Select(i => i.ToScheduledShift()).Where(i => i.TargetDate == dateTime.Date).FirstOrDefault();
 
       return new(true, res.ResultCode, ret);
     }
