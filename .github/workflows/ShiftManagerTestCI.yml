@@ -16,7 +16,7 @@ jobs:
           [
             ShiftManager.Common.Test,
             ShiftManager.Communication.InternalApi.Test,
-            ShiftManager.Communication.RestApiBroker.Test,
+#            ShiftManager.Communication.RestApiBroker.Test,
           ]
 
     steps:
