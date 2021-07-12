@@ -223,16 +223,16 @@ namespace ShiftManager.Communication
       if (!IsLoggedIn || CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In, null);
 
-      var res = await Sv.GetCurrentStoreShiftScheduleFileAsync(CurrentUserData.StoreID.Value); //StoreFileから取得しないと無理かも?
+      var res = await Sv.GetStoreFileAsync(CurrentUserData.StoreID.Value); //少し非効率かも
 
       var retCode = ToApiRes(res.Response.StatusCode);
 
       if (res.Response.StatusCode != HttpStatusCode.OK || res.Content is null)
         return new(false, retCode, null);
 
-      var ret = res.Content.Select(i => i.ToScheduledShift()).Where(i => i.TargetDate == dateTime.Date).FirstOrDefault();
+      var ret = res.Content.shift_schedules.Where(i => i.target_date.Date == dateTime.Date).Select(i => i.ToScheduledShift()).FirstOrDefault();
 
-      return new(true, res.ResultCode, ret);
+      return new(true, retCode, ret);
     }
 
     /*******************************************
@@ -274,6 +274,8 @@ namespace ShiftManager.Communication
       return new(true, ApiResultCodes.Success, res);
     }
 
+    
+
     /*******************************************
   * specification ;
   * name = GetByIDAsync ;
@@ -300,17 +302,19 @@ namespace ShiftManager.Communication
   * output = 実行結果 ;
   * end of specification ;
   *******************************************/
-    public Task<ApiResult<UserData>> GetUserDataByIDAsync(UserID userID) => Task.Run<ApiResult<UserData>>(async () =>
+    public async Task<ApiResult<UserData>> GetUserDataByIDAsync(UserID userID)
     {
       if (userID.Value?.Length != 8)
         return new(false, ApiResultCodes.Invalid_Length_UserID, null);
 
-      var result = await Api.GetDataAsync<RestUser>("/users");
-      if (!result.IsSuccess || result.ReturnData is null)
-        return new(false, result.ResultCode, null);
+      var res = await GetAllUserAsync();
+      if (res.ReturnData.IsDefaultOrEmpty)
+        return new(false, res.ResultCode, null);
 
-      return new(true, ApiResultCodes.Success, result.ReturnData.ToUserData());
-    });
+      var userData = res.ReturnData.FirstOrDefault(i => new UserID(i.UserID) == userID);
+
+      return userData is null ? new(false, ApiResultCodes.UserID_Not_Found, null) : new(true, ApiResultCodes.Success, userData);
+    }
 
     /*******************************************
   * specification ;
@@ -324,8 +328,16 @@ namespace ShiftManager.Communication
   * output = 実行結果 ;
   * end of specification ;
   *******************************************/
-    public Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserGroupAsync(UserGroup userGroup = UserGroup.None)
-      => throw new NotSupportedException();
+    public async Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserGroupAsync(UserGroup userGroup = UserGroup.None)
+    {
+      var res = await GetAllUserAsync();
+      if (res.ReturnData.IsDefaultOrEmpty)
+        return new(false, res.ResultCode, new ImmutableArray<UserData>());
+
+      var userData = res.ReturnData.Where(i => i.UserGroup == userGroup).ToImmutableArray();
+
+      return userData.IsDefaultOrEmpty ? new(false, ApiResultCodes.Data_Not_Found, new ImmutableArray<UserData>()) : new(true, ApiResultCodes.Success, userData);
+    }
 
     /*******************************************
   * specification ;
@@ -339,8 +351,16 @@ namespace ShiftManager.Communication
   * output = 実行結果 ;
   * end of specification ;
   *******************************************/
-    public Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserStateAsync(UserState userState = UserState.Normal)
-      => throw new NotSupportedException();
+    public async Task<ApiResult<ImmutableArray<UserData>>> GetUsersByUserStateAsync(UserState userState = UserState.Normal)
+    {
+      var res = await GetAllUserAsync();
+      if (res.ReturnData.IsDefaultOrEmpty)
+        return new(false, res.ResultCode, new ImmutableArray<UserData>());
+
+      var userData = res.ReturnData.Where(i => i.UserState == userState).ToImmutableArray();
+
+      return userData.IsDefaultOrEmpty ? new(false, ApiResultCodes.Data_Not_Found, new ImmutableArray<UserData>()) : new(true, ApiResultCodes.Success, userData);
+    }
 
     /*******************************************
   * specification ;
@@ -356,10 +376,10 @@ namespace ShiftManager.Communication
   *******************************************/
     public async Task<ApiResult> SignUpAsync(IUserData userData)
     {
-      var res = await Api.ExecuteWithDataAsync<RestUser, RestUser>("/signup", new RestUser().FromUserData(userData));
-
-      if (!res.IsSuccess)
-        return new(false, res.ResultCode);
+      var res = await Sv.AddUserAsync(new RestUser().FromUserData(userData));
+      var resCode = ToApiRes(res.Response.StatusCode);
+      if (resCode != ApiResultCodes.Success)
+        return new(false, resCode);
 
       return await SignInAsync(userData.UserID, userData.HashedPassword);
     }
