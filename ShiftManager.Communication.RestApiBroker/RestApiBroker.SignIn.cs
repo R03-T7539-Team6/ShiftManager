@@ -33,12 +33,20 @@ namespace ShiftManager.Communication
       if (userID.Value.Length != 8)
         return new(false, ApiResultCodes.Invalid_Length_UserID);
 
-      var result = await Api.ExecuteWithDataAsync<UserIDPW, SignInReturn>("/login", new(userID.Value, hashedPassword.Hash));
+      var result = await Sv.SignInAsync(new()
+      {
+        user_id = userID.Value,
+        password = hashedPassword.Hash
+      });
 
-      if (!result.IsSuccess || string.IsNullOrWhiteSpace(result.ReturnData?.token))
-        return new(false, ApiResultCodes.SignIn_Failed);
-
-      Api.Token = result.ReturnData.token;
+      if (result is ServerErrorResponse<RestData.RestTokenResponse> e_res)
+        return new(false, e_res.Error switch
+        {
+          ErrorType.Invalid_Json_Format => ApiResultCodes.Invalid_Input,
+          ErrorType.Wrong_ID => ApiResultCodes.UserID_Not_Found,
+          ErrorType.Wrong_PW => ApiResultCodes.Password_Not_Match,
+          _ => ApiResultCodes.Unknown_Error
+        });
 
       var userData = await GetUserDataByIDAsync(userID);
       if (!userData.IsSuccess)
@@ -65,7 +73,7 @@ namespace ShiftManager.Communication
   *******************************************/
     public Task<ApiResult> SignOutAsync() => Task.Run<ApiResult>(() =>
     {
-      Api.Token = string.Empty;
+      Sv.SignOut();
 
       if (CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In);
