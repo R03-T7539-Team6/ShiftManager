@@ -11,6 +11,8 @@ namespace ShiftManager.Communication
 
     public bool IsLoggedIn { get => !string.IsNullOrWhiteSpace(Api.Token); }
 
+    public void SignOut() => Api.Token = string.Empty;
+
     #region ログインとサインアップ
     public Task<ServerResponse<RestUser>> SignUp_WithNoTokenAsync(RestUser user) => Api.ExecuteWithDataAsync<RestUser, RestUser>("/signup", user, RestSharp.Method.POST);
 
