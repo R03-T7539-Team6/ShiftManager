@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using ShiftManager.Communication.RestData;
 using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
@@ -43,35 +44,16 @@ namespace ShiftManager.Communication
       if (lastBreakLog.Key == default || lastBreakLog.Value > 0) //休憩開始時刻の記録がない || 休憩終了時刻の記録がある
         return new(false, ApiResultCodes.BreakTime_Not_Started, CurrentTime);
 
-      int breakTimeLen = GetBreakTimeLength(lastBreakLog.Key, CurrentTime);
+      int breakTimeLen = SharedFuncs.GetBreakTimeLength(lastBreakLog.Key, CurrentTime);
       if (breakTimeLen <= 0)
         return new(false, ApiResultCodes.BreakTimeLen_Zero_Or_Less, CurrentTime);
 
       lastWorkLog.BreakTimeDictionary[lastBreakLog.Key] = breakTimeLen;
 
-      var res = await Api.ExecuteWithDataAsync<RestData.RestWorkLog, RestData.RestWorkLog>("/logs", RestData.RestWorkLog.GenerateFromSingleWorkLog(lastWorkLog, userID), RestSharp.Method.PUT);
+      var res = await Sv.UpdateWorkLogAsync(RestDataConverter.GenerateFromSingleWorkLog(lastWorkLog, userID));
 
-      return new(res.IsSuccess, res.ResultCode, CurrentTime);
+      return new(res.Content is not null, ToApiRes(res.Response.StatusCode), CurrentTime);
     }
-
-    /// <summary>休憩時刻の長さを計算します</summary>
-    /// <param name="start">休憩開始時刻</param>
-    /// <param name="end">休憩終了時刻</param>
-    /// <returns>休憩時間長 [min]</returns>
-    /*******************************************
-  * specification ;
-  * name = GetBreakTimeLength ;
-  * Function = 休憩時間長を取得します ;
-  * note = N/A ;
-  * date = 07/05/2021 ;
-  * author = 藤田一範 ;
-  * History = v1.0:新規作成 ;
-  * input = 開始時間, 終了時間 ;
-  * output = 休憩時間長 [分] ;
-  * end of specification ;
-  *******************************************/
-    static internal int GetBreakTimeLength(in DateTime start, in DateTime end)
-      => (int)(new DateTime(end.Year, end.Month, end.Day, end.Hour, end.Minute, 0) - new DateTime(start.Year, start.Month, start.Day, start.Hour, start.Minute, 0)).TotalMinutes;
 
     /// <summary>指定のユーザについて, 休憩開始の打刻を行います</summary>
     /// <param name="userID">ユーザID</param>
@@ -109,9 +91,9 @@ namespace ShiftManager.Communication
 
       lastWorkLog.BreakTimeDictionary.Add(CurrentTime, 0);
 
-      var res = await Api.ExecuteWithDataAsync<RestData.RestWorkLog, RestData.RestWorkLog>("/logs", RestData.RestWorkLog.GenerateFromSingleWorkLog(lastWorkLog, userID), RestSharp.Method.PUT);
+      var res = await Sv.UpdateWorkLogAsync(RestDataConverter.GenerateFromSingleWorkLog(lastWorkLog, userID));
 
-      return new(res.IsSuccess, res.ResultCode, CurrentTime);
+      return new(res.Content is not null, ToApiRes(res.Response.StatusCode), CurrentTime);
     }
 
     /// <summary>指定のユーザについて, 退勤の打刻を行います</summary>
@@ -146,9 +128,9 @@ namespace ShiftManager.Communication
 
       lastWorkLog = new SingleWorkLog(lastWorkLog) with { LeavingTime = CurrentTime };
 
-      var res = await Api.ExecuteWithDataAsync<RestData.RestWorkLog, RestData.RestWorkLog>("/logs", RestData.RestWorkLog.GenerateFromSingleWorkLog(lastWorkLog, userID), RestSharp.Method.PUT);
+      var res = await Sv.UpdateWorkLogAsync(RestDataConverter.GenerateFromSingleWorkLog(lastWorkLog, userID));
 
-      return new(res.IsSuccess, res.ResultCode, CurrentTime);
+      return new(res.Content is not null, ToApiRes(res.Response.StatusCode), CurrentTime);
     }
 
     /// <summary>指定のユーザについて, 出勤の打刻を行います</summary>
@@ -178,9 +160,9 @@ namespace ShiftManager.Communication
       else
         WorkLogCache[uID] = new SingleWorkLog(CurrentTime, default, new());
 
-      var res = await Api.ExecuteWithDataAsync<RestData.RestWorkLog, RestData.RestWorkLog>("/logs", RestData.RestWorkLog.GenerateFromSingleWorkLog(lastWorkLog, userID));
+      var res = await Sv.CreateWorkLogAsync(RestDataConverter.GenerateFromSingleWorkLog(lastWorkLog, userID));
 
-      return new(true, ApiResultCodes.Success, CurrentTime);
+      return new(res.Content is not null, ToApiRes(res.Response.StatusCode), CurrentTime);
     }
   }
 }

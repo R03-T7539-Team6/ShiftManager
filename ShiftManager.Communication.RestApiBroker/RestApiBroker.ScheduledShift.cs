@@ -31,15 +31,15 @@ namespace ShiftManager.Communication
     {
       if (!IsLoggedIn || CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In, null);
+      var resStore = await Sv.GetStoreFileAsync(CurrentUserData.StoreID.Value);
 
-      var res = await Api.GetDataAsync<RestStore>("/stores/0000");
-      if (!res.IsSuccess || res.ReturnData is null)
+      if (resStore.Content is null)
         return new(false, ApiResultCodes.Unknown_Error, null);
 
-      if (res.ReturnData.shift_schedules.Length <= 0)
+      if (resStore.Content.shift_schedules.Length <= 0)
         return new(false, ApiResultCodes.Data_Not_Found, null);
 
-      var tmp1 = res.ReturnData.shift_schedules.Where(i => i.target_date == targetDate);
+      var tmp1 = resStore.Content.shift_schedules.Where(i => i.target_date == targetDate);
       foreach (var tmp2 in tmp1)
       {
         var tmp3 = tmp2.shifts.Where(i => i.user_id == userID.Value).FirstOrDefault();

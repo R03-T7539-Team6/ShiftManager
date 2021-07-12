@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using ShiftManager.DataClasses;
+using ShiftManager.Communication.RestData;
 
 namespace ShiftManager.Communication
 {
@@ -40,15 +41,17 @@ namespace ShiftManager.Communication
       if (!IsLoggedIn)
         return new(false, ApiResultCodes.Not_Logged_In, null);
 
-      var res = await Api.GetDataAsync<RestData.RestWorkLog[]>("/logs");
+      var res = await Sv.GetCurrentUserWorkLogAsync(new() { user_id = CurrentUserData?.UserID.Value ?? string.Empty });
 
-      if (!res.IsSuccess)
-        return new(false, res.ResultCode, null);
+      var resCode = ToApiRes(res.Response.StatusCode);
 
-      if (CurrentUserData is null || res.ReturnData is null)
+      if (resCode != ApiResultCodes.Success)
+        return new(false, resCode, null);
+
+      if (CurrentUserData is null || res.Content is null)
         return new(false, ApiResultCodes.NewData_Is_NULL, null);
 
-      return new(true, res.ResultCode, new WorkLog(CurrentUserData.UserID, new(res.ReturnData.Select(i => i.ToSingleWorkLog() as ISingleWorkLog).ToDictionary(i => i.AttendanceTime.Date))));
+      return new(true, resCode, new WorkLog(CurrentUserData?.UserID ?? new UserID(), new(res.Content.Select(i => i.ToSingleWorkLog() as ISingleWorkLog).ToDictionary(i => i.AttendanceTime.Date))));
     }
 
     /*******************************************
@@ -83,8 +86,10 @@ namespace ShiftManager.Communication
   * output = 実行結果 ;
   * end of specification ;
   *******************************************/
-    public async Task<ApiResult> UpdatePasswordAsync(IUserID userID, INameData nameData, IHashedPassword hashedPassword)
+    public /*async*/ Task<ApiResult> UpdatePasswordAsync(IUserID userID, INameData nameData, IHashedPassword hashedPassword)
     {
+      throw new NotSupportedException();
+/*
       if (userID is null || nameData is null || hashedPassword is null)
         return new(false, ApiResultCodes.Invalid_Input); //引数NULLは許容できない
 
@@ -94,9 +99,8 @@ namespace ShiftManager.Communication
       if (userID.Value.Length != 8)
         return new(false, ApiResultCodes.Invalid_Length_UserID);
 
-      throw new NotSupportedException();
-
       return await SignInAsync(userID, hashedPassword);
+*/
     }
   }
 }

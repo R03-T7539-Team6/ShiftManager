@@ -101,7 +101,7 @@ namespace ShiftManager.Communication
         return new(false, ApiResultCodes.UserID_Not_Found, null);
 
       if (TestD.ShiftRequestsDictionary.TryGetValue(userID, out IShiftRequest? shiftRequest) && shiftRequest is not null)
-        return new(false, ApiResultCodes.Data_Already_Exists, new(shiftRequest));
+        return new(true, ApiResultCodes.Data_Already_Exists, new(shiftRequest)); // 結果は取得できるわけだから, trueで通す
 
       //Remoteにデータが存在しない場合のみ新規作成
       ShiftRequest retD = new(userID, DateTime.Now, new());
