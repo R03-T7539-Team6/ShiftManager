@@ -24,6 +24,7 @@ namespace ShiftManager.Pages
       timer.Start();
       VM.ShiftRequestArray = new();
       DataContext = VM;
+      timer_Tick(default, EventArgs.Empty);
     }
 
     /*******************************************
@@ -41,7 +42,7 @@ namespace ShiftManager.Pages
     private void timer_Tick(object sender, EventArgs e)
     {
       DateTime d = DateTime.Now;
-      time.Text = string.Format("{0:00}:{1:00}:{2:00}", d.Hour, d.Minute, d.Second);
+      time.Text = $"{d.Hour:00}:{d.Minute:00}:{d.Second:00}";
     }
 
     /*******************************************
@@ -56,7 +57,7 @@ namespace ShiftManager.Pages
     * output = 実行結果 ;
     * end of specification ;
     *******************************************/
-    private async void syukkin_Click(object sender, System.Windows.RoutedEventArgs e)
+    private async void syukkin_Click(object sender, RoutedEventArgs e)
     {
       if (!string.IsNullOrWhiteSpace(UID.Text))
       {
@@ -88,7 +89,7 @@ namespace ShiftManager.Pages
     * output = 実行結果 ;
     * end of specification ;
     *******************************************/
-    private async void kyunyu_Click(object sender, System.Windows.RoutedEventArgs e)
+    private async void kyunyu_Click(object sender, RoutedEventArgs e)
     {
       if (!string.IsNullOrWhiteSpace(UID.Text))
       {
@@ -122,7 +123,7 @@ namespace ShiftManager.Pages
     * output = 実行結果 ;
     * end of specification ;
     *******************************************/
-    private async void kyusyutu_Click_1(object sender, System.Windows.RoutedEventArgs e)
+    private async void kyusyutu_Click_1(object sender, RoutedEventArgs e)
     {
       if (!string.IsNullOrWhiteSpace(UID.Text))
       {
@@ -158,7 +159,7 @@ namespace ShiftManager.Pages
     * output = 実行結果 ;
     * end of specification ;
     *******************************************/
-    private async void taikin_Click_1(object sender, System.Windows.RoutedEventArgs e)
+    private async void taikin_Click_1(object sender, RoutedEventArgs e)
     {
       if (!string.IsNullOrWhiteSpace(UID.Text))
       {
