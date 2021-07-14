@@ -31,7 +31,7 @@ namespace ShiftManager.Pages
     * output = N/A ;
     * end of specification ;
     *******************************************/
-    private void OnSavePushed(object sender, EventArgs e){
+    private async void OnSavePushed(object sender, EventArgs e){
       //TODO: Saveボタンが押されたときの処理を書く.
       if (string.IsNullOrWhiteSpace(USC.UserIDText))
       {
@@ -58,7 +58,7 @@ namespace ShiftManager.Pages
         HashedPassword Hash = HashedPasswordGetter.Get(rawPassword, new HashedPassword(string.Empty, Salt, StretchCount));
         WorkLog wl = new(userID, new());
         UserData userData = new(userID, Hash, new NameData(USC.FirstNameText, USC.LastNameText), ApiHolder.CurrentStoreID, USC.SelectedUserGroup, USC.SelectedUserState, wl, new UserSetting(userID, NotificationPublishTimings.None, new()));
-        ApiHolder.Api.SignUpAsync(userData);
+        await ApiHolder.Api.SignUpAsync(userData);
       }
     }
   }
