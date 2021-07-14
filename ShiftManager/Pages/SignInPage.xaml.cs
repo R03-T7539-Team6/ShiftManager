@@ -38,7 +38,7 @@ namespace ShiftManager.Pages
 * output = N/A ;
 * end of specification ;
 *******************************************/
-    private async void ln_Click_2(object sender, System.Windows.RoutedEventArgs e)
+    private async void ln_Click_2(object sender, RoutedEventArgs e)
     {
       string UID = ID.Text;
       string UPass = Pass.Password;
