@@ -19,14 +19,14 @@ namespace ShiftManager.Communication.RestApiTest
   * output = N/A(非同期処理用情報) ;
   * end of specification ;
   *******************************************/
-    [Test]
+    /*[Test]
     public async Task GetJsonDataAsyncTest()
     {
       RestApiBroker Api = new();
-      var result = await Api.Api.GetJsonDataAsync("/");
+      var result = await Api.GetJsonDataAsync("/");
       Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
       Assert.AreEqual("{\"message\":\"Hello ShiftManager\"}", result.Content);
-    }
+    }*/
 
     /*******************************************
   * specification ;
@@ -40,7 +40,7 @@ namespace ShiftManager.Communication.RestApiTest
   * output = N/A(非同期処理用情報) ;
   * end of specification ;
   *******************************************/
-    [Test]
+    /*[Test]
     public async Task GetDataAsyncTest()
     {
       RestApiBroker Api = new();
@@ -48,7 +48,7 @@ namespace ShiftManager.Communication.RestApiTest
       Assert.IsTrue(result.IsSuccess);
       Assert.AreEqual(ApiResultCodes.Success, result.ResultCode);
       Assert.AreEqual("Hello ShiftManager", result.ReturnData.message);
-    }
+    }*/
 
     public class GetDataAsyncTestClass
     {
