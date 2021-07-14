@@ -6,35 +6,33 @@
       xmlns:local="clr-namespace:ShiftManager.Pages"
       xmlns:MyCtrls="clr-namespace:ShiftManager.Controls"
       xmlns:root="clr-namespace:ShiftManager"
+      d:DataContext="{d:DesignInstance Type=local:WorkLogCheckViewModel}"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-Loaded="OnLoaded"
+      Loaded="OnLoaded"
       Title="WorkLogCheckPage">
 
-    <Page.Resources>
-        <root:DoubleValueAddConverter x:Key="DoubleValueAddConv"/>
-    </Page.Resources>
+  <Page.Resources>
+    <root:DoubleValueAddConverter x:Key="DoubleValueAddConv"/>
+  </Page.Resources>
 
-    <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="3*"/>
-            <RowDefinition Height="3*"/>
-        </Grid.RowDefinitions>
+  <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
 
-        <MyCtrls:ShiftEditorHeaderControl
+    <MyCtrls:ShiftEditorHeaderControl
       Margin="-10,0"
-      Grid.Row="2"/>
-        <ListView
+      Grid.Row="0"/>
+    <ListView
       x:Name="abc"
       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
       ItemsSource="{Binding ShiftRequestArray}"
-      Grid.Row="3">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <MyCtrls:ShiftEditorControl
+      Grid.Row="1">
+      <ListView.ItemTemplate>
+        <DataTemplate>
+          <MyCtrls:ShiftEditorControl
             MinWidth="600"
             Content="{Binding WorkDate, StringFormat=YYYY/MM/DD}"
             Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleValueAddConv}, ConverterParameter=-40, Mode=OneWay}"
@@ -42,8 +40,8 @@ Loaded="OnLoaded"
             AttendanceTime="{Binding AttendanceTime, Mode=TwoWay}"
             LeavingTime="{Binding LeavingTime, Mode=TwoWay}"
             BreakTimeDictionary="{Binding BreakTimeDictionary, Mode=TwoWay}"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </Grid>
+        </DataTemplate>
+      </ListView.ItemTemplate>
+    </ListView>
+  </Grid>
 </Page>
