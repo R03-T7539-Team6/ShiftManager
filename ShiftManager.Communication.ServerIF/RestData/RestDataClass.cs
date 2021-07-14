@@ -76,8 +76,9 @@ namespace ShiftManager.Communication.RestData
     public DateTime? end_break_time { get; set; }
   }
 
-  public class RestTokenResponse
+  public class RestSignInResponse
   {
     public string token { get; set; } = string.Empty;
+    public RestUser user { get; set; } = new();
   }
 }
