@@ -64,7 +64,8 @@ namespace ShiftManager.Test
   * end of specification ;
   *******************************************/
     [TestCaseSource(nameof(Convert_TestCases))]
-    public string ConvertTest(in DateTime value, in DateTime parameter) => target.Convert(new object[] { value, parameter }, null, null, null) as string;
+    public string ConvertTest(in DateTime value, in DateTime baseDate) => new DateTimeTo24HOverStringConverterBase() { BaseDate = baseDate }.Convert(value, null, null, null) as string;
+    
 
     /*[TestCaseSource(nameof(ConvertBack_TestCases))]
     public DateTime ConvertBackTest(in string value, in DateTime parameter) => (DateTime)target.ConvertBack(value, null, null, null)[0];*/
@@ -82,7 +83,7 @@ namespace ShiftManager.Test
   * end of specification ;
   *******************************************/
     [TestCaseSource(nameof(ConvertBack_InvalidInput_TestCases))]
-    public void ConvertBackInvalidInputTest(string value, DateTime parameter, Type exception) => Assert.Throws(exception, () => target.ConvertBack(value, null, null, null));
+    public void ConvertBackInvalidInputTest(string value, DateTime baseDate, Type exception) => Assert.Throws(exception, () => new DateTimeTo24HOverStringConverterBase() { BaseDate = baseDate }.ConvertBack(value, null, null, null));
 
   }
 }
