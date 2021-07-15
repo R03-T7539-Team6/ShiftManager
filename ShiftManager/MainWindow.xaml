@@ -9,6 +9,7 @@
         d:DataContext="{x:Type local:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="MainWindow"
+        Loaded="Window_Loaded"
         FontFamily="BIZ UDPGothic">
   <Window.Resources>
     <sys:Double x:Key="FontSize_Title">24</sys:Double>
@@ -24,6 +25,32 @@
       <Setter Property="Padding" Value="5"/>
       <Setter Property="Margin" Value="5"/>
     </Style>
+
+    <Storyboard x:Name="OpenMenuStoryboard" x:Key="OpenMenuStoryboardKey">
+      <ThicknessAnimation
+        Storyboard.TargetName="MenuGrid"
+        Storyboard.TargetProperty="Margin"
+        Completed="OpenMenu_Completed"
+        To="0,0,0,0"
+        Duration="0:0:0.500">
+        <ThicknessAnimation.EasingFunction>
+          <SineEase EasingMode="EaseInOut"/>
+        </ThicknessAnimation.EasingFunction>
+      </ThicknessAnimation>
+    </Storyboard>
+
+    <Storyboard x:Name="CloseMenuStoryboard" x:Key="CloseMenuStoryboardKey">
+      <ThicknessAnimation
+        Storyboard.TargetName="MenuGrid"
+        Storyboard.TargetProperty="Margin"
+        Completed="CloseMenu_Completed"
+        To="-300,0,0,0"
+        Duration="0:0:0.500">
+        <ThicknessAnimation.EasingFunction>
+          <SineEase EasingMode="EaseInOut"/>
+        </ThicknessAnimation.EasingFunction>
+      </ThicknessAnimation>
+    </Storyboard>
   </Window.Resources>
   <Grid>
     <Grid.ColumnDefinitions>
@@ -128,6 +155,7 @@
       Orientation="Horizontal">
       <Button
         Content="≡"
+        ClickMode="Press"
         Click="MenuOpenCloseClicked"
         HorizontalAlignment="Left"
         VerticalAlignment="Center"/>
