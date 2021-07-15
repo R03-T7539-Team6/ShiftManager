@@ -44,13 +44,16 @@
       Grid.Row="1"
       Grid.Column="1"/>
 
-    <Grid Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenTrueConv}}"
-          Grid.Row="0"
+    <Grid Grid.Row="0"
           Grid.Column="0"
           Grid.ColumnSpan="2"
           Background="DarkGray">
 
-      <Grid HorizontalAlignment="Right" Margin="5">
+      <StackPanel
+        Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenTrueConv}}"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Center"
+        Margin="5">
         <TextBlock>
           <TextBlock.Text>
             <MultiBinding StringFormat="ようこそ {0} {1} さん!">
@@ -65,8 +68,8 @@
           Click="SignOutClicked"
           HorizontalAlignment="Left"
           VerticalAlignment="Center"
-          Margin="0,0,0,0"/>
-      </Grid>
+          Margin="4"/>
+      </StackPanel>
       
       <Button
           Content="ライセンス"
@@ -107,6 +110,12 @@
         <!--#endregion-->
       </StackPanel>
 
+      <Grid.Effect>
+        <DropShadowEffect
+          BlurRadius="32"
+          ShadowDepth="8"
+          Opacity="0.6"/>
+      </Grid.Effect>
     </Grid>
 
     <StackPanel
@@ -144,8 +153,8 @@
       FontFamily="Yu Gothic UI"
       HorizontalAlignment="Center"
       VerticalAlignment="Center"
-      Height="450"
-      Width="800"
+      Height="300"
+      Width="500"
       Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenFalseConv}}"
       Grid.Row="1"
       Grid.Column="1">

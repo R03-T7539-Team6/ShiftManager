@@ -161,7 +161,7 @@ namespace ShiftManager
     private void TitleStackPanel_SizeChanged(object sender, SizeChangedEventArgs e)
     {
       if (sender is FrameworkElement elem)
-        MenuCloseThicknessAnimation.To = new(-1 * elem.ActualWidth, 0, 0, 0);
+        MenuCloseThicknessAnimation.To = new(-1 * elem.ActualWidth - 20, 0, 0, 0);
     }
   }
 
