@@ -27,6 +27,8 @@ namespace ShiftManager.Pages
       timer_Tick(default, EventArgs.Empty);
     }
 
+    private void ClearIDBox() => UID.Text = string.Empty;
+
     /*******************************************
     * specification ;
     * name = timer_Tick ;
@@ -69,6 +71,7 @@ namespace ShiftManager.Pages
         if (res.ResultCode == ApiResultCodes.Success)
         {
           MessageBox.Show("出勤登録完了");
+          ClearIDBox();
           VM.ShiftRequestArray.Clear();
           main(targetUserID);
         }
@@ -105,6 +108,7 @@ namespace ShiftManager.Pages
         if (res.ResultCode == ApiResultCodes.Success)
         {
           MessageBox.Show("休憩開始");
+          ClearIDBox();
           VM.ShiftRequestArray.Clear();
           main(targetUserID);
         }
@@ -139,6 +143,7 @@ namespace ShiftManager.Pages
         if (res.ResultCode == ApiResultCodes.Success)
         {
           MessageBox.Show("休憩時間終了");
+          ClearIDBox();
           VM.ShiftRequestArray.Clear();
           main(targetUserID);
         }
@@ -175,6 +180,7 @@ namespace ShiftManager.Pages
         if (res.ResultCode == ApiResultCodes.Success)
         {
           MessageBox.Show("退勤登録完了");
+          ClearIDBox();
           VM.ShiftRequestArray.Clear();
           main(targetUserID);
         }
