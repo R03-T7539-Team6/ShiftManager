@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <None Remove="Resources\ThirdPartyLicense.md" />
+    <EmbeddedResource Include="Resources\ThirdPartyLicense.md"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -23,12 +24,6 @@
     <ProjectReference Include="..\ShiftManager.Communication.InternalApi\ShiftManager.Communication.InternalApi.csproj" />
     <ProjectReference Include="..\ShiftManager.Communication.RestApiBroker\ShiftManager.Communication.RestApiBroker.csproj" />
     <ProjectReference Include="..\ShiftManager.DataClasses\ShiftManager.DataClasses.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\ThirdPartyLicense.md">
-      <CopyToOutputDirectory></CopyToOutputDirectory>
-    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 
+using ShiftManager.Communication.RestData;
 using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
@@ -39,7 +40,7 @@ namespace ShiftManager.Communication
         password = hashedPassword.Hash
       });
 
-      if (result is ServerErrorResponse<RestData.RestTokenResponse> e_res)
+      if (result is ServerErrorResponse<RestData.RestSignInResponse> e_res)
         return new(false, e_res.Error switch
         {
           ErrorType.Invalid_Json_Format => ApiResultCodes.Invalid_Input,
@@ -48,11 +49,10 @@ namespace ShiftManager.Communication
           _ => ApiResultCodes.Unknown_Error
         });
 
-      var userData = await GetUserDataByIDAsync(userID);
-      if (!userData.IsSuccess)
-        return new(false, ApiResultCodes.SignIn_Failed);
+      if(result.Content is null)
+        return new(false, ApiResultCodes.Unknown_Error);
 
-      CurrentUserData = userData.ReturnData;
+      CurrentUserData = result.Content.user.ToUserData();
 
       return new(true, ApiResultCodes.Success);
     }

@@ -62,7 +62,7 @@ namespace ShiftManager
 
   public class HasFlagConverter : HasFlagConverterBase, IValueConverter { }
 
-  public class DateTimeTo24HOverStringConverter : DateTimeTo24HOverStringConverterBase, IMultiValueConverter { }
+  public class DateTimeTo24HOverStringConverter : DateTimeTo24HOverStringConverterBase, IValueConverter { }
 
   public class TimeSpanTo24HOverStringConverter : TimeSpanTo24HOverStringConverterBase, IValueConverter { }
 

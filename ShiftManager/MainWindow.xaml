@@ -9,34 +9,61 @@
         d:DataContext="{x:Type local:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="MainWindow"
+        Loaded="Window_Loaded"
         FontFamily="BIZ UDPGothic">
-    <Window.Resources>
-        <sys:Double x:Key="FontSize_Title">24</sys:Double>
-        <BooleanToVisibilityConverter x:Key="VisibleWhenTrueConv"/>
-        <local:ValueConverterGroup x:Key="VisibleWhenFalseConv">
-            <local:ValueConverterGroup.Converters>
-                <local:BooleanReverseConverter/>
-                <BooleanToVisibilityConverter/>
-            </local:ValueConverterGroup.Converters>
-        </local:ValueConverterGroup>
+  <Window.Resources>
+    <sys:Double x:Key="FontSize_Title">24</sys:Double>
+    <BooleanToVisibilityConverter x:Key="VisibleWhenTrueConv"/>
+    <local:ValueConverterGroup x:Key="VisibleWhenFalseConv">
+      <local:ValueConverterGroup.Converters>
+        <local:BooleanReverseConverter/>
+        <BooleanToVisibilityConverter/>
+      </local:ValueConverterGroup.Converters>
+    </local:ValueConverterGroup>
 
-        <Style TargetType="Button">
-            <Setter Property="Padding" Value="5"/>
-            <Setter Property="Margin" Value="5"/>
-        </Style>
-    </Window.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <!--メニューのGridをCollapsedにすると, Frame部か最大幅になります-->
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="56"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <Style TargetType="Button">
+      <Setter Property="Padding" Value="5"/>
+      <Setter Property="Margin" Value="5"/>
+    </Style>
 
-        <Frame
+    <Storyboard x:Name="OpenMenuStoryboard" x:Key="OpenMenuStoryboardKey">
+      <ThicknessAnimation
+        Storyboard.TargetName="MenuGrid"
+        Storyboard.TargetProperty="Margin"
+        Completed="OpenMenu_Completed"
+        To="0,0,0,0"
+        Duration="0:0:0.500">
+        <ThicknessAnimation.EasingFunction>
+          <SineEase EasingMode="EaseInOut"/>
+        </ThicknessAnimation.EasingFunction>
+      </ThicknessAnimation>
+    </Storyboard>
+
+    <Storyboard x:Name="CloseMenuStoryboard" x:Key="CloseMenuStoryboardKey">
+      <ThicknessAnimation
+        Storyboard.TargetName="MenuGrid"
+        Storyboard.TargetProperty="Margin"
+        Completed="CloseMenu_Completed"
+        To="-300,0,0,0"
+        Duration="0:0:0.500">
+        <ThicknessAnimation.EasingFunction>
+          <SineEase EasingMode="EaseInOut"/>
+        </ThicknessAnimation.EasingFunction>
+      </ThicknessAnimation>
+    </Storyboard>
+  </Window.Resources>
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <!--メニューのGridをCollapsedにすると, Frame部か最大幅になります-->
+      <ColumnDefinition Width="auto"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="56"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+
+    <Frame
       x:Name="MainFrame"
       NavigationUIVisibility="Hidden"
       Navigating="MainFrame_Navigating"
@@ -44,37 +71,43 @@
       Grid.Row="1"
       Grid.Column="1"/>
 
-        <Grid Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenTrueConv}}"
-          Grid.Row="0"
+    <Grid Grid.Row="0"
           Grid.Column="0"
           Grid.ColumnSpan="2"
           Background="DarkGray">
 
-            <Grid HorizontalAlignment="Right" Margin="5">
-                <TextBlock>
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="ようこそ {0} {1} さん!">
-                            <Binding Path="UserName.Value.LastName"/>
-                            <Binding Path="UserName.Value.FirstName"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
+      <StackPanel
+        Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenTrueConv}}"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Center"
+        Margin="5">
+        <TextBlock>
+          <TextBlock.Text>
+            <MultiBinding StringFormat="ようこそ {0} {1} さん!">
+              <Binding Path="UserName.Value.LastName"/>
+              <Binding Path="UserName.Value.FirstName"/>
+            </MultiBinding>
+          </TextBlock.Text>
+        </TextBlock>
 
-                <Button
+        <Button
           Content="ログアウト"
           Click="SignOutClicked"
           HorizontalAlignment="Left"
-          VerticalAlignment="Center" Margin="0,0,0,0"/>
-            </Grid>
-            <Button
+          VerticalAlignment="Center"
+          Margin="4"/>
+      </StackPanel>
+      
+      <Button
           Content="ライセンス"
           Click="LicenseClicked"
           HorizontalAlignment="Left"
           VerticalAlignment="Center" Margin="260,0,0,0"/>
-        </Grid>
+    </Grid>
 
-        <!--ページ選択用ボタン群表示用-->
-        <Grid
+    <!--ページ選択用ボタン群表示用-->
+    <Grid
+      x:Name="MenuGrid"
       Width="{Binding ElementName=TitleStackPanel, Path=ActualWidth}"
       Grid.Row="0"
       Grid.Column="0"
@@ -83,67 +116,83 @@
       HorizontalAlignment="Left"
       VerticalAlignment="Stretch">
 
-            <StackPanel Margin="0,60,0,0">
-                <Button Content="HOME" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Null}"/>
-                <Button Content="シフト希望登録" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftRequestManagePage}"/>
-                <Button Content="予定シフト表示" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ScheduledShiftCheckPage}"/>
-                <Button Content="勤務実績表示" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkLogCheckPage}"/>
-                <Button Content="シフト印刷" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftPrintPage}"/>
-                <Button Content="ユーザ設定" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:UserSettingPage}"/>
+      <StackPanel Margin="0,60,0,0">
+        <Button Content="HOME" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Null}"/>
+        <Button Content="シフト希望登録" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftRequestManagePage}"/>
+        <Button Content="予定シフト表示" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ScheduledShiftCheckPage}"/>
+        <Button Content="勤務実績表示" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkLogCheckPage}"/>
+        <Button Content="シフト印刷" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftPrintPage}"/>
+        <Button Content="ユーザ設定" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:UserSettingPage}"/>
 
-                <Line Stroke="Black"
+        <Line Stroke="Black"
               StrokeThickness="2"
               Margin="0,5"
               X2="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualWidth}"/>
 
-                <!--#region 管理者用ボタン群  権限が無いなら表示しない-->
-                <Button Content="予定シフト作成" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ScheduledShiftManagePage}"/>
-                <Button Content="新規従業員追加" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:SignUpPage}"/>
-                <Button Content="データ管理" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:DataManagePage}"/>
-                <Button Content="勤怠登録モード" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkTimeRecordPage}"/>
-                <!--#endregion-->
-            </StackPanel>
+        <!--#region 管理者用ボタン群  権限が無いなら表示しない-->
+        <Button Content="予定シフト作成" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ScheduledShiftManagePage}"/>
+        <Button Content="新規従業員追加" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:SignUpPage}"/>
+        <Button Content="データ管理" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:DataManagePage}"/>
+        <Button Content="勤怠登録モード" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkTimeRecordPage}"/>
+        <!--#endregion-->
+      </StackPanel>
 
-        </Grid>
+      <Grid.Effect>
+        <DropShadowEffect
+          BlurRadius="32"
+          ShadowDepth="8"
+          Opacity="0.6"/>
+      </Grid.Effect>
+    </Grid>
 
-        <StackPanel
+    <StackPanel
       Name="TitleStackPanel"
+      SizeChanged="TitleStackPanel_SizeChanged"
       Grid.Row="0"
       Grid.Column="0"
       Grid.ColumnSpan="2"
       HorizontalAlignment="Left"
       Orientation="Horizontal">
-            <Button
+      <Button
         Content="≡"
+        ClickMode="Press"
+        Click="MenuOpenCloseClicked"
         HorizontalAlignment="Left"
         VerticalAlignment="Center"/>
 
-            <TextBlock
+      <TextBlock
         Text="Shift Manager"
         VerticalAlignment="Center"
         Margin="4"
         Padding="5"
         FontSize="{StaticResource FontSize_Title}"/>
-        </StackPanel>
+    </StackPanel>
 
-        <Rectangle
+    <Rectangle
       Fill="Black"
       Opacity="0.5"
       Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenFalseConv}}"
       Grid.Row="1"
       Grid.Column="1"/>
 
-        <pages:SignInPage
+    <pages:SignInPage
       x:Name="SignInPageElem"
       Login="SignInPageElem_Login"
       FontFamily="Yu Gothic UI"
       HorizontalAlignment="Center"
       VerticalAlignment="Center"
-      Height="450"
-      Width="800"
+      Height="300"
+      Width="500"
       Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenFalseConv}}"
       Grid.Row="1"
-      Grid.Column="1"/>
+      Grid.Column="1">
+      <pages:SignInPage.Effect>
+        <DropShadowEffect
+          BlurRadius="40"
+          ShadowDepth="20"
+          Opacity="0.6"/>
+      </pages:SignInPage.Effect>
+    </pages:SignInPage>
 
-    </Grid>
+  </Grid>
 </Window>

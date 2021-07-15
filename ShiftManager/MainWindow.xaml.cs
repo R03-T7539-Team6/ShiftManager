@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 
 using Reactive.Bindings;
 
@@ -17,8 +18,21 @@ namespace ShiftManager
   /// </summary>
   public partial class MainWindow : Window, IContainsApiHolder
   {
-    public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.RestApiBroker() };
+    // public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.RestApiBroker() };
+    public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.InternalApi() };
     private MainWindowViewModel MWVM { get; }
+
+    enum MenuState
+    {
+      Opened,
+      Closing,
+      Closed,
+      Opening
+    }
+
+    MenuState CurrentMenuState { get; set; } = MenuState.Opened;
+    Storyboard OpenMenuStoryboard { get; set; }
+    Storyboard CloseMenuStoryboard { get; set; }
 
     /*******************************************
 * specification ;
@@ -127,6 +141,63 @@ namespace ShiftManager
           }
         }
       }
+    }
+
+    private void MenuOpenCloseClicked(object sender, RoutedEventArgs e)
+    {
+      switch (CurrentMenuState)
+      {
+        case MenuState.Opened:
+          CurrentMenuState = MenuState.Closing;
+          CloseMenuStoryboard?.Begin();
+          break;
+
+        case MenuState.Closing:
+          CloseMenuStoryboard?.Stop();
+
+          CurrentMenuState = MenuState.Opening;
+          OpenMenuStoryboard?.Begin();
+          break;
+
+        case MenuState.Closed:
+          MenuGrid.Visibility = Visibility.Visible;
+          CurrentMenuState = MenuState.Opening;
+          OpenMenuStoryboard?.Begin();
+          break;
+
+        case MenuState.Opening:
+          OpenMenuStoryboard?.Stop();
+
+          CurrentMenuState = MenuState.Closing;
+          CloseMenuStoryboard?.Begin();
+          break;
+      }
+    }
+
+    private void TitleStackPanel_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+      if (CloseMenuStoryboard is not null && sender is FrameworkElement elem)
+        foreach (var i in CloseMenuStoryboard?.Children)
+          if (i is ThicknessAnimation ta)
+            ta.To = new(-1 * elem.ActualWidth - 20, 0, 0, 0);
+    }
+
+    private void CloseMenu_Completed(object sender, EventArgs e)
+    {
+      MenuGrid.Visibility = Visibility.Collapsed;
+      CurrentMenuState = MenuState.Closed;
+    }
+    private void OpenMenu_Completed(object sender, EventArgs e) => CurrentMenuState = MenuState.Opened;
+
+    private void Window_Loaded(object sender, RoutedEventArgs e)
+    {
+      if (FindResource(nameof(OpenMenuStoryboard) + "Key") is Storyboard oms)
+        OpenMenuStoryboard = oms;
+
+      if (FindResource(nameof(CloseMenuStoryboard) + "Key") is Storyboard cms)
+        CloseMenuStoryboard = cms;
+
+      TitleStackPanel_SizeChanged(TitleStackPanel, null);
     }
   }
 

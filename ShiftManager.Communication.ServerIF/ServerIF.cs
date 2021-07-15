@@ -16,14 +16,14 @@ namespace ShiftManager.Communication
     #region ログインとサインアップ
     public Task<ServerResponse<RestUser>> SignUp_WithNoTokenAsync(RestUser user) => Api.ExecuteWithDataAsync<RestUser, RestUser>("/signup", user, RestSharp.Method.POST);
 
-    public async Task<ServerResponse> SignInAsync(RestUser user)
+    public async Task<ServerResponse<RestSignInResponse>> SignInAsync(RestUser user)
     {
-      var res = await Api.ExecuteWithDataAsync<RestUser, RestTokenResponse>("/login", user, RestSharp.Method.POST);
+      var res = await Api.ExecuteWithDataAsync<RestUser, RestSignInResponse>("/login", user, RestSharp.Method.POST);
       if (res.Response.StatusCode == System.Net.HttpStatusCode.OK && res.Content is not null)
         Api.Token = res.Content.token;
       else if(res.Response.StatusCode== System.Net.HttpStatusCode.BadRequest)
       {
-        res = new ServerErrorResponse<RestTokenResponse>(res.Response, res.Content, res.Response.Content switch
+        res = new ServerErrorResponse<RestSignInResponse>(res.Response, res.Content, res.Response.Content switch
         {
           "Invalid json provided" => ErrorType.Invalid_Json_Format,
           "Wrong User ID" => ErrorType.Wrong_ID,

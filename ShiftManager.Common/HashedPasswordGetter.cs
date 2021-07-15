@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 using ShiftManager.DataClasses;
 
-namespace ShiftManager.Communication
+namespace ShiftManager
 {
   static public class HashedPasswordGetter
   {

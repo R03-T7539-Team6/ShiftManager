@@ -12,37 +12,35 @@
       Title="ShiftRequestManagePage">
 
 
-    <Page.Resources>
-        <root:DoubleValueAddConverter x:Key="DoubleValueAddConv"/>
-    </Page.Resources>
+  <Page.Resources>
+    <root:DoubleValueAddConverter x:Key="DoubleValueAddConv"/>
+  </Page.Resources>
 
-    <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="3*"/>
-            <RowDefinition Height="3*"/>
-        </Grid.RowDefinitions>
+  <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
 
-        <DatePicker
+    <DatePicker
       Margin="4"
       HorizontalAlignment="Left"
       VerticalAlignment="Bottom"
       SelectedDateChanged="DatePicker_SelectedDateChanged"
       SelectedDate="{Binding TargetDate}"/>
 
-        <MyCtrls:ShiftEditorHeaderControl
+    <MyCtrls:ShiftEditorHeaderControl
       Margin="-10,0"
-      Grid.Row="2"/>
-        <ListView
+      Grid.Row="1"/>
+    <ListView
       x:Name="abc"
       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
       ItemsSource="{Binding ShiftRequestArray}"
-      Grid.Row="3">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <MyCtrls:ShiftEditorControl
+      Grid.Row="2">
+      <ListView.ItemTemplate>
+        <DataTemplate>
+          <MyCtrls:ShiftEditorControl
             MinWidth="600"
             Content="{Binding WorkDate, StringFormat=YYYY/MM/DD}"
             Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleValueAddConv}, ConverterParameter=-40, Mode=OneWay}"
@@ -50,9 +48,17 @@
             AttendanceTime="{Binding AttendanceTime, Mode=TwoWay}"
             LeavingTime="{Binding LeavingTime, Mode=TwoWay}"
             BreakTimeDictionary="{Binding BreakTimeDictionary, Mode=TwoWay}"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-        <Button x:Name="Save" Content="保存" HorizontalAlignment="Left" Height="27" Margin="677,15,0,0" VerticalAlignment="Top" Width="94" FontSize="18" Click="Save_Click"/>
-    </Grid>
+        </DataTemplate>
+      </ListView.ItemTemplate>
+    </ListView>
+    <Button
+      x:Name="Save"
+      Grid.Row="0"
+      Content="保存"
+      HorizontalAlignment="Right"
+      Margin="20,10"
+      Width="100"
+      FontSize="18"
+      Click="Save_Click"/>
+  </Grid>
 </Page>

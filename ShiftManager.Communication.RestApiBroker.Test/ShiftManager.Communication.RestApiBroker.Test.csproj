@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ShiftManager.Common\ShiftManager.Common.csproj" />
     <ProjectReference Include="..\ShiftManager.Communication.RestApiBroker\ShiftManager.Communication.RestApiBroker.csproj" />
   </ItemGroup>
 
