@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 
 using Reactive.Bindings;
 
@@ -20,6 +21,10 @@ namespace ShiftManager
     // public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.RestApiBroker() };
     public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.InternalApi() };
     private MainWindowViewModel MWVM { get; }
+
+    ThicknessAnimation MenuCloseThicknessAnimation { get; } = new(new(-300,0,0,0), TimeSpan.FromMilliseconds(500));
+    bool IsMenuOpenAnimationRunning { get; set; } = false;
+    ThicknessAnimation MenuOpenThicknessAnimation { get; } = new(new(0,0,0,0), TimeSpan.FromMilliseconds(500));
 
     /*******************************************
 * specification ;
@@ -39,6 +44,12 @@ namespace ShiftManager
       MWVM = new() { MainFramePageChanger = new(MainFrame) };
       DataContext = MWVM;
       SignInPageElem.ApiHolder = this.ApiHolder;
+
+      MenuCloseThicknessAnimation.Completed += (_, _) =>MenuGrid.Visibility = Visibility.Collapsed;
+      MenuOpenThicknessAnimation.Completed += (_, _) => IsMenuOpenAnimationRunning = false;
+
+      MenuCloseThicknessAnimation.EasingFunction = new SineEase() { EasingMode = EasingMode.EaseInOut };
+      MenuOpenThicknessAnimation.EasingFunction = new SineEase() { EasingMode = EasingMode.EaseInOut };
     }
 
     /// <summary>SignInがSuccessした際に実行される</summary>
@@ -128,6 +139,29 @@ namespace ShiftManager
           }
         }
       }
+    }
+
+    private void MenuOpenCloseClicked(object sender, RoutedEventArgs e)
+    {
+      if (IsMenuOpenAnimationRunning || MenuGrid.Visibility == Visibility.Visible)
+      {
+        IsMenuOpenAnimationRunning = false;
+
+        MenuGrid.BeginAnimation(Grid.MarginProperty, MenuCloseThicknessAnimation);
+      }
+      else
+      {
+        MenuGrid.Visibility = Visibility.Visible;
+
+        MenuGrid.BeginAnimation(Grid.MarginProperty, MenuOpenThicknessAnimation);
+        IsMenuOpenAnimationRunning = true;
+      }
+    }
+
+    private void TitleStackPanel_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+      if (sender is FrameworkElement elem)
+        MenuCloseThicknessAnimation.To = new(-1 * elem.ActualWidth, 0, 0, 0);
     }
   }
 
