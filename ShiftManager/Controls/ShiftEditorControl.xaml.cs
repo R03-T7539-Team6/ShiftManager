@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -19,7 +20,7 @@ namespace ShiftManager.Controls
     public static readonly DependencyProperty EditableElementsProperty = DependencyProperty.Register(nameof(EditableElements), typeof(ShiftEditorElements), typeof(ShiftEditorControl));
 
     public DateTime WorkDate { get => (DateTime)GetValue(WorkDateProperty); set => SetValue(WorkDateProperty, value); }
-    public static readonly DependencyProperty WorkDateProperty = DependencyProperty.Register(nameof(WorkDate), typeof(DateTime), typeof(ShiftEditorControl));
+    public static readonly DependencyProperty WorkDateProperty = DependencyProperty.Register(nameof(WorkDate), typeof(DateTime), typeof(ShiftEditorControl), new(OnWorkDateChanged));
     public DateTime AttendanceTime { get => (DateTime)GetValue(AttendanceTimeProperty); set => SetValue(AttendanceTimeProperty, value); }
     public static readonly DependencyProperty AttendanceTimeProperty = DependencyProperty.Register(nameof(AttendanceTime), typeof(DateTime), typeof(ShiftEditorControl), new((s, _) => (s as ShiftEditorControl)?.ChangeWorkTimeLen()));
     public DateTime LeavingTime { get => (DateTime)GetValue(LeavingTimeProperty); set => SetValue(LeavingTimeProperty, value); }
@@ -77,7 +78,7 @@ namespace ShiftManager.Controls
 * output = N/A ;
 * end of specification ;
 *******************************************/
-    public ShiftEditorControl() { }
+    public ShiftEditorControl() => SetBindingsProperty();
 
     /*******************************************
 * specification ;
@@ -91,7 +92,11 @@ namespace ShiftManager.Controls
 * output = N/A ;
 * end of specification ;
 *******************************************/
-    public ShiftEditorControl(ISingleShiftData i) => SingleShiftData = i;
+    public ShiftEditorControl(ISingleShiftData i)
+    {
+      SingleShiftData = i;
+      SetBindingsProperty();
+    }
 
     public ISingleShiftData SingleShiftData
     {
@@ -99,12 +104,48 @@ namespace ShiftManager.Controls
       set
       {
         var i = value ?? new SingleShiftData(null);
-        UserID = value.UserID;
-        WorkDate = value.WorkDate;
-        IsPaidHoliday = value.IsPaidHoliday;
-        AttendanceTime = value.AttendanceTime;
-        LeavingTime = value.LeavingTime;
-        BreakTimeDictionary = new(value.BreakTimeDictionary);
+        UserID = i.UserID;
+        WorkDate = i.WorkDate;
+        IsPaidHoliday = i.IsPaidHoliday;
+        AttendanceTime = i.AttendanceTime;
+        LeavingTime = i.LeavingTime;
+        BreakTimeDictionary = new(i.BreakTimeDictionary);
+      }
+    }
+    private Binding AttendanceTimeBinding { get; } = new(nameof(AttendanceTime)) { UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged };
+    private Binding LeavingTimeBinding { get; } = new(nameof(LeavingTime)) { UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged };
+
+    private void SetBindingsProperty()
+    {
+      AttendanceTimeBinding.Source = this;
+      AttendanceTimeBinding.Converter = new DateTimeTo24HOverStringConverter() { BaseDate = WorkDate };
+      AttendanceTimeBinding.ValidationRules.Add(new HHMMValidationRule());
+
+      LeavingTimeBinding.Source = this;
+      LeavingTimeBinding.Converter = new DateTimeTo24HOverStringConverter() { BaseDate = WorkDate };
+      LeavingTimeBinding.ValidationRules.Add(new HHMMValidationRule());
+
+    }
+
+    public override void OnApplyTemplate()
+    {
+      base.OnApplyTemplate();
+
+      if (Template.FindName("AttendanceTimeTextBox", this) is TextBox tba)
+        _ = tba.SetBinding(TextBox.TextProperty, AttendanceTimeBinding);
+      if (Template.FindName("LeavingTimeTextBox", this) is TextBox tbl)
+        _ = tbl.SetBinding(TextBox.TextProperty, LeavingTimeBinding);
+    }
+
+    static private void OnWorkDateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+      if(d is ShiftEditorControl s)
+      {
+        if (s.AttendanceTimeBinding.Converter is DateTimeTo24HOverStringConverter c1)
+          c1.BaseDate = s.WorkDate.Date;
+
+        if (s.LeavingTimeBinding.Converter is DateTimeTo24HOverStringConverter c2)
+          c2.BaseDate = s.WorkDate.Date;
       }
     }
 

@@ -49,49 +49,25 @@
 
             <!--出勤時刻-->
             <TextBox
+              x:Name="AttendanceTimeTextBox"
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.AttendTime}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.AttendTime}}"
               HorizontalContentAlignment="Center"
               Width="50"
               Grid.Column="1"
               Margin="4"
-              Padding="4">
-              <MultiBinding UpdateSourceTrigger="PropertyChanged">
-                <Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="AttendanceTime"/>
-                <Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="WorkDate"/>
-
-                <MultiBinding.Converter>
-                  <!--DateTimeTo24HOverStringConverterは各箇所でインスタンスを生成して使用する-->
-                  <root:DateTimeTo24HOverStringConverter/>
-                </MultiBinding.Converter>
-                <MultiBinding.ValidationRules>
-                  <root:HHMMValidationRule/>
-                </MultiBinding.ValidationRules>
-              </MultiBinding>
-            </TextBox>
+              Padding="4"/>
 
             <!--退勤時刻-->
             <TextBox
+              x:Name="LeavingTimeTextBox"
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.LeaveTime}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.LeaveTime}}"
               HorizontalContentAlignment="Center"
               Width="50"
               Grid.Column="2"
               Margin="4"
-              Padding="4">
-              <MultiBinding UpdateSourceTrigger="PropertyChanged">
-                <Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="LeavingTime"/>
-                <Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="WorkDate"/>
-
-                <MultiBinding.Converter>
-                  <!--DateTimeTo24HOverStringConverterは各箇所でインスタンスを生成して使用する-->
-                  <root:DateTimeTo24HOverStringConverter/>
-                </MultiBinding.Converter>
-                <MultiBinding.ValidationRules>
-                  <root:HHMMValidationRule/>
-                </MultiBinding.ValidationRules>
-              </MultiBinding>
-            </TextBox>
+              Padding="4"/>
 
             <!--休憩時刻-->
             <Button
