@@ -17,10 +17,6 @@ namespace ShiftManager.Pages
 
     public event EventHandler Login;
 
-    public void Start()
-    {
-      Login?.Invoke(this, EventArgs.Empty);
-    }
     public SignInPage()
     {
       InitializeComponent();
@@ -43,11 +39,17 @@ namespace ShiftManager.Pages
       string UID = ID.Text;
       string UPass = Pass.Password;
       var re = await SignInAsyncTest_WithIDAndPassword(UID, UPass);
+
       if (re.IsSuccess)
       {
-        Start();
+        Login?.Invoke(this, EventArgs.Empty);
+
+        //成功時は入力内容をクリアする
+        ID.Text = string.Empty;
+        Pass.Password = string.Empty;
       }
-      MessageBox.Show(re.IsSuccess.ToString() + " * " + re.ResultCode.ToString());
+
+      MessageBox.Show(re.IsSuccess.ToString() + " : " + re.ResultCode.ToString());
     }
 
     /*******************************************

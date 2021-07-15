@@ -6,69 +6,73 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
   xmlns:local="clr-namespace:ShiftManager.Pages"
   mc:Ignorable="d"
-  Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
   d:DesignHeight="300"
   d:DesignWidth="600">
 
-  <Grid
-    Margin="40">
-    <Grid.RowDefinitions>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="auto"/>
-      <ColumnDefinition Width="*"/>
-    </Grid.ColumnDefinitions>
+  <Border
+    Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+    CornerRadius="5">
+    <Grid
+        Margin="40">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
 
-    <TextBlock
-      Text="ログインID"
-      Grid.Row="0"
-      Grid.Column="0"
-      Margin="10"
-      VerticalAlignment="Center"
-      TextAlignment="Right"
-      FontSize="24"/>
-    <TextBox
-      x:Name="ID"
-      Grid.Row="0"
-      Grid.Column="1"
-      VerticalAlignment="Center"
-      Height="32"
-      Margin="10"
-      FontSize="18"/>
-    
-    <TextBlock
-      Text="パスワード"
-      Grid.Row="1"
-      Grid.Column="0"
-      Margin="10"
-      VerticalAlignment="Center"
-      TextAlignment="Right"
-      FontSize="24"/>
-    <PasswordBox
-      x:Name="Pass"
-      Grid.Row="1"
-      Grid.Column="1"
-      VerticalAlignment="Center"
-      Margin="10"
-      Height="32"
-      FontSize="18"
-      PasswordChar="*"/>
+      <TextBlock
+        Text="ログインID"
+        Grid.Row="0"
+        Grid.Column="0"
+        Margin="10"
+        VerticalAlignment="Center"
+        TextAlignment="Right"
+        FontSize="24"/>
+      <TextBox
+        x:Name="ID"
+        Grid.Row="0"
+        Grid.Column="1"
+        VerticalAlignment="Center"
+        Height="32"
+        Margin="10"
+        FontSize="18"/>
 
-    <Button
-      x:Name="In"
-      Content="ログイン"
-      Grid.Row="2"
-      Grid.Column="0"
-      Grid.ColumnSpan="2"
-      HorizontalAlignment="Center"
-      VerticalAlignment="Center"
-      Height="47"
-      Width="150"
-      FontSize="24"
-      Click="ln_Click_2"
-      ClickMode="Press"/>
-  </Grid>
+      <TextBlock
+        Text="パスワード"
+        Grid.Row="1"
+        Grid.Column="0"
+        Margin="10"
+        VerticalAlignment="Center"
+        TextAlignment="Right"
+        FontSize="24"/>
+      <PasswordBox
+        x:Name="Pass"
+        Grid.Row="1"
+        Grid.Column="1"
+        VerticalAlignment="Center"
+        Margin="10"
+        Height="32"
+        FontSize="18"
+        PasswordChar="*"/>
+
+      <Button
+        x:Name="In"
+        Content="ログイン"
+        IsDefault="True"
+        Grid.Row="2"
+        Grid.Column="0"
+        Grid.ColumnSpan="2"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        Height="47"
+        Width="150"
+        FontSize="24"
+        Click="ln_Click_2"
+        ClickMode="Press"/>
+    </Grid>
+  </Border>
 </UserControl>

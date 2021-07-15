@@ -148,7 +148,14 @@
       Width="800"
       Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenFalseConv}}"
       Grid.Row="1"
-      Grid.Column="1"/>
+      Grid.Column="1">
+      <pages:SignInPage.Effect>
+        <DropShadowEffect
+          BlurRadius="40"
+          ShadowDepth="20"
+          Opacity="0.6"/>
+      </pages:SignInPage.Effect>
+    </pages:SignInPage>
 
   </Grid>
 </Window>
