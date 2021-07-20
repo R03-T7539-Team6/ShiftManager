@@ -196,6 +196,8 @@ namespace ShiftManager.Communication
     /// <summary>現在サインイン中のユーザのユーザ設定を取得します</summary>
     /// <returns>実行結果</returns>
     Task<ApiResult<UserSetting>> GetUserSettingAsync();
+
+    Task<ApiResult<UserData>> UpdateUserDataAsync(IUserData userData);
   }
 
   /// <summary>勤怠実績の操作に関するメソッド群を規定しています</summary>
