@@ -40,7 +40,7 @@ namespace ShiftManager.Communication
         password = hashedPassword.Hash
       });
 
-      if (result is ServerErrorResponse<RestData.RestSignInResponse> e_res)
+      if (result is ServerErrorResponse<RestSignInResponse> e_res)
         return new(false, e_res.Error switch
         {
           ErrorType.Invalid_Json_Format => ApiResultCodes.Invalid_Input,
@@ -49,7 +49,7 @@ namespace ShiftManager.Communication
           _ => ApiResultCodes.Unknown_Error
         });
 
-      if(result.Content is null)
+      if(result.Content?.user is null)
         return new(false, ApiResultCodes.Unknown_Error);
 
       CurrentUserData = result.Content.user.ToUserData();

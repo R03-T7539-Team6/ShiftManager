@@ -25,7 +25,8 @@ namespace ShiftManager.Communication
 
     private static readonly JsonSerializerSettings jsonSerializerSettings = new()
     {
-      DateTimeZoneHandling = DateTimeZoneHandling.Local
+      DateTimeZoneHandling = DateTimeZoneHandling.Local,
+      NullValueHandling = NullValueHandling.Ignore,
     };
 
     /// <summary>任意のデータをJsonに変換します</summary>

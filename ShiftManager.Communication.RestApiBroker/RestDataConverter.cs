@@ -11,8 +11,8 @@ namespace ShiftManager.Communication.RestData
     #region UserData
     public static UserData ToUserData(this RestUser i)
     {
-      UserID id = new(i.user_id);
-      return new UserData(id, new HashedPassword(), new NameData(i.firstname, i.lastname), new StoreID(i.store_id), GroupStringToValue(i.user_group), StatusStringToValue(i.user_state), new WorkLog(id, new()), new UserSetting(id, NotificationPublishTimings.None, new()));
+      UserID id = new(i.user_id ?? string.Empty);
+      return new UserData(id, new HashedPassword(), new NameData(i.firstname ?? string.Empty, i.lastname ?? string.Empty), new StoreID(i.store_id ?? string.Empty), GroupStringToValue(i.user_group), StatusStringToValue(i.user_state), new WorkLog(id, new()), new UserSetting(id, NotificationPublishTimings.None, new()));
     }
     public static RestUser FromUserData(this RestUser dst, IUserData i)
     {
@@ -36,7 +36,7 @@ namespace ShiftManager.Communication.RestData
       if (i.start_break_time is not null && i.end_break_time is not null)
         breakTDic = new() { [i.start_break_time ?? default] = (int?)(i.end_break_time - i.start_break_time)?.TotalMinutes ?? 0 };
 
-      return new(new UserID(i.user_id), i.work_date.Date, i.is_paid_holiday, i.attendance_time, i.leaving_time, breakTDic);
+      return new(new UserID(i.user_id ?? string.Empty), i.work_date?.Date ?? default, i.is_paid_holiday ?? false, i.attendance_time ?? default, i.leaving_time ?? default, breakTDic);
     }
 
     public static RestShift FromSingleShiftData(this RestShift dst,in ISingleShiftData i, in uint id, in string store_id, in bool is_request)
@@ -63,7 +63,7 @@ namespace ShiftManager.Communication.RestData
     #endregion
 
     #region Shift Request
-    public static ShiftRequest ToShiftRequest(this RestShiftRequest i) => new(new UserID(i.user_id), i.last_update, i.shifts.Select(i => i.ToSingleShiftData() as ISingleShiftData).ToDictionary(i => i.WorkDate));
+    public static ShiftRequest ToShiftRequest(this RestShiftRequest i) => new(new UserID(i.user_id ?? string.Empty), i.last_update ?? default, i.shifts?.Select(i => i.ToSingleShiftData() as ISingleShiftData).ToDictionary(i => i.WorkDate) ?? new());
 
     public static RestShiftRequest FromShiftRequest(this RestShiftRequest dst, in IShiftRequest i, string store_id)
     {
@@ -82,8 +82,8 @@ namespace ShiftManager.Communication.RestData
 
     #region ShiftSchedule
     public static ScheduledShift ToScheduledShift(this RestShiftSchedule i)
-      => new(i.target_date.Date, i.start_of_schedule, i.end_of_schedule, ShiftStateStringToValue(i.shift_state),
-        i.shifts.Select(i => i.ToSingleShiftData() as ISingleShiftData).ToDictionary(i => new UserID(i.UserID)), new() { (int)i.worker_num });
+      => new(i.target_date?.Date ?? default, i.start_of_schedule ?? default, i.end_of_schedule ?? default, ShiftStateStringToValue(i.shift_state),
+        i.shifts?.Select(i => i.ToSingleShiftData() as ISingleShiftData).ToDictionary(i => new UserID(i.UserID)) ?? new(), new() { (int)(i.worker_num ?? 0)});
 
     public static RestShiftSchedule FromScheduledShift(this RestShiftSchedule dst, in IScheduledShift i, string store_id)
     {
@@ -103,10 +103,10 @@ namespace ShiftManager.Communication.RestData
 
     #region StoreData
     public static StoreData ToStoreData(this RestStore i)
-      => new(new StoreID(i.store_id),
-        i.worker_lists.Select(i => i.ToUserData() as IUserData).ToDictionary(i => new UserID(i.UserID)),
-        i.shift_requests.Select(i => i.ToShiftRequest() as IShiftRequest).ToDictionary(i => new UserID(i.UserID)),
-        i.shift_schedules.Select(i => i.ToScheduledShift() as IScheduledShift).ToDictionary(i => i.TargetDate)
+      => new(new StoreID(i.store_id ?? string.Empty),
+        i.worker_lists?.Select(i => i.ToUserData() as IUserData).ToDictionary(i => new UserID(i.UserID)) ?? new(),
+        i.shift_requests?.Select(i => i.ToShiftRequest() as IShiftRequest).ToDictionary(i => new UserID(i.UserID)) ?? new(),
+        i.shift_schedules?.Select(i => i.ToScheduledShift() as IScheduledShift).ToDictionary(i => i.TargetDate) ?? new()
       );
 
     public static RestStore FromStoreData(this RestStore dst, in IStoreData i)
@@ -129,7 +129,7 @@ namespace ShiftManager.Communication.RestData
       if (i.start_break_time is not null || i.end_break_time is not null)
         breakT = new() { [i.start_break_time ?? default] = (int?)((i.end_break_time - i.start_break_time)?.TotalMinutes) ?? 0 };
 
-      return new(i.attendance_time, i.leaving_time ?? default, breakT);
+      return new(i.attendance_time ?? default, i.leaving_time ?? default, breakT);
     }
 
     public static RestWorkLog FromSingleWorkLog(this RestWorkLog dst, in ISingleWorkLog i, in IUserID userID)
@@ -151,7 +151,7 @@ namespace ShiftManager.Communication.RestData
     #endregion
 
     #region String To Enum
-    public static UserGroup GroupStringToValue(in string value) => value switch
+    public static UserGroup GroupStringToValue(in string? value) => value switch
     {
       RestDataConstants.Group.SystemAdmin => UserGroup.SystemAdmin,
       RestDataConstants.Group.SuperUser => UserGroup.SuperUser,
@@ -159,7 +159,7 @@ namespace ShiftManager.Communication.RestData
       RestDataConstants.Group.ForTimeRecordTerminal => UserGroup.ForTimeRecordTerminal,
       _ => UserGroup.None
     };
-    public static UserState StatusStringToValue(in string value) => value switch
+    public static UserState StatusStringToValue(in string? value) => value switch
     {
       RestDataConstants.Status.Normal => UserState.Normal,
       RestDataConstants.Status.InLeaveOfAbsence => UserState.InLeaveOfAbsence,
@@ -167,7 +167,7 @@ namespace ShiftManager.Communication.RestData
       RestDataConstants.Status.NotHired => UserState.NotHired,
       _ => UserState.Others
     };
-    public static ShiftSchedulingState ShiftStateStringToValue(in string value) => value switch
+    public static ShiftSchedulingState ShiftStateStringToValue(in string? value) => value switch
     {
       RestDataConstants.ShiftStatus.NotStarted => ShiftSchedulingState.NotStarted,
       RestDataConstants.ShiftStatus.Working => ShiftSchedulingState.Working,
