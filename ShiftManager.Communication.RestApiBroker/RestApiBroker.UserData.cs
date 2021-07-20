@@ -66,13 +66,17 @@ namespace ShiftManager.Communication
   * output = 実行結果 ;
   * end of specification ;
   *******************************************/
-    public Task<ApiResult> UpdatePasswordAsync(IHashedPassword hashedPassword) => Task.Run<ApiResult>(() =>
+    public async Task<ApiResult> UpdatePasswordAsync(IHashedPassword hashedPassword)
     {
       if (CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In);
 
-      return UpdatePasswordAsync(CurrentUserData.UserID, CurrentUserData.FullName, hashedPassword).Result;
-    });
+      var res = await Sv.UpdateUserDataAsync(new() { password = hashedPassword.Hash }); //パスワード以外はNULL => JSONに入らない
+
+      var apiRes = ToApiRes(res.Response.StatusCode);
+
+      return new(apiRes == ApiResultCodes.Success, apiRes);
+    }
 
     /*******************************************
   * specification ;
