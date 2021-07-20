@@ -66,6 +66,9 @@ namespace ShiftManager.Controls
 
     static ShiftEditorControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(ShiftEditorControl), new FrameworkPropertyMetadata(typeof(ShiftEditorControl)));
 
+    BreakTimeEditorControl BreakTimeEditor;
+    TimeSpan TotalBreakTimeLength { get => BreakTimeEditor?.TotalBreakTimeLength ?? TimeSpan.Zero; }
+
     /*******************************************
 * specification ;
 * name = ShiftEditorControl ;
@@ -135,6 +138,11 @@ namespace ShiftManager.Controls
         _ = tba.SetBinding(TextBox.TextProperty, AttendanceTimeBinding);
       if (Template.FindName("LeavingTimeTextBox", this) is TextBox tbl)
         _ = tbl.SetBinding(TextBox.TextProperty, LeavingTimeBinding);
+      if (Template.FindName(nameof(BreakTimeEditor), this) is BreakTimeEditorControl btec)
+      {
+        BreakTimeEditor = btec;
+        BreakTimeEditor.BreakTimeLenChanged += (_, _) => OnWorkTimeLenChanged();
+      }
     }
 
     static private void OnWorkDateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -196,7 +204,7 @@ namespace ShiftManager.Controls
 * output = N/A ;
 * end of specification ;
 *******************************************/
-    private void ChangeWorkTimeLen() => WorkTimeLength = LeavingTime - AttendanceTime;
+    private void ChangeWorkTimeLen() => WorkTimeLength = LeavingTime - AttendanceTime - TotalBreakTimeLength;
 
     /*******************************************
 * specification ;
@@ -212,8 +220,8 @@ namespace ShiftManager.Controls
 *******************************************/
     private void OnWorkTimeLenChanged()
     {
-      if (WorkTimeLength != (LeavingTime - AttendanceTime))
-        LeavingTime = AttendanceTime + WorkTimeLength;
+      if (WorkTimeLength != (LeavingTime - AttendanceTime + TotalBreakTimeLength))
+        LeavingTime = AttendanceTime + WorkTimeLength - TotalBreakTimeLength;
 
       WorkTimeLenForeground = WorkTimeLength < new TimeSpan(0) ? Brushes.Red : Brushes.Black;
     }

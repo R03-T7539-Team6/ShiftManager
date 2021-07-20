@@ -29,16 +29,16 @@ namespace ShiftManager.Controls
     public static readonly DependencyProperty BreakTimeListProperty = DependencyProperty.Register(nameof(BreakTimeList), typeof(ObservableCollection<BreakTimeDataSource>), typeof(BreakTimeEditorControl));
 
     /// <summary>休憩時間の総量 [min]</summary>
-    public int TotalBreakTimeLength
+    public TimeSpan TotalBreakTimeLength
     {
       get
       {
         if (!(BreakTimeList?.Count > 0))
-          return 0;
+          return TimeSpan.Zero;
 
-        int ret = 0;
+        TimeSpan ret = TimeSpan.Zero;
         foreach (var i in BreakTimeList)
-          ret += (int)i.TimeLen.TotalMinutes;
+          ret += i.TimeLen;
 
         return ret;
       }
