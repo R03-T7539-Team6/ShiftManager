@@ -33,7 +33,7 @@ namespace ShiftManager.Communication
         return new(false, ApiResultCodes.Not_Logged_In, null);
       var resStore = await Sv.GetStoreFileAsync(CurrentUserData.StoreID.Value);
 
-      if (resStore.Content is null)
+      if (resStore.Content?.shift_schedules is null)
         return new(false, ApiResultCodes.Unknown_Error, null);
 
       if (resStore.Content.shift_schedules.Length <= 0)
@@ -42,7 +42,7 @@ namespace ShiftManager.Communication
       var tmp1 = resStore.Content.shift_schedules.Where(i => i.target_date == targetDate);
       foreach (var tmp2 in tmp1)
       {
-        var tmp3 = tmp2.shifts.Where(i => i.user_id == userID.Value).FirstOrDefault();
+        var tmp3 = tmp2.shifts?.Where(i => i.user_id == userID.Value).FirstOrDefault();
         if (tmp3 != default)
           return new(true, ApiResultCodes.Success, tmp3.ToSingleShiftData());
       }

@@ -71,17 +71,19 @@ namespace ShiftManager.Communication
     {
       if (!IsLoggedIn || CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In, null);
-      throw new NotSupportedException();
-      /*var res = await Sv.(new() //サーバー側の実装を確認する
+
+      var res = await Sv.CreateStoreShiftScheduleFileAsync(new() //サーバー側の実装を確認する
       {
         store_id = CurrentUserData.StoreID.Value,
         target_date = dateTime.Date,
         start_of_schedule = dateTime.Date,
         end_of_schedule = dateTime.Date,
         worker_num = 1
-      });*/
+      });
 
-      //return new(res.IsSuccess, res.ResultCode, res.ReturnData?.ToScheduledShift());
+      var apiRes = ToApiRes(res.Response.StatusCode);
+
+      return new(apiRes == ApiResultCodes.Success, apiRes, res.Content?.ToScheduledShift());
     }
 
     /*******************************************
@@ -153,7 +155,7 @@ namespace ShiftManager.Communication
 
       var resCode = ToApiRes(res.Response.StatusCode);
 
-      if (res.Response.StatusCode != HttpStatusCode.OK || res.Content is null)
+      if (res.Response.StatusCode != HttpStatusCode.OK || res.Content?.shift_requests is null)
         return new(false, resCode, new ImmutableArray<ShiftRequest>());
 
 
@@ -181,7 +183,7 @@ namespace ShiftManager.Communication
       var retCode = ToApiRes(res.Response.StatusCode);
       if (retCode != ApiResultCodes.Success)
         return new(false, retCode, Array.Empty<UserData>().ToImmutableArray());
-      if (res.Content is null)
+      if (res.Content?.worker_lists is null)
         return new(false, ApiResultCodes.Data_Not_Found, Array.Empty<UserData>().ToImmutableArray());
 
       return new(true, retCode, res.Content.worker_lists.Select(i => i.ToUserData()).ToImmutableArray());
@@ -227,10 +229,10 @@ namespace ShiftManager.Communication
 
       var retCode = ToApiRes(res.Response.StatusCode);
 
-      if (res.Response.StatusCode != HttpStatusCode.OK || res.Content is null)
+      if (res.Response.StatusCode != HttpStatusCode.OK || res.Content?.shift_schedules is null)
         return new(false, retCode, null);
 
-      var ret = res.Content.shift_schedules.Where(i => i.target_date.Date == dateTime.Date).Select(i => i.ToScheduledShift()).FirstOrDefault();
+      var ret = res.Content.shift_schedules.Where(i => i.target_date?.Date == dateTime.Date).Select(i => i.ToScheduledShift()).FirstOrDefault();
 
       return new(true, retCode, ret);
     }

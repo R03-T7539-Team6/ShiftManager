@@ -66,13 +66,17 @@ namespace ShiftManager.Communication
   * output = 実行結果 ;
   * end of specification ;
   *******************************************/
-    public Task<ApiResult> UpdatePasswordAsync(IHashedPassword hashedPassword) => Task.Run<ApiResult>(() =>
+    public async Task<ApiResult> UpdatePasswordAsync(IHashedPassword hashedPassword)
     {
       if (CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In);
 
-      return UpdatePasswordAsync(CurrentUserData.UserID, CurrentUserData.FullName, hashedPassword).Result;
-    });
+      var res = await Sv.UpdateUserDataAsync(new() { password = hashedPassword.Hash }); //パスワード以外はNULL => JSONに入らない
+
+      var apiRes = ToApiRes(res.Response.StatusCode);
+
+      return new(apiRes == ApiResultCodes.Success, apiRes);
+    }
 
     /*******************************************
   * specification ;
@@ -101,6 +105,27 @@ namespace ShiftManager.Communication
 
       return await SignInAsync(userID, hashedPassword);
 */
+    }
+
+    public async Task<ApiResult<UserData>> UpdateUserDataAsync(IUserData userData)
+    {
+      RestUser restUser = new();
+      restUser.FromUserData(userData);
+
+      if (string.IsNullOrWhiteSpace(restUser.password))
+        restUser.password = null;
+
+      var res = await Sv.UpdateUserDataAsync(restUser);
+
+      var apiRes = ToApiRes(res.Response.StatusCode);
+
+      if (apiRes != ApiResultCodes.Success || res.Content is null)
+        return new(false, apiRes, null);
+
+      UserData newUserData = res.Content.ToUserData();
+      CurrentUserData = newUserData;
+
+      return new(true, ApiResultCodes.Success, newUserData);
     }
   }
 }

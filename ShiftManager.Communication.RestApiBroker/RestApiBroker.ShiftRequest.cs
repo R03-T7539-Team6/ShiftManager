@@ -31,7 +31,7 @@ namespace ShiftManager.Communication
         if (!(res.Content?.Length > 0))
           return new(false, ApiResultCodes.Data_Not_Found);
 
-        ShiftReqCache = res.Content.ToDictionary(i => i.work_date.Date);
+        ShiftReqCache = res.Content.Where(i => i.work_date is not null).ToDictionary(i => i.work_date?.Date ?? default);
       }
       return new(true, ApiResultCodes.Success);
     }

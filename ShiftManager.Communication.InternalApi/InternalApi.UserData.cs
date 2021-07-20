@@ -95,5 +95,18 @@ namespace ShiftManager.Communication
 
       return SignInAsync(userID, hashedPassword).Result;
     });
+    public Task<ApiResult<UserData>> UpdateUserDataAsync(IUserData userData) => Task.Run<ApiResult<UserData>>(() =>
+    {
+      UserID id = new(userData.UserID);
+      if (!TestD.UserDataDictionary.TryGetValue(id, out var oldData) || oldData is null)
+        return new(false, ApiResultCodes.UserID_Not_Found, null);
+
+
+
+      UserData newUserData = new UserData(userData) with { HashedPassword = oldData.HashedPassword };
+      TestD.UserDataDictionary[new(userData.UserID)] = newUserData;
+
+      return new(true, ApiResultCodes.Success, newUserData);
+    });
   }
 }

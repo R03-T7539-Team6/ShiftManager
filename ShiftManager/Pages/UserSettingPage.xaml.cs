@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 
 using ShiftManager.Communication;
@@ -11,6 +12,7 @@ namespace ShiftManager.Pages
   /// </summary>
   public partial class UserSettingPage : Page, IContainsApiHolder
   {
+    public event EventHandler UpdateUserDataSuccessed;
     public IApiHolder ApiHolder { get; set; }
     private UserData userData;
     public UserSettingPage() => InitializeComponent();
@@ -19,8 +21,11 @@ namespace ShiftManager.Pages
     {
       ApiResult<UserData> data = await ApiHolder.Api.GetUserDataByIDAsync(ApiHolder.CurrentUserID);
 
-      if(data.IsSuccess && data.ReturnData is not null)
-        usc.SetData(data.ReturnData);
+      if (data.IsSuccess && data.ReturnData is not null)
+      {
+        userData = data.ReturnData;
+        usc.SetData(userData);
+      }
       else
         _ = MessageBox.Show("データ取得に失敗しました\nErrorCode:" + data.ResultCode.ToString(), "ShiftManager");
     }
@@ -54,8 +59,22 @@ namespace ShiftManager.Pages
           _ = MessageBox.Show("パスワード更新に失敗しました\nErrorCode:" + res.ResultCode.ToString(), "ShiftManager");
           return;
         }
+
+        data = data with { HashedPassword = new HashedPassword() };
       }
-      // dataのupdateは未実装
+
+      if(userData != data) //パスワード以外も変更されているかチェック
+      {
+        var res = await ApiHolder.Api.UpdateUserDataAsync(data);
+        if (!res.IsSuccess)
+        {
+          _ = MessageBox.Show("ユーザー情報更新に失敗しました\nErrorCode:" + res.ResultCode.ToString(), "ShiftManager");
+          return;
+        }
+      }
+
+      UpdateUserDataSuccessed?.Invoke(this, EventArgs.Empty);
+      _ = MessageBox.Show("ユーザー情報更新に成功しました", "ShiftManager");
     }
   }
 }
