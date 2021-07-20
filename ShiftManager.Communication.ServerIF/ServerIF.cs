@@ -19,7 +19,7 @@ namespace ShiftManager.Communication
     public async Task<ServerResponse<RestSignInResponse>> SignInAsync(RestUser user)
     {
       var res = await Api.ExecuteWithDataAsync<RestUser, RestSignInResponse>("/login", user, RestSharp.Method.POST);
-      if (res.Response.StatusCode == System.Net.HttpStatusCode.OK && res.Content is not null)
+      if (res.Response.StatusCode == System.Net.HttpStatusCode.OK && res.Content?.token is not null)
         Api.Token = res.Content.token;
       else if(res.Response.StatusCode== System.Net.HttpStatusCode.BadRequest)
       {
@@ -41,7 +41,7 @@ namespace ShiftManager.Communication
 
     public Task<ServerResponse<RestUser>> AddUserAsync(RestUser user) => Api.ExecuteWithDataAsync<RestUser, RestUser>("/users", user, RestSharp.Method.POST);
 
-    public Task<ServerResponse> UpdateUserDataAsync() => throw new NotSupportedException(); //=> Api.ExecuteAsync("/users", RestSharp.Method.PUT); //変えたい情報だけをJsonに含める方法を検討する
+    public Task<ServerResponse<RestUser>> UpdateUserDataAsync(RestUser user) => Api.ExecuteWithDataAsync<RestUser, RestUser>("/users", user, RestSharp.Method.PUT); //変えたい情報だけが変わっていることを期待する
 
     public Task<ServerResponse> DeleteCurrentUserAsync() => Api.ExecuteAsync("/users", RestSharp.Method.DELETE);
     #endregion
@@ -53,7 +53,7 @@ namespace ShiftManager.Communication
 
     public Task<ServerResponse<RestShift>> CreateSingleShiftAsync(RestShift shift) => Api.ExecuteWithDataAsync<RestShift, RestShift>("/shifts", shift, RestSharp.Method.POST);
 
-    public Task<ServerResponse<RestShift>> UpdateShiftAsync(RestShift shift) => throw new NotSupportedException(); // => Api.ExecuteWithDataAsync<RestShift, RestShift>($"/shifts/{shift.id}",shift, RestSharp.Method.PUT); //変えたい情報だけをJsonに含める方法を検討する
+    public Task<ServerResponse<RestShift>> UpdateShiftAsync(RestShift shift) => Api.ExecuteWithDataAsync<RestShift, RestShift>($"/shifts/{shift.id}", shift, RestSharp.Method.PUT); //変えたい情報だけが変わっていることを期待する
 
     public Task<ServerResponse> DeleteSingleShiftAsync(int shiftID) => Api.ExecuteAsync($"/shifts/{shiftID}", RestSharp.Method.DELETE);
 
@@ -65,7 +65,7 @@ namespace ShiftManager.Communication
 
     public Task<ServerResponse<RestShiftSchedule>> GetCurrentStoreShiftScheduleFileAsync(string storeID) => Api.ExecuteAsync<RestShiftSchedule>($"/shifts/schedule/{storeID}", RestSharp.Method.GET);
 
-    public Task<ServerResponse<RestShiftSchedule>> CreateStoreShiftScheduleFileAsync() => throw new NotSupportedException();  //変えたい情報だけをJsonに含める
+    public Task<ServerResponse<RestShiftSchedule>> CreateStoreShiftScheduleFileAsync(RestShiftSchedule data) => Api.ExecuteWithDataAsync<RestShiftSchedule, RestShiftSchedule>("/shifts/schedule", data, RestSharp.Method.POST); //変えたい情報だけがJsonに含まれることを期待
     #endregion
 
     #region お店情報に関する操作
@@ -79,7 +79,7 @@ namespace ShiftManager.Communication
 
     public Task<ServerResponse<RestWorkLog>> CreateWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLog>("/logs", log, RestSharp.Method.POST);
 
-    public Task<ServerResponse<RestWorkLog>> UpdateWorkLogAsync(RestWorkLog log) => throw new NotSupportedException(); // => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLog>("/logs", log, RestSharp.Method.PUT); //変えたい情報だけをJsonに含める
+    public Task<ServerResponse<RestWorkLog>> UpdateWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLog>("/logs", log, RestSharp.Method.PUT); //変えたい情報だけがJsonに含まれることを期待
     #endregion
   }
 }
