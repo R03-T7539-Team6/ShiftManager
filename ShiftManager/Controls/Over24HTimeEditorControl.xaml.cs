@@ -7,10 +7,10 @@ namespace ShiftManager.Controls
   public class Over24HTimeEditorControl : TextBox
   {
     public DateTime TargetDate { get => (DateTime)GetValue(TargetDateProperty); set => SetValue(TargetDateProperty, value); }
-    public static readonly DependencyProperty TargetDateProperty = DependencyProperty.Register(nameof(TargetDate), typeof(DateTime), typeof(Over24HTimeEditorControl), new(OnTargetDateChanged));
+    public static readonly DependencyProperty TargetDateProperty = DependencyProperty.Register(nameof(TargetDate), typeof(DateTime), typeof(Over24HTimeEditorControl), new FrameworkPropertyMetadata(DateTime.UnixEpoch, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnTargetDateChanged));
 
     public DateTime CurrentDateTime { get => (DateTime)GetValue(CurrentDateTimeProperty); set => SetValue(CurrentDateTimeProperty, value); }
-    public static readonly DependencyProperty CurrentDateTimeProperty = DependencyProperty.Register(nameof(CurrentDateTime), typeof(DateTime), typeof(Over24HTimeEditorControl), new(OnCurrentDateTimeChanged));
+    public static readonly DependencyProperty CurrentDateTimeProperty = DependencyProperty.Register(nameof(CurrentDateTime), typeof(DateTime), typeof(Over24HTimeEditorControl), new FrameworkPropertyMetadata(DateTime.UnixEpoch, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnCurrentDateTimeChanged));
 
     public TimeSpan CurrentTimeSpan { get; private set; }
 
