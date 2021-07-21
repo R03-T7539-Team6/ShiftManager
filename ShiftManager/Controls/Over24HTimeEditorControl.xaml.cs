@@ -41,7 +41,7 @@ namespace ShiftManager.Controls
       if (ts == c.CurrentTimeSpan)
         return;
 
-      c.Text = $"{(int)ts.TotalHours:D2}:{(int)ts.TotalMinutes:D2}";
+      c.Text = $"{(int)ts.TotalHours:D2}:{ts.Minutes:D2}";
     }
 
     protected override void OnTextChanged(TextChangedEventArgs e)
