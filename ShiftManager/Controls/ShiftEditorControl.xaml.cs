@@ -220,7 +220,7 @@ namespace ShiftManager.Controls
 *******************************************/
     private void OnWorkTimeLenChanged()
     {
-      if (WorkTimeLength != (LeavingTime - AttendanceTime + TotalBreakTimeLength))
+      if (WorkTimeLength != (LeavingTime - AttendanceTime - TotalBreakTimeLength))
         LeavingTime = AttendanceTime + WorkTimeLength - TotalBreakTimeLength;
 
       WorkTimeLenForeground = WorkTimeLength < new TimeSpan(0) ? Brushes.Red : Brushes.Black;
