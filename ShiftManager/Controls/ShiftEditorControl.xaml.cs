@@ -26,7 +26,7 @@ namespace ShiftManager.Controls
     public DateTime LeavingTime { get => (DateTime)GetValue(LeavingTimeProperty); set => SetValue(LeavingTimeProperty, value); }
     public static readonly DependencyProperty LeavingTimeProperty = DependencyProperty.Register(nameof(LeavingTime), typeof(DateTime), typeof(ShiftEditorControl), new((s, _) => (s as ShiftEditorControl)?.ChangeWorkTimeLen()));
     public TimeSpan WorkTimeLength { get => (TimeSpan)GetValue(WorkTimeLengthProperty); set => SetValue(WorkTimeLengthProperty, value); }
-    public static readonly DependencyProperty WorkTimeLengthProperty = DependencyProperty.Register(nameof(WorkTimeLength), typeof(TimeSpan), typeof(ShiftEditorControl), new((s, _) => (s as ShiftEditorControl)?.OnWorkTimeLenChanged()));
+    public static readonly DependencyProperty WorkTimeLengthProperty = DependencyProperty.Register(nameof(WorkTimeLength), typeof(TimeSpan), typeof(ShiftEditorControl), new((s, e) => (s as ShiftEditorControl)?.OnWorkTimeLenChanged((TimeSpan)e.NewValue)));
 
     public Dictionary<DateTime, int> BreakTimeDictionary { get => (Dictionary<DateTime, int>)GetValue(BreakTimeDictionaryProperty); set => SetValue(BreakTimeDictionaryProperty, value); }
     public static readonly DependencyProperty BreakTimeDictionaryProperty = DependencyProperty.Register(nameof(BreakTimeDictionary), typeof(Dictionary<DateTime, int>), typeof(ShiftEditorControl));
@@ -65,6 +65,9 @@ namespace ShiftManager.Controls
     public static readonly ICommand DeleteButtonClickedCommand = new CustomCommand<ShiftEditorControl>(i => i.DeleteButtonClicked());
 
     static ShiftEditorControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(ShiftEditorControl), new FrameworkPropertyMetadata(typeof(ShiftEditorControl)));
+
+    private BreakTimeEditorControl BreakTimeEditor;
+    private TimeSpan TotalBreakTimeLength => BreakTimeEditor?.TotalBreakTimeLength ?? TimeSpan.Zero;
 
     /*******************************************
 * specification ;
@@ -110,6 +113,11 @@ namespace ShiftManager.Controls
         AttendanceTime = i.AttendanceTime;
         LeavingTime = i.LeavingTime;
         BreakTimeDictionary = new(i.BreakTimeDictionary);
+
+        int BreakTimeLen = 0;
+        foreach (var item in BreakTimeDictionary)
+          BreakTimeLen += item.Value;
+        WorkTimeLength = LeavingTime - AttendanceTime - TimeSpan.FromMinutes(BreakTimeLen);
       }
     }
     private Binding AttendanceTimeBinding { get; } = new(nameof(AttendanceTime)) { UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged };
@@ -135,6 +143,11 @@ namespace ShiftManager.Controls
         _ = tba.SetBinding(TextBox.TextProperty, AttendanceTimeBinding);
       if (Template.FindName("LeavingTimeTextBox", this) is TextBox tbl)
         _ = tbl.SetBinding(TextBox.TextProperty, LeavingTimeBinding);
+      if (Template.FindName(nameof(BreakTimeEditor), this) is BreakTimeEditorControl btec)
+      {
+        BreakTimeEditor = btec;
+        BreakTimeEditor.BreakTimeLenChanged += (_, _) => ChangeWorkTimeLen();
+      }
     }
 
     static private void OnWorkDateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -196,7 +209,7 @@ namespace ShiftManager.Controls
 * output = N/A ;
 * end of specification ;
 *******************************************/
-    private void ChangeWorkTimeLen() => WorkTimeLength = LeavingTime - AttendanceTime;
+    private void ChangeWorkTimeLen() => WorkTimeLength = LeavingTime - AttendanceTime - TotalBreakTimeLength;
 
     /*******************************************
 * specification ;
@@ -210,12 +223,12 @@ namespace ShiftManager.Controls
 * output = N/A ;
 * end of specification ;
 *******************************************/
-    private void OnWorkTimeLenChanged()
+    private void OnWorkTimeLenChanged(TimeSpan newWorkTimeLen)
     {
-      if (WorkTimeLength != (LeavingTime - AttendanceTime))
-        LeavingTime = AttendanceTime + WorkTimeLength;
+      if (newWorkTimeLen != (LeavingTime - AttendanceTime - TotalBreakTimeLength))
+        LeavingTime = AttendanceTime + newWorkTimeLen - TotalBreakTimeLength;
 
-      WorkTimeLenForeground = WorkTimeLength < new TimeSpan(0) ? Brushes.Red : Brushes.Black;
+      WorkTimeLenForeground = newWorkTimeLen < TimeSpan.Zero ? Brushes.Red : Brushes.Black;
     }
 
     public static readonly ShiftEditorElements FullBitsOfElements = (ShiftEditorElements)0b01111111;

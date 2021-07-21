@@ -28,6 +28,23 @@ namespace ShiftManager.Controls
     public ObservableCollection<BreakTimeDataSource> BreakTimeList { get => (ObservableCollection<BreakTimeDataSource>)GetValue(BreakTimeListProperty); set => SetValue(BreakTimeListProperty, value); }
     public static readonly DependencyProperty BreakTimeListProperty = DependencyProperty.Register(nameof(BreakTimeList), typeof(ObservableCollection<BreakTimeDataSource>), typeof(BreakTimeEditorControl));
 
+    /// <summary>休憩時間の総量 [min]</summary>
+    public TimeSpan TotalBreakTimeLength
+    {
+      get
+      {
+        if (!(BreakTimeList?.Count > 0))
+          return TimeSpan.Zero;
+
+        TimeSpan ret = TimeSpan.Zero;
+        foreach (var i in BreakTimeList)
+          ret += i.TimeLen;
+
+        return ret;
+      }
+    }
+    public event EventHandler BreakTimeLenChanged;
+
     public string SelectionText
     {
       get => _SelectionText;
@@ -168,7 +185,11 @@ namespace ShiftManager.Controls
     {
       BreakTimeList = new();
       foreach (var i in new Dictionary<DateTime, int>(BreakTimeDictionary))
-        BreakTimeList.Add(new(i, BreakTimeDictionary, TargetDate));
+      {
+        BreakTimeDataSource btds = new(i, BreakTimeDictionary, TargetDate);
+        BreakTimeList.Add(btds);
+        btds.TimeLenChanged += OnBreakTimeLenChanged;
+      }
     }
 
     /*******************************************
@@ -189,12 +210,16 @@ namespace ShiftManager.Controls
       if (!BreakTimeDictionary.ContainsKey(TargetDate.Date)) //TargetDateの年月日の0時0分0秒を割り当てる
       {
         KeyValuePair<DateTime, int> kvp = new(TargetDate.Date, 0);
-        BreakTimeList.Add(new(kvp, BreakTimeDictionary, TargetDate));
+        BreakTimeDataSource btds = new(kvp, BreakTimeDictionary, TargetDate);
+        BreakTimeList.Add(btds);
+        btds.TimeLenChanged += OnBreakTimeLenChanged;
       }
 
       foreach (var i in BreakTimeList)
         i.UpdateIndex();
     }
+
+    private void OnBreakTimeLenChanged(object sender, EventArgs e) => BreakTimeLenChanged?.Invoke(this, e);
 
     /*******************************************
 * specification ;
@@ -217,18 +242,22 @@ namespace ShiftManager.Controls
       {
         _ = BreakTimeDictionary.Remove(i.StartTime); //Keyが存在しなかったときはfalseが返るだけ
         _ = BreakTimeList.Remove(i); //tmpが存在しなかったときはfalseが返るだけ
+        i.TimeLenChanged -= OnBreakTimeLenChanged;
       }
 
       SelectedBreakTime.Clear();
 
       foreach (var i in BreakTimeList)
         i.UpdateIndex();
+
+      BreakTimeLenChanged?.Invoke(this, EventArgs.Empty);
     }
   }
   public partial class BreakTimeDataSource : INotifyPropertyChanged, INotifyDataErrorInfo
   {
     public event PropertyChangedEventHandler PropertyChanged;
     public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+    public event EventHandler TimeLenChanged;
 
     /*******************************************
 * specification ;
@@ -377,7 +406,7 @@ namespace ShiftManager.Controls
 
         OnPropertyChanged(nameof(EndTime));
         OnPropertyChanged(nameof(TimeLen));
-
+        TimeLenChanged?.Invoke(this, EventArgs.Empty);
         BreakTimeDictionary[StartTime] = (int)TimeLen.TotalMinutes;
       }
     }

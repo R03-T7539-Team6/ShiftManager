@@ -9,5 +9,6 @@
     <ResourceDictionary Source="/ShiftManager;component/Controls/ShiftEditorHeaderControl.xaml"/>
     <ResourceDictionary Source="/ShiftManager;component/Controls/BreakTimeEditorControl.xaml"/>
     <ResourceDictionary Source="/ShiftManager;component/Controls/PasswordStrengthVisualizerControl.xaml"/>
+    <ResourceDictionary Source="/ShiftManager;component/Controls/Over24HTimeEditorControl.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
