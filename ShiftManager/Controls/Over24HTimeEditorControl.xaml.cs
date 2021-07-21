@@ -54,7 +54,7 @@ namespace ShiftManager.Controls
 
       var sarr = Text.Split(':');
 
-      if (sarr.Length != 2 || !int.TryParse(sarr[0], out var hh) || !int.TryParse(sarr[1], out var mm))
+      if (sarr.Length != 2 || !int.TryParse(sarr[0], out var hh) || !int.TryParse(sarr[1], out var mm) || mm is >= 60 or < 0 || hh < 0)
         return;
 
       TimeSpan ts = new(hh, mm, 0);
