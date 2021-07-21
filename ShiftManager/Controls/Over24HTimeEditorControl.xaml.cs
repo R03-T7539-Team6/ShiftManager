@@ -22,6 +22,8 @@ namespace ShiftManager.Controls
     {
       if (d is not Over24HTimeEditorControl c)
         return;
+      if (c.CurrentDateTime == (DateTime)CurrentDateTimeProperty.DefaultMetadata.DefaultValue)
+        return; //初期値設定前は実行しない
 
       DateTime oldDate = (DateTime)e.OldValue;
       TimeSpan ts = c.CurrentDateTime - oldDate;
