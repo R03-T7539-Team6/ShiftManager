@@ -51,7 +51,7 @@
                           <local:Over24HTimeEditorControl
                             IsEnabled="{TemplateBinding IsEnabled}"
                             TargetDate="{Binding BaseDate}"
-                            CurrentDateTime="{Binding StartTime, Mode=TwoWay}"/>
+                            CurrentDateTime="{Binding StartTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         </DataTemplate>
                       </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -61,7 +61,7 @@
                           <local:Over24HTimeEditorControl
                             IsEnabled="{TemplateBinding IsEnabled}"
                             TargetDate="{Binding BaseDate}"
-                            CurrentDateTime="{Binding EndTime, Mode=TwoWay}"/>
+                            CurrentDateTime="{Binding EndTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         </DataTemplate>
                       </GridViewColumn.CellTemplate>
                     </GridViewColumn>
