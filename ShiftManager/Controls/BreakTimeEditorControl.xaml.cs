@@ -249,6 +249,8 @@ namespace ShiftManager.Controls
 
       foreach (var i in BreakTimeList)
         i.UpdateIndex();
+
+      BreakTimeLenChanged?.Invoke(this, EventArgs.Empty);
     }
   }
   public partial class BreakTimeDataSource : INotifyPropertyChanged, INotifyDataErrorInfo
