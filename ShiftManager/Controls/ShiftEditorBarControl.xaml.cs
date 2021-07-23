@@ -157,7 +157,7 @@ namespace ShiftManager.Controls
         ToolTipService.SetInitialShowDelay(TargetGrid, 200);
         ToolTipService.SetBetweenShowDelay(TargetGrid, 1);
         ToolTipService.SetHasDropShadow(TargetGrid, false);
-        ToolTipService.SetShowDuration(TargetGrid, 1);
+        ToolTipService.SetShowDuration(TargetGrid, int.MaxValue);
       }
     }
 
