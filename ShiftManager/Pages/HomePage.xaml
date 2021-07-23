@@ -14,11 +14,11 @@
     Background="White"
     Margin="50">
 
-    <TextBlock
+    <TextBox
       HorizontalAlignment="Center"
       VerticalAlignment="Top"
-      Margin="30"
-      Text="{Binding ElementName=SEBC, Path=CurrentCellMode, Mode=OneWay}"/>
+      Margin="50"
+      Text="{Binding ElementName=SEBC, Path=Width, Mode=TwoWay}"/>
 
     <Border
       HorizontalAlignment="Stretch"
