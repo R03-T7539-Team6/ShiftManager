@@ -14,7 +14,6 @@
             BorderBrush="Black"
             BorderThickness="1">
             <Grid
-              ShowGridLines="True"
               x:Name="TargetGrid"
               Background="White"/>
           </Border>

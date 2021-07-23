@@ -7,6 +7,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
+using System.Windows.Shapes;
 
 namespace ShiftManager.Controls
 {
@@ -15,6 +16,7 @@ namespace ShiftManager.Controls
     // public double Scale { get; set; } = 1.0; //Scale設定は, 親側でしか変更しないため親側で行う
     static ShiftEditorBarControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(ShiftEditorBarControl), new FrameworkPropertyMetadata(typeof(ShiftEditorBarControl)));
 
+    #region Cell Settings
     private const double BASE_WIDTH = 32;
 
     /// <summary>1時間ごとにセルを表示する最大値 [px]</summary>
@@ -23,9 +25,11 @@ namespace ShiftManager.Controls
     /// <summary>30分ごとにセルを表示する最大値 [px]</summary>
     private const double CELLWIDTH_30MIN_MAX = CELLWIDTH_1H_MAX * 1.5; //これ以上は15分間隔
     /// <summary>15分ごとにセルを表示する最大値 [px]</summary>
-    private const double CELLWIDTH_15MIN_MAX = CELLWIDTH_30MIN_MAX * 2; //これ以上は5分間隔
+    private const double CELLWIDTH_15MIN_MAX = CELLWIDTH_30MIN_MAX * 2; //これ以上は10分間隔
+    /// <summary>10分ごとにセルを表示する最大値 [px]</summary>
+    private const double CELLWIDTH_10MIN_MAX = CELLWIDTH_30MIN_MAX * 3; //これ以上は5分間隔
     /// <summary>5分ごとにセルを表示する最大値 [px]</summary>
-    private const double CELLWIDTH_05MIN_MAX = CELLWIDTH_15MIN_MAX * 3; //これ以上は1分間隔
+    private const double CELLWIDTH_05MIN_MAX = CELLWIDTH_10MIN_MAX * 2; //これ以上は1分間隔
 
     /// <summary>2時間ごとにセルを表示する最大値 [px]</summary>
     private const double CELLWIDTH_2H_MAX = CELLWIDTH_1H_MAX * 0.5; //これ以上は1時間間隔 これ未満なら2H間隔
@@ -33,32 +37,35 @@ namespace ShiftManager.Controls
     public enum CellMode
     {
       None,
-      Minute_01,
-      Minute_05,
-      Minute_15,
-      Minute_30,
-      Hour_1,
-      Hour_2,
+      Minute01,
+      Minute05,
+      Minute10,
+      Minute15,
+      Minute30,
+      Hour01,
+      Hour02,
     }
 
     private static CellMode GetCellMode(in Size newSize) => GetCellMode(newSize.Width);
     private static CellMode GetCellMode(in double newWidth) =>
-      newWidth < CELLWIDTH_2H_MAX ? CellMode.Hour_2 :
-      newWidth < CELLWIDTH_1H_MAX ? CellMode.Hour_1 :
-      newWidth < CELLWIDTH_30MIN_MAX ? CellMode.Minute_30 :
-      newWidth < CELLWIDTH_15MIN_MAX ? CellMode.Minute_15 :
-      newWidth < CELLWIDTH_05MIN_MAX ? CellMode.Minute_05 :
-      CellMode.Minute_01;
+      newWidth < CELLWIDTH_2H_MAX ? CellMode.Hour02 :
+      newWidth < CELLWIDTH_1H_MAX ? CellMode.Hour01 :
+      newWidth < CELLWIDTH_30MIN_MAX ? CellMode.Minute30 :
+      newWidth < CELLWIDTH_15MIN_MAX ? CellMode.Minute15 :
+      newWidth < CELLWIDTH_10MIN_MAX ? CellMode.Minute10 :
+      newWidth < CELLWIDTH_05MIN_MAX ? CellMode.Minute05 :
+      CellMode.Minute01;
 
     private int GetCellCount() => GetCellCount(CurrentCellMode);
     private static int GetCellCount(in CellMode cellMode) => cellMode switch
     {
-      CellMode.Hour_2 => 24 / 2,
-      CellMode.Hour_1 => 24 / 1,
-      CellMode.Minute_30 => 24 * 2,
-      CellMode.Minute_15 => 24 * 2 * 2,
-      CellMode.Minute_05 => 24 * 2 * 2 * 3,
-      CellMode.Minute_01 => 24 * 2 * 2 * 3 * 5,
+      CellMode.Hour02 => 24 / 2,
+      CellMode.Hour01 => 24 / 1,
+      CellMode.Minute30 => 24 * 2,
+      CellMode.Minute10 => 24 * 6,
+      CellMode.Minute15 => 24 * 4,
+      CellMode.Minute05 => 24 * 12,
+      CellMode.Minute01 => 24 * 60,
       _ => throw new ArgumentOutOfRangeException()
     };
     private double GetCellStep() => GetCellStep(CurrentCellMode);
@@ -66,18 +73,20 @@ namespace ShiftManager.Controls
     private TimeSpan GetCellMinuteStep() => GetCellMinuteStep(CurrentCellMode);
     private static TimeSpan GetCellMinuteStep(in CellMode cellMode) => cellMode switch
     {
-      CellMode.Hour_2 => new(2, 0, 0),
-      CellMode.Hour_1 => new(1, 0, 0),
-      CellMode.Minute_30 => new(0, 30, 0),
-      CellMode.Minute_15 => new(0, 15, 0),
-      CellMode.Minute_05 => new(0, 5, 0),
-      CellMode.Minute_01 => new(0, 1, 0),
+      CellMode.Hour02 => new(2, 0, 0),
+      CellMode.Hour01 => new(1, 0, 0),
+      CellMode.Minute30 => new(0, 30, 0),
+      CellMode.Minute15 => new(0, 15, 0),
+      CellMode.Minute10 => new(0, 10, 0),
+      CellMode.Minute05 => new(0, 5, 0),
+      CellMode.Minute01 => new(0, 1, 0),
       _ => throw new ArgumentOutOfRangeException()
     };
 
     public CellMode CurrentCellMode { get; private set; } = CellMode.None;
+    #endregion
 
-    public Brush SeparatorBrush { get; set; } = Brushes.Red;
+    public Brush SeparatorBrush { get; set; } = Brushes.LightGray;
     public Brush WorkTimeBrush { get; set; } = Brushes.Aqua;
     public Brush BreakTimeBrush { get; set; } = Brushes.Lime;
 
@@ -99,24 +108,49 @@ namespace ShiftManager.Controls
     }
 
 
-    IReadOnlyDictionary<int, TextBlock> TimeTBDictionary { get; }
+    IReadOnlyDictionary<int, Grid> TimeTBDictionary { get; }
 
     private const int ZIndex_TimeTextBlock = 3; //大きいほど前に出る
     private const int ZIndex_Separator = 2; //大きいほど前に出る
     private const int ZIndex_BreakTime = 1; //大きいほど前に出る
     private const int ZIndex_WorkTime = 0; //大きいほど前に出る
 
+    private const double SEPARATOR_WIDTH_BOLD = 4;
+    private const double SEPARATOR_WIDTH_NORMAL = 2;
+    private const double SEPARATOR_WIDTH_LIGHT = 1;
+
     public ShiftEditorBarControl()
     {
       #region 時間ラベル用のTextBlock初期化
-      Dictionary<int, TextBlock> tbDic = new();
+      Dictionary<int, Grid> tbDic = new();
       for (int i = 0; i < 24; i++)
+      {
+
         tbDic.Add(i, new()
         {
-          Text = i.ToString(),
+          Children =
+          {
+            new TextBlock()
+            {
+              Text = i.ToString(),
+              FontWeight = FontWeights.Bold,
+              Foreground = Brushes.White,
+              Effect = new BlurEffect()
+              {
+                Radius = 1,
+                KernelType = KernelType.Box
+              }
+            },
+            new TextBlock()
+            {
+              Text = i.ToString(),
+              FontWeight = FontWeights.Bold,
+            },
+          },
           HorizontalAlignment = HorizontalAlignment.Center,
-          VerticalAlignment = VerticalAlignment.Center
+          VerticalAlignment = VerticalAlignment.Center,
         });
+      }
       TimeTBDictionary = tbDic;
 
       foreach (var t in TimeTBDictionary.Values)
@@ -167,14 +201,6 @@ namespace ShiftManager.Controls
         TargetGrid.MouseMove += TargetGrid_MouseMove;
         TargetGrid.MouseEnter += (_, _) => TimeTooltip.IsOpen = true;
         TargetGrid.MouseLeave += (_, _) => TimeTooltip.IsOpen = false;
-
-        /*TargetGrid.ToolTip = TimeTooltip;
-
-        ToolTipService.SetToolTip(TargetGrid, TimeTooltipTB);
-        ToolTipService.SetInitialShowDelay(TargetGrid, 200);
-        ToolTipService.SetBetweenShowDelay(TargetGrid, 1);
-        ToolTipService.SetHasDropShadow(TargetGrid, true);
-        ToolTipService.SetShowDuration(TargetGrid, int.MaxValue);*/
       }
     }
 
@@ -203,7 +229,7 @@ namespace ShiftManager.Controls
       else //現状余分なのがある (48個存在に対して24個必要 => +24)
         TargetGrid.ColumnDefinitions.RemoveRange(0, cellSubResult); //余分な部分を削除
 
-      if (CurrentCellMode == CellMode.Hour_2)
+      if (CurrentCellMode == CellMode.Hour02)
       {
         for(int i = 0; i < TimeTBDictionary.Count / 2; i++)
         {
@@ -221,7 +247,10 @@ namespace ShiftManager.Controls
           _ = TargetGrid.Children.Add(TimeTBDictionary[i]);
         }
       }
+
       Debug.WriteLine(CurrentCellMode);
+
+      ReputSeparator();
     }
 
     private void TargetGrid_MouseMove(object sender, MouseEventArgs e)
@@ -239,12 +268,10 @@ namespace ShiftManager.Controls
       TimeSpan currentCellTime = new(0, (int)cellMinuteStep.TotalMinutes * currentCell, 0);
 
       TryUpdateTimeTooltipTB(currentCellTime, cellMinuteStep);
-      //TimeTooltip.Placement = PlacementMode.Absolute;
+
       var screenPoint = grid.PointToScreen(e.GetPosition(grid));
       TimeTooltip.HorizontalOffset = 10 + screenPoint.X;
       TimeTooltip.VerticalOffset = 10 + screenPoint.Y;
-
-      //TimeTooltip.Margin = new(pos.X, pos.Y, 0, 0);
     }
 
     private void TargetGrid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -252,6 +279,70 @@ namespace ShiftManager.Controls
       if (!IsEnabled || sender is not Grid grid)
         return;
 
+    }
+
+    private void ReputSeparator()
+    {
+      int CellCount = GetCellCount();
+      for(int i = 1; i < CellCount; i++)
+      {
+        Line line = new()
+        {
+          StrokeThickness = CurrentCellMode switch
+          {
+            CellMode.Minute01 =>
+              (i % 60) == 0 ? SEPARATOR_WIDTH_BOLD :
+              (i % 15) == 0 ? SEPARATOR_WIDTH_NORMAL
+              : SEPARATOR_WIDTH_LIGHT, // 1HはBold, 15minはNormal, 5min/1minはLight
+
+            CellMode.Minute05 =>
+              (i % 12) == 0 ? SEPARATOR_WIDTH_BOLD :
+              (i % 6) == 0 ? SEPARATOR_WIDTH_NORMAL
+              : SEPARATOR_WIDTH_LIGHT, // 1HはBold, 30minはNormal, 10min/5minはLight
+
+            CellMode.Minute10 =>
+              (i % 6) == 0 ? SEPARATOR_WIDTH_BOLD :
+              (i % 2) == 0 ? SEPARATOR_WIDTH_NORMAL
+              : SEPARATOR_WIDTH_LIGHT, // 1HはBold, 30minはNormal, 10minはLight
+
+            CellMode.Minute15 =>
+              (i % 4) == 0 ? SEPARATOR_WIDTH_BOLD :
+              (i % 2) == 0 ? SEPARATOR_WIDTH_NORMAL
+              : SEPARATOR_WIDTH_LIGHT, // 1HはBold, 30minはNormal, 15minはLight
+
+            CellMode.Minute30 => (i % 2) == 0 ? SEPARATOR_WIDTH_BOLD : SEPARATOR_WIDTH_NORMAL, // 1HはBold, 30minはNormal
+
+            CellMode.Hour01 or CellMode.Hour02 => SEPARATOR_WIDTH_NORMAL,
+
+            _ => 0
+          }
+        };
+
+        if (line.StrokeThickness <= 0)
+          return; //次回以降に回復することは考えられないため処理中断
+
+        if (CurrentCellMode == CellMode.Minute01 && (i % 5) != 0) //1分ごとのモードのとき, 5の倍数以外は破線にする
+        {
+          line.StrokeDashArray = new() { 2 };
+          line.StrokeDashCap = PenLineCap.Round;
+        }
+        else if (CurrentCellMode == CellMode.Minute05 && (i % 2) != 0) //5分ごとのモードのとき, 10の倍数以外は破線にする
+        {
+          line.StrokeDashArray = new() { 2 };
+          line.StrokeDashCap = PenLineCap.Round;
+        }
+
+        line.Y1 = 0;
+        line.Y2 = TargetGrid.ActualHeight;
+        line.Stroke = SeparatorBrush;
+        line.HorizontalAlignment = HorizontalAlignment.Center;
+
+        Panel.SetZIndex(line, ZIndex_Separator);
+        Grid.SetColumn(line, i - 1);
+        Grid.SetColumnSpan(line, 2);
+
+        TargetGrid.Children.Add(line);
+      }
     }
   }
 }
