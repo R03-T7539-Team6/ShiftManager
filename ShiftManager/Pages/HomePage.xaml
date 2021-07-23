@@ -10,16 +10,31 @@
   d:DesignHeight="450" d:DesignWidth="800"
   Title="HomePage">
 
-  <Grid Background="White">
-    <Border
+  <Grid
+    Background="White"
+    Margin="50">
+
+    <TextBlock
       HorizontalAlignment="Center"
+      VerticalAlignment="Top"
+      Margin="30"
+      Text="{Binding ElementName=SEBC, Path=CurrentCellMode, Mode=OneWay}"/>
+
+    <Border
+      HorizontalAlignment="Stretch"
       VerticalAlignment="Center"
       BorderThickness="2"
       BorderBrush="Aqua">
-      <ctrls:ShiftEditorBarControl
+      <ScrollViewer
+        VerticalScrollBarVisibility="Hidden"
+        HorizontalScrollBarVisibility="Auto">
+        <ctrls:ShiftEditorBarControl
+          x:Name="SEBC"
         Margin="2"
-        Width="300"
+        Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollViewer}, Path=ActualWidth}"
         Height="30"/>
+      </ScrollViewer>
+        
     </Border>
   </Grid>
 </Page>
