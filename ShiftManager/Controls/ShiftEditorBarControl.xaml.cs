@@ -83,7 +83,7 @@ namespace ShiftManager.Controls
 
     private Grid TargetGrid;
     
-    //private ToolTip TimeTooltip { get; }
+    private Popup TimeTooltip { get; }
     private TextBlock TimeTooltipTB { get; }
     private TimeSpan TimeTooltipTB_LastStart = TimeSpan.MinValue;
     private TimeSpan TimeTooltipTB_LastStep = TimeSpan.MinValue;
@@ -124,14 +124,31 @@ namespace ShiftManager.Controls
       #endregion
 
       #region Tooltip用の初期設定
-      TimeTooltipTB = new() { Text = "--:-- ~ --:--", Background = Brushes.White };
-      /*TimeTooltip = new()
+      TimeTooltipTB = new()
       {
-        Content= TimeTooltipTB,
+        Text = "--:-- ~ --:--",
+      };
+      TimeTooltip = new()
+      {
+        Child = new Border()
+        {
+          Child = TimeTooltipTB,
+          BorderBrush = Brushes.Black,
+          BorderThickness = new(1),
+          Padding = new(3),
+          Background = Brushes.White,
+          CornerRadius = new(2),
+          Margin = new(0, 0, 16, 16), //影用
+          Effect = new DropShadowEffect()
+          {
+            BlurRadius = 8,
+            ShadowDepth = 1,
+          },
+        },
         IsOpen = false,
-        Effect = new DropShadowEffect(),
-        Placement = PlacementMode.Mouse,
-      };*/
+        Placement = PlacementMode.Absolute,
+        AllowsTransparency = true
+      };
       #endregion
     }
 
@@ -148,16 +165,16 @@ namespace ShiftManager.Controls
       {
         TargetGrid.MouseDown += TargetGrid_MouseDown;
         TargetGrid.MouseMove += TargetGrid_MouseMove;
-        //TargetGrid.MouseEnter += (_, _) => TimeTooltip.IsOpen = true;
-        //TargetGrid.MouseLeave += (_, _) => TimeTooltip.IsOpen = false;
+        TargetGrid.MouseEnter += (_, _) => TimeTooltip.IsOpen = true;
+        TargetGrid.MouseLeave += (_, _) => TimeTooltip.IsOpen = false;
 
-        TargetGrid.ToolTip = TimeTooltipTB; //TimeTooltip;
+        /*TargetGrid.ToolTip = TimeTooltip;
 
         ToolTipService.SetToolTip(TargetGrid, TimeTooltipTB);
         ToolTipService.SetInitialShowDelay(TargetGrid, 200);
         ToolTipService.SetBetweenShowDelay(TargetGrid, 1);
-        ToolTipService.SetHasDropShadow(TargetGrid, false);
-        ToolTipService.SetShowDuration(TargetGrid, int.MaxValue);
+        ToolTipService.SetHasDropShadow(TargetGrid, true);
+        ToolTipService.SetShowDuration(TargetGrid, int.MaxValue);*/
       }
     }
 
@@ -174,7 +191,7 @@ namespace ShiftManager.Controls
 
       TargetGrid.Children.Clear();
 
-      //TargetGrid.Children.Add(TimeTooltip);
+      TargetGrid.Children.Add(TimeTooltip);
 
       int cellCount = GetCellCount();
 
@@ -222,7 +239,12 @@ namespace ShiftManager.Controls
       TimeSpan currentCellTime = new(0, (int)cellMinuteStep.TotalMinutes * currentCell, 0);
 
       TryUpdateTimeTooltipTB(currentCellTime, cellMinuteStep);
+      //TimeTooltip.Placement = PlacementMode.Absolute;
+      var screenPoint = grid.PointToScreen(e.GetPosition(grid));
+      TimeTooltip.HorizontalOffset = 10 + screenPoint.X;
+      TimeTooltip.VerticalOffset = 10 + screenPoint.Y;
 
+      //TimeTooltip.Margin = new(pos.X, pos.Y, 0, 0);
     }
 
     private void TargetGrid_MouseDown(object sender, MouseButtonEventArgs e)
