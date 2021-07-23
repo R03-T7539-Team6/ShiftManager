@@ -13,7 +13,10 @@
             Background="{x:Null}"
             BorderBrush="Black"
             BorderThickness="1">
-            <Rectangle Fill="{TemplateBinding Background}"/>
+            <Grid
+              ShowGridLines="True"
+              x:Name="TargetGrid"
+              Background="White"/>
           </Border>
         </ControlTemplate>
       </Setter.Value>
