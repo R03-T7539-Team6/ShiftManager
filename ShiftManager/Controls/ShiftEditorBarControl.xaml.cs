@@ -52,19 +52,17 @@ namespace ShiftManager.Controls
     public static readonly DependencyProperty BreakTimeDictionaryProperty = DependencyProperty.Register(nameof(BreakTimeDictionary), typeof(Dictionary<DateTime, int>), typeof(ShiftEditorBarControl),
       new((i, _) =>
       {
-        if (i is not ShiftEditorBarControl c)
+        if (i is not ShiftEditorBarControl c || !c.IsInitialized)
           return;
 
-        if (c.BreakTimeDictionary.GetHashCode() != c.LocalBreakTimeDicHash)
+        if (c.BreakTimeDictionary is null || !c.BreakTimeDictionary.SequenceEqual(c.LocalBreakTimeDicRec))
           c.OnTimeValuesChanged();
       }));
-    private int LocalBreakTimeDicHash = 0;
+    private Dictionary<DateTime, int> _LocalBreakTimeDicRec;
+    private Dictionary<DateTime, int> LocalBreakTimeDicRec { get => _LocalBreakTimeDicRec; set => _LocalBreakTimeDicRec = new(value); }
 
     private void OnTimeValuesChanged()
     {
-      if (LocalStartTime == StartTime && LocalEndTime == EndTime && LocalBreakTimeDicHash == BreakTimeDictionary?.GetHashCode())
-        return;
-
       if (BreakTimeDictionary is null)
         return;
 
@@ -107,7 +105,7 @@ namespace ShiftManager.Controls
 
       LocalStartTime = StartTime;
       LocalEndTime = EndTime;
-      LocalBreakTimeDicHash = BreakTimeDictionary.GetHashCode();
+      LocalBreakTimeDicRec = BreakTimeDictionary;
 
       foreach (var i in FittingWorkTimeRectangles())
         TargetGrid.Children.Add(i);
@@ -217,7 +215,8 @@ namespace ShiftManager.Controls
           BreakTimeDictionary.Add(dt, (int)(key2.From - key1.To).TotalMinutes);
         }
 
-      LocalBreakTimeDicHash = BreakTimeDictionary.GetHashCode();
+      LocalBreakTimeDicRec = BreakTimeDictionary;
+      BreakTimeDictionaryUpdated?.Invoke(this, EventArgs.Empty);
     }
 
     class TimeSpanFromToComparer : IComparer<TimeSpanFromTo>

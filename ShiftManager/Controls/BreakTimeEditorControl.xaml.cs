@@ -181,7 +181,7 @@ namespace ShiftManager.Controls
 * output = N/A ;
 * end of specification ;
 *******************************************/
-    private void BreakTimeDictionaryUpdated()
+    public void BreakTimeDictionaryUpdated()
     {
       BreakTimeList = new();
       foreach (var i in new Dictionary<DateTime, int>(BreakTimeDictionary))
