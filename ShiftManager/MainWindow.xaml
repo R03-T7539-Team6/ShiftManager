@@ -69,7 +69,8 @@
       Navigating="MainFrame_Navigating"
       FontFamily="BIZ UDPGothic"
       Grid.Row="1"
-      Grid.Column="1"/>
+      Grid.Column="1"
+      Source="/Pages/HomePage.xaml"/>
 
     <Grid Grid.Row="0"
           Grid.Column="0"
@@ -117,7 +118,7 @@
       VerticalAlignment="Stretch">
 
       <StackPanel Margin="0,60,0,0">
-        <Button Content="HOME" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Null}"/>
+        <Button Content="HOME" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:HomePage}"/>
         <Button Content="シフト希望登録" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftRequestManagePage}"/>
         <Button Content="予定シフト表示" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ScheduledShiftCheckPage}"/>
         <Button Content="勤務実績表示" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkLogCheckPage}"/>

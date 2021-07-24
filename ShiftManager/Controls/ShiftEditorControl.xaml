@@ -23,6 +23,10 @@
   <Style TargetType="{x:Type local:ShiftEditorControl}">
     <Setter Property="VisibleElements" Value="{x:Static local:ShiftEditorControl.FullBitsOfElements}"/>
     <Setter Property="EditableElements" Value="{x:Static local:ShiftEditorControl.FullBitsOfElements}"/>
+
+    <Setter Property="AttendingTimeBrush" Value="LightSkyBlue"/>
+    <Setter Property="BreakingTimeBrush" Value="Yellow"/>
+
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type local:ShiftEditorControl}">
@@ -98,11 +102,17 @@
             </Popup>
 
             <local:ShiftEditorBarControl
+              x:Name="BarEditor"
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.ShiftBar}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.ShiftBar}}"
+              TargetDate="{TemplateBinding WorkDate}"
+              StartTime="{Binding AttendanceTime, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"
+              EndTime="{Binding LeavingTime, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"
+              BreakTimeDictionary="{Binding BreakTimeDictionary, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"
+              WorkTimeBrush="{TemplateBinding AttendingTimeBrush}"
+              BreakTimeBrush="{TemplateBinding BreakingTimeBrush}"
               Grid.Column="4"
-              Margin="4"
-              Background="Aqua"/>
+              Margin="4"/>
               
 
             <TextBox

@@ -148,6 +148,12 @@ namespace ShiftManager.Controls
         BreakTimeEditor = btec;
         BreakTimeEditor.BreakTimeLenChanged += (_, _) => ChangeWorkTimeLen();
       }
+      if (Template.FindName("BarEditor", this) is ShiftEditorBarControl sebc)
+      {
+        sebc.BreakTimeDictionaryUpdated += (_, _) => BreakTimeEditor.BreakTimeDictionaryUpdated();
+        sebc.BreakTimeDictionaryUpdated += (_, _) => ChangeWorkTimeLen();
+        BreakTimeEditor.BreakTimeLenChanged += (_, _) => sebc.BreakTimeDictionary = BreakTimeEditor.BreakTimeDictionary;
+      }
     }
 
     static private void OnWorkDateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
