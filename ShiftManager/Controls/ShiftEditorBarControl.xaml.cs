@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -92,9 +93,14 @@ namespace ShiftManager.Controls
     private Grid TargetGrid;
 
     record TimeSpanFromTo(TimeSpan From, TimeSpan To);
-    record TripleRectangle(Rectangle Left, Rectangle Center, Rectangle Right);
-    Dictionary<TimeSpanFromTo, TripleRectangle> WorkTimes { get; } = new();
-    
+    record TripleRectangle(Grid Left, Grid Center, Grid Right);
+    SortedDictionary<TimeSpanFromTo, TripleRectangle> WorkTimes { get; } = new(new TimeSpanFromToComparer());
+
+    class TimeSpanFromToComparer : IComparer<TimeSpanFromTo>
+    {
+      public int Compare(TimeSpanFromTo x, TimeSpanFromTo y) => TimeSpan.Compare(x.From, y.From);
+    }
+
     #region Tooltip
     private Popup TimeTooltip { get; }
     private TextBlock TimeTooltipTB { get; }
@@ -255,8 +261,21 @@ namespace ShiftManager.Controls
       Debug.WriteLine(CurrentCellMode);
 
       ReputSeparator();
+
+      _ = FittingWorkTimeRectangles();
+
+      foreach (var i in WorkTimes.Values) //WorkTimeの四角形を配置する
+      {
+        if (i.Left is not null)
+          _ = TargetGrid.Children.Add(i.Left);
+        if (i.Center is not null)
+          _ = TargetGrid.Children.Add(i.Center);
+        if (i.Right is not null)
+          _ = TargetGrid.Children.Add(i.Right);
+      }
     }
 
+    int lastCell = -1;
     private void TargetGrid_MouseMove(object sender, MouseEventArgs e)
     {
       if (!IsEnabled || sender is not Grid grid)
@@ -279,6 +298,18 @@ namespace ShiftManager.Controls
 
       if (!IsEnabled || e.LeftButton != MouseButtonState.Pressed)
         return;
+
+      if (currentCell == lastCell)
+        return;
+
+      _ = TurnWorkTime(currentCellTime, cellMinuteStep);
+
+      OptimizeWorkTimes();
+
+      foreach (var i in FittingWorkTimeRectangles())
+        _ = TargetGrid.Children.Add(i);
+
+      lastCell = currentCell;
     }
 
     private void TargetGrid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -296,47 +327,278 @@ namespace ShiftManager.Controls
       TimeSpan cellMinuteStep = GetCellMinuteStep();
       TimeSpan currentCellTime = new(0, (int)cellMinuteStep.TotalMinutes * currentCell, 0);
 
-      if (WorkTimes.Count <= 0) //最初の追加 => 勤務設定
-      {
-        Rectangle rect = new() { Fill = WorkTimeBrush };
-        WorkTimes.Add(new(currentCellTime, currentCellTime + cellMinuteStep), new(null, rect, null));
+      _ = TurnWorkTime(currentCellTime, cellMinuteStep);
 
-        Panel.SetZIndex(rect, ZIndex_WorkTime);
-        Grid.SetColumn(rect, currentCell);
+      OptimizeWorkTimes();
 
-        TargetGrid.Children.Add(rect);
-        return;
-      }
-      else
+      foreach (var i in FittingWorkTimeRectangles())
+        _ = TargetGrid.Children.Add(i);
+
+      lastCell = currentCell;
+    }
+
+    /// <summary></summary>
+    /// <param name="From"></param>
+    /// <param name="Step"></param>
+    /// <returns>再配置が必要かどうか</returns>
+    private bool TurnWorkTime(in TimeSpan From, in TimeSpan Step)
+    {
+      TimeSpan To = From + Step;
+      List<TimeSpanFromTo> KeysToRemove = new();
+
+      foreach (var i in WorkTimes) //ソート済み
       {
-        foreach (var v in WorkTimes)
+        if (i.Key.To <= From) //反転させる場所がまだ含まれていない
+          continue;
+        else if (i.Key.From >= To) //反転させる場所がもう含まれることはない
+          break;
+        else if (From <= i.Key.From && i.Key.To <= To) //完全一致 OR 内側にWorkTimeが存在する => 該当KeyValuePairを除去
         {
-          if(v.Key.From <= currentCellTime && currentCellTime <= v.Key.To) //勤務時間の真ん中に穴をあける
-          {
-            WorkTimes.Remove(v.Key);
+          if (i.Value.Left is not null)
+            TargetGrid.Children.Remove(i.Value.Left);
+          if (i.Value.Center is not null)
+            TargetGrid.Children.Remove(i.Value.Center);
+          if (i.Value.Right is not null)
+            TargetGrid.Children.Remove(i.Value.Right);
 
-            /* 2-3-4-5-6 (2からSpan=5)
-             * 2-3 4 5-6 (2, 6からSpan=2)
-             */
-            Grid.SetColumnSpan(v.Value.Center, currentCell - Grid.GetColumn(v.Value.Center));
+          KeysToRemove.Add(i.Key);
 
-            if (currentCell == GetCellCount()) //押下されたセルが最後の部分だった => その右にセルは存在しない
-              return;
+          continue; //最終的にはセルを塗りつぶすけど, 他にも内側に存在するかもしれないから再探索
+        }
+        else if (i.Key.From == From && i.Key.To > To) //始端一致 かつ WorkTime終端がTargetCellよりも右にある : 一部除去 (短縮: 始端を右にずらす)
+          return ReplaceWorkTimesKey(i.Key, i.Key with { From = To });
+        else if (i.Key.To == To && i.Key.From < From) //終端一致 かつ WorkTime始端がTargetCellよりも左にある : 一部除去 (短縮: 終端を左にずらす)
+          return ReplaceWorkTimesKey(i.Key, i.Key with { To = From });
+        else if(i.Key.From < From && To < i.Key.To) //該当セルとその両隣がWorkTime => 中抜き
+        {
+          ReplaceWorkTimesKey(i.Key, i.Key with { To = From }); //左側
+          WorkTimes.Add(new(To, i.Key.To), new(null, null, null)); //右側
 
-            /*Rectangle rightCRect;
-            if (v.Value.Right is not null) {
-              rightRRect = v.Value.Right;
-            }
-            else
-            {
-              KeyValuePair<TimeSpanFromTo, TripleRectangle> rightKVP;
-
-            }
-            Grid.SetColumn(rightCRect, currentCell + 1);*/
-          }
+          return true;
         }
       }
 
+      foreach (var i in KeysToRemove) //空リストでも大丈夫
+        WorkTimes.Remove(i);
+
+      WorkTimes.Add(new(From, To), new(null, null, null));
+
+      return true;
+    }
+    private bool ReplaceWorkTimesKey(in TimeSpanFromTo Old, in TimeSpanFromTo New)
+    {
+      if (WorkTimes.TryGetValue(Old, out var value))
+        WorkTimes.Remove(Old);
+
+      WorkTimes.Add(New, value);
+
+      return true;
+    }
+
+    private void OptimizeWorkTimes()
+    {
+      if (WorkTimes.Count <= 1)
+        return; //1つだけしかないなら結合不要
+
+      for (int i = 1; i < WorkTimes.Count; i++)
+      {
+        var currentKey = WorkTimes.Keys.ElementAt(i);
+        var prevKey = WorkTimes.Keys.ElementAt(i - 1);
+        if(currentKey.From <= prevKey.To) // Prev:1400, From:1300など
+        {
+          var rects = WorkTimes[prevKey];
+          var rects2 = WorkTimes[currentKey];
+
+          TargetGrid.Children.Remove(rects.Right);
+          TargetGrid.Children.Remove(rects2.Left);
+          TargetGrid.Children.Remove(rects2.Center);
+
+          WorkTimes.Remove(currentKey);
+          WorkTimes.Remove(prevKey);
+
+          WorkTimes.Add(prevKey with { To = currentKey.To }, rects with { Right = rects2.Right });
+
+          i--; //再度確認する必要があるため
+        }
+      }
+    }
+
+    private IReadOnlyList<UIElement> FittingWorkTimeRectangles()
+    {
+      TimeSpan cellMinuteStep = GetCellMinuteStep();
+      List<UIElement> addList = new();
+      Dictionary<TimeSpanFromTo, TripleRectangle> TmpDic = new();
+      foreach(var i in WorkTimes)
+      {
+        var (leftGrid, centerGrid, rightGrid) = i.Value;
+
+        var workLen = i.Key.To - i.Key.From;
+
+        int leftCol = (int)(i.Key.From.TotalMinutes / cellMinuteStep.TotalMinutes); //端数は切り捨て
+        int rightCol = (int)(i.Key.To.TotalMinutes / cellMinuteStep.TotalMinutes); //端数は切り捨て
+
+        double leftFraction = i.Key.From.TotalMinutes % cellMinuteStep.TotalMinutes; //左のSeparatorから四角形左端までの時間
+        double rightFraction = i.Key.To.TotalMinutes % cellMinuteStep.TotalMinutes; //左のSeparatorから四角形右端までの時間
+
+        bool NeededLeftGrid = leftFraction != 0;
+        bool NeededRightGrid = rightFraction != 0;
+        bool IsSameCell = leftCol == rightCol || (NeededLeftGrid && !NeededRightGrid && rightCol == leftCol + 1); //右端に端数はないが, 左に1セル未満の勤務が存在する場合も含める
+
+        if ((!NeededLeftGrid && !NeededRightGrid) || IsSameCell) //端数が必要ない OR 同じセル内で完結する
+        {
+          if(centerGrid is null)
+          {
+            Rectangle rect = new() { Fill = WorkTimeBrush };
+
+            Grid.SetColumn(rect, 1);
+
+            centerGrid = new()
+            {
+              ColumnDefinitions = { new(), new(), new() },
+              Children = { rect }
+            };
+
+            Panel.SetZIndex(centerGrid, ZIndex_WorkTime);
+
+            addList.Add(centerGrid);
+          }
+
+          centerGrid.ColumnDefinitions[0].Width = IsSameCell ? new(leftFraction, GridUnitType.Star) : new(0);
+          centerGrid.ColumnDefinitions[1].Width = new(workLen.TotalMinutes, GridUnitType.Star);
+          centerGrid.ColumnDefinitions[2].Width = IsSameCell ? new(cellMinuteStep.TotalMinutes - rightFraction, GridUnitType.Star) : new(0);
+
+          if (leftGrid is not null)
+          {
+            TargetGrid.Children.Remove(leftGrid);
+            leftGrid = null;
+          }
+          if(rightGrid is not null)
+          {
+            TargetGrid.Children.Remove(rightGrid);
+            rightGrid = null;
+          }
+
+          Grid.SetColumn(centerGrid, leftCol);
+          Grid.SetColumnSpan(centerGrid, Math.Max(rightCol - leftCol, 1)); //少なくともSpan=1は確保する
+        }
+        else //端数専用Gridが必要である
+        {
+          #region 左の端数Gridの処理
+          if (NeededLeftGrid) //左端に端数あり
+          {
+            if (leftGrid is null) //端数用のGridが準備されていない
+            {
+              Rectangle rect = new()
+              {
+                Fill = WorkTimeBrush
+              };
+
+              Grid.SetColumn(rect, 1);
+
+              leftGrid = new()
+              {
+                ColumnDefinitions = { new(), new() },
+                Children = { rect }
+              };
+
+              Panel.SetZIndex(leftGrid, ZIndex_WorkTime);
+
+              addList.Add(leftGrid);
+            }
+
+            leftGrid.ColumnDefinitions[0].Width = new(leftFraction, GridUnitType.Star);
+            leftGrid.ColumnDefinitions[1].Width = new(cellMinuteStep.TotalMinutes - leftFraction, GridUnitType.Star);
+
+            Grid.SetColumn(leftGrid, leftCol);
+            Grid.SetColumnSpan(leftGrid, 1);
+          }
+          else if (leftGrid is not null) //左端に端数がないのに端数用Gridが存在する => 除去する
+          {
+            TargetGrid.Children.Remove(leftGrid);
+            leftGrid = null;
+          }
+          #endregion
+
+          #region 右の端数Gridの処理
+          if (NeededRightGrid) //右端に端数あり
+          {
+            if (rightGrid is null) //端数用のGridが準備されていない
+            {
+              Rectangle rect = new()
+              {
+                Fill = WorkTimeBrush
+              };
+
+              Grid.SetColumn(rect, 0);
+
+              rightGrid = new()
+              {
+                ColumnDefinitions = { new(), new() },
+                Children = { rect }
+              };
+
+              Panel.SetZIndex(rightGrid, ZIndex_WorkTime);
+
+              addList.Add(rightGrid);
+            }
+
+            rightGrid.ColumnDefinitions[0].Width = new(rightFraction, GridUnitType.Star);
+            rightGrid.ColumnDefinitions[1].Width = new(cellMinuteStep.TotalMinutes - rightFraction, GridUnitType.Star);
+
+            Grid.SetColumn(rightGrid, rightCol);
+            Grid.SetColumnSpan(rightGrid, 1);
+          }
+          else if (rightGrid is not null) //右端に端数がないのに端数用Gridが存在する => 除去する
+          {
+            TargetGrid.Children.Remove(rightGrid);
+            rightGrid = null;
+          }
+          #endregion
+
+          #region CenterGridの設定
+          if (rightCol - leftCol >= 2) //centerGridが必要である場合のみ処理を行う
+          {
+            if (centerGrid is null)
+            {
+              Rectangle rect = new() { Fill = WorkTimeBrush };
+
+              Grid.SetColumn(rect, 1);
+
+              centerGrid = new()
+              {
+                ColumnDefinitions = { new(), new(), new() },
+                Children = { rect }
+              };
+
+              Panel.SetZIndex(centerGrid, ZIndex_WorkTime);
+
+              addList.Add(centerGrid);
+            }
+
+            centerGrid.ColumnDefinitions[0].Width = new(0);
+            centerGrid.ColumnDefinitions[1].Width = new(1, GridUnitType.Star); //いっぱいいっぱいを使用する
+            centerGrid.ColumnDefinitions[2].Width = new(0);
+
+            int LeftPad = NeededLeftGrid ? 1 : 0;
+
+            Grid.SetColumn(centerGrid, leftCol + LeftPad); //左端Gridを配置しているなら, その分一つ右から開始する
+            Grid.SetColumnSpan(centerGrid, rightCol - leftCol - LeftPad);
+          }
+          else if (centerGrid is not null) //必要ないのに存在しているなら削除する
+          {
+            TargetGrid.Children.Remove(centerGrid);
+            centerGrid = null;
+          }
+          #endregion
+        }
+
+        TmpDic.Add(i.Key, new(leftGrid, centerGrid, rightGrid));
+      }
+
+      foreach (var i in TmpDic)
+        WorkTimes[i.Key] = i.Value;
+
+      return addList;
     }
 
     private void ReputSeparator()
