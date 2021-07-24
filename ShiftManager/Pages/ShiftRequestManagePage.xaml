@@ -31,10 +31,11 @@
       SelectedDate="{Binding TargetDate}"/>
 
     <MyCtrls:ShiftEditorHeaderControl
-      Margin="-10,0"
+      Margin="30,0"
       Grid.Row="1"/>
     <ListView
       x:Name="abc"
+      Margin="10,0,10,10"
       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
       ItemsSource="{Binding ShiftRequestArray}"
       Grid.Row="2">
