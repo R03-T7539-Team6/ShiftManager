@@ -381,8 +381,6 @@ namespace ShiftManager.Controls
         }
       }
 
-      Debug.WriteLine(CurrentCellMode);
-
       ReputSeparator();
 
       _ = FittingWorkTimeRectangles();
