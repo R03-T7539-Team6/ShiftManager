@@ -77,7 +77,7 @@ namespace ShiftManager.Communication
 
       ServerResponse<RestShift> res;
       DateTime targetDate = singleShiftData.WorkDate.Date;
-      var req = new RestShift().FromSingleShiftData(singleShiftData, 0, CurrentUserData?.StoreID.Value ?? string.Empty, true);
+      var req = new RestShift().FromSingleShiftData(singleShiftData, null, CurrentUserData?.StoreID.Value ?? string.Empty, true);
 
       var reqRes = await Sv.GetCurrentUserSingleShiftRequestsAsync(targetDate);
       var reqResCode = ToApiRes(reqRes.Response.StatusCode);
@@ -92,7 +92,7 @@ namespace ShiftManager.Communication
       }
       else 
       { // 既にシフトが存在する場合 => IDを取得して更新扱い
-        req.id = reqRes.Content.FirstOrDefault(i => i.work_date == targetDate)?.id;
+        req.id = reqRes.Content.FirstOrDefault(i => i.work_date?.Date == targetDate.Date)?.id;
         if (req.id is null)
           res = await Sv.CreateSingleShiftAsync(req);
         else
@@ -125,7 +125,7 @@ namespace ShiftManager.Communication
       if (apiRes != ApiResultCodes.Success || res.Content is null || res.Content.Length <= 0 ) //失敗し, かつその原因が「データが存在しない」場合
         return new(false, apiRes, null);
 
-      var data = res.Content.FirstOrDefault(i => i.work_date == date)?.ToSingleShiftData();
+      var data = res.Content.FirstOrDefault(i => i.work_date?.Date == date.Date)?.ToSingleShiftData();
 
       return (data is not null)
         ? new(true, ApiResultCodes.Success, data)
