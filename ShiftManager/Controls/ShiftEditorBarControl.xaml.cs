@@ -13,7 +13,6 @@ namespace ShiftManager.Controls
 {
   public class ShiftEditorBarControl : Control
   {
-    // public double Scale { get; set; } = 1.0; //Scale設定は, 親側でしか変更しないため親側で行う
     static ShiftEditorBarControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(ShiftEditorBarControl), new FrameworkPropertyMetadata(typeof(ShiftEditorBarControl)));
 
     #region Cell Settings
@@ -91,7 +90,12 @@ namespace ShiftManager.Controls
     public Brush BreakTimeBrush { get; set; } = Brushes.Lime;
 
     private Grid TargetGrid;
+
+    record TimeSpanFromTo(TimeSpan From, TimeSpan To);
+    record TripleRectangle(Rectangle Left, Rectangle Center, Rectangle Right);
+    Dictionary<TimeSpanFromTo, TripleRectangle> WorkTimes { get; } = new();
     
+    #region Tooltip
     private Popup TimeTooltip { get; }
     private TextBlock TimeTooltipTB { get; }
     private TimeSpan TimeTooltipTB_LastStart = TimeSpan.MinValue;
@@ -106,7 +110,7 @@ namespace ShiftManager.Controls
 
       TimeTooltipTB.Text = $"{start:hh\\:mm}~{start + step:hh\\:mm}";
     }
-
+    #endregion
 
     IReadOnlyDictionary<int, Grid> TimeTBDictionary { get; }
 
@@ -272,12 +276,66 @@ namespace ShiftManager.Controls
       var screenPoint = grid.PointToScreen(e.GetPosition(grid));
       TimeTooltip.HorizontalOffset = 10 + screenPoint.X;
       TimeTooltip.VerticalOffset = 10 + screenPoint.Y;
+
+      if (!IsEnabled || e.LeftButton != MouseButtonState.Pressed)
+        return;
     }
 
     private void TargetGrid_MouseDown(object sender, MouseButtonEventArgs e)
     {
       if (!IsEnabled || sender is not Grid grid)
         return;
+      // 押されたところが「勤務」設定である => 「勤務」設定解除
+      // 押されたところが「勤務」設定ではない=>「勤務」設定を行う
+
+      double pos_0to1 = e.GetPosition(grid).X / grid.ActualWidth;
+      double cell_step = GetCellStep();
+
+      //Step:0.1でPos=0.2ならCurrentCell=2
+      int currentCell = (int)(pos_0to1 / cell_step);
+      TimeSpan cellMinuteStep = GetCellMinuteStep();
+      TimeSpan currentCellTime = new(0, (int)cellMinuteStep.TotalMinutes * currentCell, 0);
+
+      if (WorkTimes.Count <= 0) //最初の追加 => 勤務設定
+      {
+        Rectangle rect = new() { Fill = WorkTimeBrush };
+        WorkTimes.Add(new(currentCellTime, currentCellTime + cellMinuteStep), new(null, rect, null));
+
+        Panel.SetZIndex(rect, ZIndex_WorkTime);
+        Grid.SetColumn(rect, currentCell);
+
+        TargetGrid.Children.Add(rect);
+        return;
+      }
+      else
+      {
+        foreach (var v in WorkTimes)
+        {
+          if(v.Key.From <= currentCellTime && currentCellTime <= v.Key.To) //勤務時間の真ん中に穴をあける
+          {
+            WorkTimes.Remove(v.Key);
+
+            /* 2-3-4-5-6 (2からSpan=5)
+             * 2-3 4 5-6 (2, 6からSpan=2)
+             */
+            Grid.SetColumnSpan(v.Value.Center, currentCell - Grid.GetColumn(v.Value.Center));
+
+            if (currentCell == GetCellCount()) //押下されたセルが最後の部分だった => その右にセルは存在しない
+              return;
+
+            /*Rectangle rightCRect;
+            if (v.Value.Right is not null) {
+              rightRRect = v.Value.Right;
+            }
+            else
+            {
+              KeyValuePair<TimeSpanFromTo, TripleRectangle> rightKVP;
+
+            }
+            Grid.SetColumn(rightCRect, currentCell + 1);*/
+          }
+        }
+      }
 
     }
 
