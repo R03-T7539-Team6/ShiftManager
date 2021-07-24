@@ -84,7 +84,7 @@ namespace ShiftManager.Communication
     Task<ApiResult> AddShiftRequestAsync(ISingleShiftData singleShiftData);
 
     /// <summary>現在のユーザの指定の日付のシフト希望を取得する  存在しなければ新規に作成されて返る</summary>
-    /// <remarks>内部的には, GetShiftRequestByIDAsyncを実行してそこから日付でピックアップしています</remarks>
+    /// <remarks>(InternalApiでは) GetShiftRequestByIDAsyncを実行してそこから日付でピックアップしています</remarks>
     /// <param name="date">希望した日付</param>
     /// <returns>実行結果</returns>
     Task<ApiResult<SingleShiftData>> GetShiftRequestByDateAsync(DateTime date);

@@ -12,6 +12,7 @@ namespace ShiftManager.Communication
 
   public partial class RestApiBroker : InternalApi_ShiftRequest
   {
+    /* キャッシュ機能は一旦オミット
     /// <summary>送受信したデータをキャッシュします</summary>
     Dictionary<DateTime, RestShift> ShiftReqCache { get; set; } = new();
     DateTime ShiftReqCacheLastUpdate { get; set; }
@@ -33,8 +34,9 @@ namespace ShiftManager.Communication
 
         ShiftReqCache = res.Content.Where(i => i.work_date is not null).ToDictionary(i => i.work_date?.Date ?? default);
       }
+
       return new(true, ApiResultCodes.Success);
-    }
+    }*/
 
     /// <summary>シフト希望を追加します  初めての追加の場合は, コレクションにユーザのデータが生成されたうえで追加されます</summary>
     /// <param name="singleShiftData">追加する単一シフトデータ</param>
@@ -68,29 +70,35 @@ namespace ShiftManager.Communication
   *******************************************/
     public async Task<ApiResult> AddShiftRequestAsync(ISingleShiftData singleShiftData)
     {
-      var updRes = await UpdateShiftReqCache();
+      /*var updRes = await UpdateShiftReqCache();
 
       if (!updRes.IsSuccess)
-        return updRes;
+        return updRes;*/
 
       ServerResponse<RestShift> res;
       DateTime targetDate = singleShiftData.WorkDate.Date;
       var req = new RestShift().FromSingleShiftData(singleShiftData, 0, CurrentUserData?.StoreID.Value ?? string.Empty, true);
-      if (ShiftReqCache.TryGetValue(targetDate, out var shift))
-      { // 既にシフトが存在する場合 => IDを取得して更新扱い
-        req.id = shift.id;
-        res = await Sv.UpdateShiftAsync(req);
 
-        if (res.Content is not null)
-          ShiftReqCache[targetDate] = res.Content;
-      }
-      else
-      { // サーバー側にシフトが存在しない場合 => 新規追加扱い
+      var reqRes = await Sv.GetCurrentUserSingleShiftRequestsAsync(targetDate);
+      var reqResCode = ToApiRes(reqRes.Response.StatusCode);
+
+      if (reqRes.Content is null)
+      {
+        if (reqResCode != ApiResultCodes.Success)
+          return new(false, reqResCode);
+
+        // サーバー側にシフトが存在しない場合 => 新規追加扱い
         res = await Sv.CreateSingleShiftAsync(req);
-
-        if (res.Content is not null)
-          ShiftReqCache.Add(targetDate, res.Content);
       }
+      else 
+      { // 既にシフトが存在する場合 => IDを取得して更新扱い
+        req.id = reqRes.Content.FirstOrDefault(i => i.work_date == targetDate)?.id;
+        if (req.id is null)
+          res = await Sv.CreateSingleShiftAsync(req);
+        else
+          res = await Sv.UpdateShiftAsync(req);
+      }
+
       var resCode = ToApiRes(res.Response.StatusCode);
 
       return new(resCode == ApiResultCodes.Success, resCode);
@@ -110,13 +118,17 @@ namespace ShiftManager.Communication
   *******************************************/
     public async Task<ApiResult<SingleShiftData>> GetShiftRequestByDateAsync(DateTime date)
     {
-      var updRes = await UpdateShiftReqCache();
+      //var updRes = await UpdateShiftReqCache();
+      var res = await Sv.GetCurrentUserSingleShiftRequestsAsync(date);
+      var apiRes = ToApiRes(res.Response.StatusCode);
 
-      if (!updRes.IsSuccess)
-        return new(false, updRes.ResultCode, null);
+      if (apiRes != ApiResultCodes.Success || res.Content is null || res.Content.Length <= 0 ) //失敗し, かつその原因が「データが存在しない」場合
+        return new(false, apiRes, null);
 
-      return (ShiftReqCache.TryGetValue(date.Date, out var res) && res is not null)
-        ? new(true, ApiResultCodes.Success, res.ToSingleShiftData())
+      var data = res.Content.FirstOrDefault(i => i.work_date == date)?.ToSingleShiftData();
+
+      return (data is not null)
+        ? new(true, ApiResultCodes.Success, data)
         : new(false, ApiResultCodes.Target_Date_Not_Found, null);
     }
 

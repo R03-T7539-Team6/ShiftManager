@@ -47,9 +47,14 @@ namespace ShiftManager.Communication
     #endregion
 
 
-
+    static string GetTargetDateQuery(in DateTime dt) => $"target_date={dt:yyyy-MM-dd}T00:00:00Z";
     #region シフトに関する操作
-    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftRequestsAsync() => Api.ExecuteAsync<RestShift[]>("/shifts?is_request=true", RestSharp.Method.GET);
+    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftAsync(bool is_request) => Api.ExecuteAsync<RestShift[]>("/shifts?is_request=" + is_request.ToString().ToLower(), RestSharp.Method.GET);
+    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftAsync(DateTime targetDate) => Api.ExecuteAsync<RestShift[]>($"/shifts?" + GetTargetDateQuery(targetDate), RestSharp.Method.GET);
+    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftAsync(bool is_request, DateTime targetDate) => Api.ExecuteAsync<RestShift[]>($"/shifts?is_request=" + is_request.ToString().ToLower() + "&" + GetTargetDateQuery(targetDate), RestSharp.Method.GET);
+    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftRequestsAsync() => GetCurrentUserSingleShiftAsync(true);
+    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftRequestsAsync(DateTime targetDate) => GetCurrentUserSingleShiftAsync(targetDate);
+    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftRequestsAsync(bool is_request, DateTime targetDate) => GetCurrentUserSingleShiftAsync(is_request, targetDate);
 
     public Task<ServerResponse<RestShift>> CreateSingleShiftAsync(RestShift shift) => Api.ExecuteWithDataAsync<RestShift, RestShift>("/shifts", shift, RestSharp.Method.POST);
 
@@ -64,6 +69,7 @@ namespace ShiftManager.Communication
     public Task<ServerResponse> DeleteCurrentUserShiftRequestFileAsync(int id) => throw new NotSupportedException(); //Serverの実装待ち
 
     public Task<ServerResponse<RestShiftSchedule>> GetCurrentStoreShiftScheduleFileAsync(string storeID) => Api.ExecuteAsync<RestShiftSchedule>($"/shifts/schedule/{storeID}", RestSharp.Method.GET);
+    public Task<ServerResponse<RestShiftSchedule>> GetCurrentStoreShiftScheduleFileAsync(string storeID, DateTime targetDate) => Api.ExecuteAsync<RestShiftSchedule>($"/shifts/schedule/{storeID}?" + GetTargetDateQuery(targetDate), RestSharp.Method.GET);
 
     public Task<ServerResponse<RestShiftSchedule>> CreateStoreShiftScheduleFileAsync(RestShiftSchedule data) => Api.ExecuteWithDataAsync<RestShiftSchedule, RestShiftSchedule>("/shifts/schedule", data, RestSharp.Method.POST); //変えたい情報だけがJsonに含まれることを期待
     #endregion
