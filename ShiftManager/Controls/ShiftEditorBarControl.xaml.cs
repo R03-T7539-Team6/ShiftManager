@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -14,6 +15,104 @@ namespace ShiftManager.Controls
 {
   public class ShiftEditorBarControl : Control
   {
+    public DateTime TargetDate { get => (DateTime)GetValue(TargetDateProperty); set => SetValue(TargetDateProperty, value); }
+    public static readonly DependencyProperty TargetDateProperty = DependencyProperty.Register(nameof(TargetDate), typeof(DateTime), typeof(ShiftEditorBarControl));
+    public Brush SeparatorBrush { get => (Brush)GetValue(SeparatorBrushProperty); set => SetValue(SeparatorBrushProperty, value); }
+    public static readonly DependencyProperty SeparatorBrushProperty = DependencyProperty.Register(nameof(SeparatorBrush), typeof(Brush), typeof(ShiftEditorBarControl));
+    public Brush WorkTimeBrush { get => (Brush)GetValue(WorkTimeBrushProperty); set => SetValue(WorkTimeBrushProperty, value); }
+    public static readonly DependencyProperty WorkTimeBrushProperty = DependencyProperty.Register(nameof(WorkTimeBrush), typeof(Brush), typeof(ShiftEditorBarControl));
+    public Brush BreakTimeBrush { get => (Brush)GetValue(BreakTimeBrushProperty); set => SetValue(BreakTimeBrushProperty, value); }
+    public static readonly DependencyProperty BreakTimeBrushProperty = DependencyProperty.Register(nameof(BreakTimeBrush), typeof(Brush), typeof(ShiftEditorBarControl));
+
+    public DateTime StartTime { get => (DateTime)GetValue(StartTimeProperty); set => SetValue(StartTimeProperty, value); }
+    public static readonly DependencyProperty StartTimeProperty = DependencyProperty.Register(nameof(StartTime), typeof(DateTime), typeof(ShiftEditorBarControl),
+      new((i, _) =>
+      {
+        if (i is not ShiftEditorBarControl c)
+          return;
+
+        if (c.StartTime != c.LocalStartTime)
+          c.OnTimeValuesChanged();
+      }));
+    private DateTime LocalStartTime;
+
+    public DateTime EndTime { get => (DateTime)GetValue(EndTimeProperty); set => SetValue(EndTimeProperty, value); }
+    public static readonly DependencyProperty EndTimeProperty = DependencyProperty.Register(nameof(EndTime), typeof(DateTime), typeof(ShiftEditorBarControl),
+      new((i, _) =>
+      {
+        if (i is not ShiftEditorBarControl c)
+          return;
+
+        if (c.EndTime != c.LocalEndTime)
+          c.OnTimeValuesChanged();
+      }));
+    private DateTime LocalEndTime;
+
+    public Dictionary<DateTime, int> BreakTimeDictionary { get => (Dictionary<DateTime, int>)GetValue(BreakTimeDictionaryProperty); set => SetValue(BreakTimeDictionaryProperty, value); }
+    public static readonly DependencyProperty BreakTimeDictionaryProperty = DependencyProperty.Register(nameof(BreakTimeDictionary), typeof(Dictionary<DateTime, int>), typeof(ShiftEditorBarControl),
+      new((i, _) =>
+      {
+        if (i is not ShiftEditorBarControl c)
+          return;
+
+        if (c.BreakTimeDictionary.GetHashCode() != c.LocalBreakTimeDicHash)
+          c.OnTimeValuesChanged();
+      }));
+    private int LocalBreakTimeDicHash = 0;
+
+    private void OnTimeValuesChanged()
+    {
+      if (LocalStartTime == StartTime && LocalEndTime == EndTime && LocalBreakTimeDicHash == BreakTimeDictionary?.GetHashCode())
+        return;
+
+      if (BreakTimeDictionary is null)
+        return;
+
+      foreach (var i in WorkTimes.Values)
+      {
+        if (i.Center is not null)
+          TargetGrid.Children.Remove(i.Center);
+        if (i.Left is not null)
+          TargetGrid.Children.Remove(i.Left);
+        if (i.Right is not null)
+          TargetGrid.Children.Remove(i.Right);
+      }
+
+      WorkTimes.Clear();
+
+      if (StartTime == EndTime)
+        return;
+
+      if (BreakTimeDictionary.Count <= 0)
+      {
+        WorkTimes.Add(new(StartTime - TargetDate, EndTime - TargetDate), new(null, null, null));
+      }
+      else
+      {
+        var SortedBreakTimeDic = BreakTimeDictionary.OrderBy(v => v.Key);
+
+        TimeSpan From = StartTime - TargetDate;
+        TimeSpan To = SortedBreakTimeDic.FirstOrDefault().Key - TargetDate;
+        WorkTimes.Add(new(From, To), new(null, null, null));
+
+        for (int i = 0; i < BreakTimeDictionary.Count - 1; i++)
+        {
+          var tmp = SortedBreakTimeDic.ElementAt(i + 1).Key - TargetDate;
+          WorkTimes.Add(new(To.Add(new(0, SortedBreakTimeDic.ElementAt(i).Value, 0)), tmp), new(null, null, null));
+          To = tmp;
+        }
+
+        WorkTimes.Add(new(To.Add(new(0, SortedBreakTimeDic.Last().Value, 0)), EndTime - TargetDate), new(null, null, null));
+      }
+
+      LocalStartTime = StartTime;
+      LocalEndTime = EndTime;
+      LocalBreakTimeDicHash = BreakTimeDictionary.GetHashCode();
+
+      foreach (var i in FittingWorkTimeRectangles())
+        TargetGrid.Children.Add(i);
+    }
+
     static ShiftEditorBarControl() => DefaultStyleKeyProperty.OverrideMetadata(typeof(ShiftEditorBarControl), new FrameworkPropertyMetadata(typeof(ShiftEditorBarControl)));
 
     #region Cell Settings
@@ -86,15 +185,40 @@ namespace ShiftManager.Controls
     public CellMode CurrentCellMode { get; private set; } = CellMode.None;
     #endregion
 
-    public Brush SeparatorBrush { get; set; } = Brushes.LightGray;
-    public Brush WorkTimeBrush { get; set; } = Brushes.Aqua;
-    public Brush BreakTimeBrush { get; set; } = Brushes.Lime;
-
-    private Grid TargetGrid;
+    private Grid TargetGrid { get; set; }
 
     record TimeSpanFromTo(TimeSpan From, TimeSpan To);
     record TripleRectangle(Grid Left, Grid Center, Grid Right);
     SortedDictionary<TimeSpanFromTo, TripleRectangle> WorkTimes { get; } = new(new TimeSpanFromToComparer());
+
+    public event EventHandler BreakTimeDictionaryUpdated;
+
+    private void OnWorkTimesUpdate()
+    {
+      if (!IsInitialized)
+        return;
+      LocalStartTime = TargetDate.Date.AddMinutes(WorkTimes.FirstOrDefault().Key.From.TotalMinutes);
+      StartTime = LocalStartTime;
+
+      LocalEndTime = TargetDate.Date.AddMinutes(WorkTimes.LastOrDefault().Key.To.TotalMinutes);
+      EndTime = LocalEndTime;
+
+      if (BreakTimeDictionary is null)
+        return;
+
+      BreakTimeDictionary.Clear();
+
+      if (WorkTimes.Count > 1)
+        for (int i = 0; i < WorkTimes.Count - 1; i++)
+        {
+          var key1 = WorkTimes.ElementAt(i).Key;
+          var key2 = WorkTimes.ElementAt(i + 1).Key;
+          DateTime dt = TargetDate.Date.AddMinutes(key1.To.TotalMinutes);
+          BreakTimeDictionary.Add(dt, (int)(key2.From - key1.To).TotalMinutes);
+        }
+
+      LocalBreakTimeDicHash = BreakTimeDictionary.GetHashCode();
+    }
 
     class TimeSpanFromToComparer : IComparer<TimeSpanFromTo>
     {
@@ -225,7 +349,7 @@ namespace ShiftManager.Controls
         return;
       CurrentCellMode = newCellMode;
 
-      TargetGrid.Children.Clear();
+      TargetGrid.Children.Clear();////////////////////////////////////////////
 
       TargetGrid.Children.Add(TimeTooltip);
 
@@ -361,6 +485,12 @@ namespace ShiftManager.Controls
           if (i.Value.Right is not null)
             TargetGrid.Children.Remove(i.Value.Right);
 
+          if(From == i.Key.From && i.Key.To == To) //完全一致ならここで終了
+          {
+            WorkTimes.Remove(i.Key);
+            return false;
+          }
+
           KeysToRemove.Add(i.Key);
 
           continue; //最終的にはセルを塗りつぶすけど, 他にも内側に存在するかもしれないから再探索
@@ -397,30 +527,30 @@ namespace ShiftManager.Controls
 
     private void OptimizeWorkTimes()
     {
-      if (WorkTimes.Count <= 1)
-        return; //1つだけしかないなら結合不要
-
-      for (int i = 1; i < WorkTimes.Count; i++)
-      {
-        var currentKey = WorkTimes.Keys.ElementAt(i);
-        var prevKey = WorkTimes.Keys.ElementAt(i - 1);
-        if(currentKey.From <= prevKey.To) // Prev:1400, From:1300など
+      if (WorkTimes.Count > 1) //2つ以上存在する場合のみ結合チェックを行う
+        for (int i = 1; i < WorkTimes.Count; i++)
         {
-          var rects = WorkTimes[prevKey];
-          var rects2 = WorkTimes[currentKey];
+          var currentKey = WorkTimes.Keys.ElementAt(i);
+          var prevKey = WorkTimes.Keys.ElementAt(i - 1);
+          if (currentKey.From <= prevKey.To) // Prev:1400, From:1300など
+          {
+            var rects = WorkTimes[prevKey];
+            var rects2 = WorkTimes[currentKey];
 
-          TargetGrid.Children.Remove(rects.Right);
-          TargetGrid.Children.Remove(rects2.Left);
-          TargetGrid.Children.Remove(rects2.Center);
+            TargetGrid.Children.Remove(rects.Right);
+            TargetGrid.Children.Remove(rects2.Left);
+            TargetGrid.Children.Remove(rects2.Center);
 
-          WorkTimes.Remove(currentKey);
-          WorkTimes.Remove(prevKey);
+            WorkTimes.Remove(currentKey);
+            WorkTimes.Remove(prevKey);
 
-          WorkTimes.Add(prevKey with { To = currentKey.To }, rects with { Right = rects2.Right });
+            WorkTimes.Add(prevKey with { To = currentKey.To }, rects with { Right = rects2.Right });
 
-          i--; //再度確認する必要があるため
+            i--; //再度確認する必要があるため
+          }
         }
-      }
+
+      OnWorkTimesUpdate();
     }
 
     private IReadOnlyList<UIElement> FittingWorkTimeRectangles()
@@ -433,6 +563,9 @@ namespace ShiftManager.Controls
         var (leftGrid, centerGrid, rightGrid) = i.Value;
 
         var workLen = i.Key.To - i.Key.From;
+
+        if (workLen < TimeSpan.Zero)
+          continue;
 
         int leftCol = (int)(i.Key.From.TotalMinutes / cellMinuteStep.TotalMinutes); //端数は切り捨て
         int rightCol = (int)(i.Key.To.TotalMinutes / cellMinuteStep.TotalMinutes); //端数は切り捨て
@@ -448,8 +581,8 @@ namespace ShiftManager.Controls
         {
           if(centerGrid is null)
           {
-            Rectangle rect = new() { Fill = WorkTimeBrush };
-
+            Rectangle rect = new() { DataContext = this };
+            rect.SetBinding(Shape.FillProperty, nameof(WorkTimeBrush));
             Grid.SetColumn(rect, 1);
 
             centerGrid = new()
@@ -488,10 +621,8 @@ namespace ShiftManager.Controls
           {
             if (leftGrid is null) //端数用のGridが準備されていない
             {
-              Rectangle rect = new()
-              {
-                Fill = WorkTimeBrush
-              };
+              Rectangle rect = new() { DataContext = this };
+              rect.SetBinding(Shape.FillProperty, nameof(WorkTimeBrush));
 
               Grid.SetColumn(rect, 1);
 
@@ -524,10 +655,8 @@ namespace ShiftManager.Controls
           {
             if (rightGrid is null) //端数用のGridが準備されていない
             {
-              Rectangle rect = new()
-              {
-                Fill = WorkTimeBrush
-              };
+              Rectangle rect = new() { DataContext = this };
+              rect.SetBinding(Shape.FillProperty, nameof(WorkTimeBrush));
 
               Grid.SetColumn(rect, 0);
 
@@ -560,7 +689,8 @@ namespace ShiftManager.Controls
           {
             if (centerGrid is null)
             {
-              Rectangle rect = new() { Fill = WorkTimeBrush };
+              Rectangle rect = new() { DataContext = this };
+              rect.SetBinding(Shape.FillProperty, nameof(WorkTimeBrush));
 
               Grid.SetColumn(rect, 1);
 
@@ -635,7 +765,9 @@ namespace ShiftManager.Controls
             CellMode.Hour01 or CellMode.Hour02 => SEPARATOR_WIDTH_NORMAL,
 
             _ => 0
-          }
+          },
+
+          DataContext = this
         };
 
         if (line.StrokeThickness <= 0)
@@ -654,7 +786,7 @@ namespace ShiftManager.Controls
 
         line.Y1 = 0;
         line.Y2 = TargetGrid.ActualHeight;
-        line.Stroke = SeparatorBrush;
+        line.SetBinding(Shape.StrokeProperty, nameof(SeparatorBrush));
         line.HorizontalAlignment = HorizontalAlignment.Center;
 
         Panel.SetZIndex(line, ZIndex_Separator);
