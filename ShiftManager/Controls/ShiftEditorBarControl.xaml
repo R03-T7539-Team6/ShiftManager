@@ -6,6 +6,10 @@
 
 
   <Style TargetType="{x:Type local:ShiftEditorBarControl}">
+    <Setter Property="SeparatorBrush" Value="LightGray"/>
+    <Setter Property="WorkTimeBrush" Value="DeepSkyBlue"/>
+    <Setter Property="BreakTimeBrush" Value="LightYellow"/>
+
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type local:ShiftEditorBarControl}">
