@@ -50,15 +50,17 @@ namespace ShiftManager.Controls
 
     public Dictionary<DateTime, int> BreakTimeDictionary { get => (Dictionary<DateTime, int>)GetValue(BreakTimeDictionaryProperty); set => SetValue(BreakTimeDictionaryProperty, value); }
     public static readonly DependencyProperty BreakTimeDictionaryProperty = DependencyProperty.Register(nameof(BreakTimeDictionary), typeof(Dictionary<DateTime, int>), typeof(ShiftEditorBarControl),
-      new((i, _) =>
+      new(new Dictionary<DateTime, int>(), (i, _) =>
       {
         if (i is not ShiftEditorBarControl c || !c.IsInitialized)
           return;
 
-        if (c.BreakTimeDictionary is null || !c.BreakTimeDictionary.SequenceEqual(c.LocalBreakTimeDicRec))
+        c.BreakTimeDictionary ??= new(); //NULLは不可
+
+        if (!c.BreakTimeDictionary.SequenceEqual(c.LocalBreakTimeDicRec))
           c.OnTimeValuesChanged();
       }));
-    private Dictionary<DateTime, int> _LocalBreakTimeDicRec;
+    private Dictionary<DateTime, int> _LocalBreakTimeDicRec = new();
     private Dictionary<DateTime, int> LocalBreakTimeDicRec { get => _LocalBreakTimeDicRec; set => _LocalBreakTimeDicRec = new(value); }
 
     private void OnTimeValuesChanged()
@@ -81,6 +83,11 @@ namespace ShiftManager.Controls
       if (StartTime == EndTime)
         return;
 
+      // 長さゼロの休憩は除外する
+      var rests = BreakTimeDictionary.Where(i => i.Value <= 0).ToArray();
+      foreach (var i in rests)
+        BreakTimeDictionary.Remove(i.Key);
+
       if (BreakTimeDictionary.Count <= 0)
       {
         WorkTimes.Add(new(StartTime - TargetDate, EndTime - TargetDate), new(null, null, null));
@@ -96,6 +103,10 @@ namespace ShiftManager.Controls
         for (int i = 0; i < BreakTimeDictionary.Count - 1; i++)
         {
           var tmp = SortedBreakTimeDic.ElementAt(i + 1).Key - TargetDate;
+
+          if (tmp == TimeSpan.Zero)
+            continue;
+
           WorkTimes.Add(new(To.Add(new(0, SortedBreakTimeDic.ElementAt(i).Value, 0)), tmp), new(null, null, null));
           To = tmp;
         }
@@ -133,14 +144,13 @@ namespace ShiftManager.Controls
 
     public enum CellMode
     {
-      None,
+      Hour01,
+      Hour02,
       Minute01,
       Minute05,
       Minute10,
       Minute15,
       Minute30,
-      Hour01,
-      Hour02,
     }
 
     private static CellMode GetCellMode(in Size newSize) => GetCellMode(newSize.Width);
@@ -180,7 +190,7 @@ namespace ShiftManager.Controls
       _ => throw new ArgumentOutOfRangeException()
     };
 
-    public CellMode CurrentCellMode { get; private set; } = CellMode.None;
+    public CellMode CurrentCellMode { get; private set; } = CellMode.Hour01;
     #endregion
 
     private Grid TargetGrid { get; set; }
