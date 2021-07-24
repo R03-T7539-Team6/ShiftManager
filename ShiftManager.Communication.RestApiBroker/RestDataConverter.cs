@@ -39,7 +39,7 @@ namespace ShiftManager.Communication.RestData
       return new(new UserID(i.user_id ?? string.Empty), i.work_date?.Date ?? default, i.is_paid_holiday ?? false, i.attendance_time ?? default, i.leaving_time ?? default, breakTDic);
     }
 
-    public static RestShift FromSingleShiftData(this RestShift dst,in ISingleShiftData i, in uint id, in string store_id, in bool is_request)
+    public static RestShift FromSingleShiftData(this RestShift dst,in ISingleShiftData i, in uint? id, in string store_id, in bool is_request)
     {
       dst.id = id;
       dst.user_id = i.UserID.Value;
@@ -58,7 +58,7 @@ namespace ShiftManager.Communication.RestData
       return dst;
     }
 
-    public static RestShift GenerateFromSingleShiftData(in ISingleShiftData i, in uint id, in string store_id, in bool is_request)
+    public static RestShift GenerateFromSingleShiftData(in ISingleShiftData i, in uint? id, in string store_id, in bool is_request)
       => new RestShift().FromSingleShiftData(i, id, store_id, is_request);
     #endregion
 
