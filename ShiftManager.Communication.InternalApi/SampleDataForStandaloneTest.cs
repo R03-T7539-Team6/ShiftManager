@@ -55,8 +55,8 @@ namespace ShiftManager.Communication
         userDataList.Add(
           new UserData(
             id,
-            ID0000.HashedPW,
-            new NameData($"FN{i:D6}", $"LN{i:06}"),
+            PW_0000,
+            new NameData($"FN{i:D6}", $"LN{i:D6}"),
             STORE_ID,
             UserGroup.SystemAdmin,
             UserState.NotHired,
