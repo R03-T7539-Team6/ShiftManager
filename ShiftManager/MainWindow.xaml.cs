@@ -22,6 +22,8 @@ namespace ShiftManager
     public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.InternalApi() };
     private MainWindowViewModel MWVM { get; }
 
+    static readonly double BlurRadiusWhenSignOut = 10;
+
     enum MenuState
     {
       Opened,
@@ -52,6 +54,8 @@ namespace ShiftManager
       MWVM = new() { MainFramePageChanger = new(MainFrame) };
       DataContext = MWVM;
       SignInPageElem.ApiHolder = this.ApiHolder;
+
+      MWVM.BlurRadius.Value = MWVM.IsSignedIn.Value ? 0 : BlurRadiusWhenSignOut;
     }
 
     /// <summary>SignInがSuccessした際に実行される</summary>
@@ -73,6 +77,7 @@ namespace ShiftManager
     {
       MWVM.IsSignedIn.Value = true;
       MWVM.UserName.Value = new(ApiHolder.CurrentUserName);
+      MWVM.BlurRadius.Value = 0;
     }
 
     /*******************************************
@@ -110,6 +115,7 @@ namespace ShiftManager
       _ = await ApiHolder.Api.SignOutAsync();
       MWVM.IsSignedIn.Value = false;
       // MainFrame.Content = null;
+      MWVM.BlurRadius.Value = BlurRadiusWhenSignOut;
     }
 
 /*******************************************
@@ -212,6 +218,7 @@ namespace ShiftManager
       = new(false);
 #endif
     public ReactivePropertySlim<NameData_PropertyChanged> UserName { get; } = new(new());
+    public ReactivePropertySlim<double> BlurRadius { get; } = new(0);
   }
 
   /// <summary>指定のFrameに, CommandParmeterで指定された型のPageを表示する</summary>
