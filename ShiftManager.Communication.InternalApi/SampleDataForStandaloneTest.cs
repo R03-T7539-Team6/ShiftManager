@@ -91,7 +91,31 @@ namespace ShiftManager.Communication
       }
 
       #region 勤務予定(予定シフト)
+      for (int i = 0; i < MAX_SAMPLE_SCEDULEDSHIFT; i++)
+      {
+        DateTime workDate = DateTime.Today.AddDays(i);
 
+        List<ISingleShiftData> shiftList = new();
+
+        foreach (var u in userDataList)
+        {
+          int v = RandomNumberGenerator.GetInt32(5);
+          if (v % 5 == 0)
+            continue;
+
+          DateTime attendTime = workDate.AddMinutes(RandomNumberGenerator.GetInt32(MinutesPerDay));
+          TimeSpan maxWorkTimeLen = TimeSpan.FromDays(1) - attendTime.TimeOfDay;
+
+          if (maxWorkTimeLen == TimeSpan.Zero)
+            continue;
+
+          DateTime leaveTime = attendTime.AddMinutes(RandomNumberGenerator.GetInt32((int)maxWorkTimeLen.TotalMinutes));
+
+          shiftList.Add(new SingleShiftData(u.UserID, workDate, false, attendTime, leaveTime, new()));
+        }
+
+        scheduledShiftList.Add(new ScheduledShift(workDate, workDate.Date, workDate.Date.AddDays(1), ShiftSchedulingState.FinalVersion, shiftList.ToDictionary(v => new UserID(v.UserID)), new() { 1 }));
+      }
       #endregion
 
       StoreData = new(STORE_ID, userDataList.ToDictionary(v => new UserID(v.UserID)), shiftReqList.ToDictionary(v => new UserID(v.UserID)), scheduledShiftList.ToDictionary(v => v.TargetDate));
