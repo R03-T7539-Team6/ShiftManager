@@ -70,7 +70,11 @@
       FontFamily="BIZ UDPGothic"
       Grid.Row="1"
       Grid.Column="1"
-      Source="/Pages/HomePage.xaml"/>
+      Source="/Pages/HomePage.xaml">
+      <Frame.Effect>
+        <BlurEffect Radius="{Binding BlurRadius.Value}"/>
+      </Frame.Effect>
+    </Frame>
 
     <Grid Grid.Row="0"
           Grid.Column="0"
