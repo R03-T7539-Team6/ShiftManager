@@ -109,7 +109,7 @@ namespace ShiftManager
     {
       _ = await ApiHolder.Api.SignOutAsync();
       MWVM.IsSignedIn.Value = false;
-      MainFrame.Content = null;
+      // MainFrame.Content = null;
     }
 
 /*******************************************
