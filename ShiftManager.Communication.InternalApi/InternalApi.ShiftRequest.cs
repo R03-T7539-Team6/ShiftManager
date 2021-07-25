@@ -86,10 +86,10 @@ namespace ShiftManager.Communication
       if (CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In, null);//ログイン中しか使用できない
 
-      if (TestD.ShiftRequestsDictionary.TryGetValue(new(CurrentUserData.UserID), out IShiftRequest? shiftRequest) || shiftRequest is null)
+      if (!TestD.ShiftRequestsDictionary.TryGetValue(new(CurrentUserData.UserID), out IShiftRequest? shiftRequest) || shiftRequest is null)
         return new(false, ApiResultCodes.UserID_Not_Found, null);
 
-      if (shiftRequest.RequestsDictionary.TryGetValue(date, out ISingleShiftData? singleShiftData) || singleShiftData is null)
+      if (!shiftRequest.RequestsDictionary.TryGetValue(date, out ISingleShiftData? singleShiftData) || singleShiftData is null)
         return new(false, ApiResultCodes.Target_Date_Not_Found, null);
       else
         return new(true, ApiResultCodes.Success, new(singleShiftData));
