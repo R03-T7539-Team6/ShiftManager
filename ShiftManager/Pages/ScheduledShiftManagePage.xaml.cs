@@ -137,7 +137,10 @@ namespace ShiftManager.Pages
       }
       VM.ScheduledShiftArray.Clear();
 
-      foreach (var i in ret.ReturnData.ShiftDictionary.Values)
+      if (ret.ReturnData is null)
+        return;
+
+      foreach (var i in ret.ReturnData?.ShiftDictionary.Values)
         VM.ScheduledShiftArray.Add(new SingleShiftData(i));
     }
 
