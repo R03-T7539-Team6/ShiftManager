@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 using ShiftManager.Communication;
@@ -11,6 +15,7 @@ namespace ShiftManager.Pages
   /// </summary>
   public partial class ScheduledShiftCheckPage : Page, IContainsApiHolder
   {
+    static readonly int DayPerPage = 28;
     public IApiHolder ApiHolder { get; set; }
     ScheduledShiftManagePageViewModel VM = new();
     public ScheduledShiftCheckPage()
@@ -20,6 +25,7 @@ namespace ShiftManager.Pages
       DataContext = VM;
     }
 
+    bool IsDataLoading = false;
 /*******************************************
 * specification ;
 * name = main ;
@@ -34,18 +40,45 @@ namespace ShiftManager.Pages
 *******************************************/
     public async void main()
     {
-      DateTime selectday = VM.TargetDate.Date;
-      for (int i = 0; i < 7; i++)
+      if (IsDataLoading)
+        return; //二重読み込みの防止
+
+      if (VM.TargetDate == VM.ShiftRequestArray.FirstOrDefault()?.WorkDate) //既に同じ日付を表示済みなら再度実行しない
+        return;
+
+      try
       {
-        ApiResult<SingleShiftData> res = await ApiHolder.Api.GetScheduledShiftByIDAsync(selectday.AddDays(i), ApiHolder.CurrentUserID);
-        if (!res.IsSuccess)
+        IsDataLoading = true;
+
+        VM.ShiftRequestArray.Clear();
+
+        if (string.IsNullOrWhiteSpace(ApiHolder.CurrentUserID.Value))
         {
-          break;
+          _ = MessageBox.Show("サインインされていません (不正なユーザID)", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+          return;
         }
-        else
+
+        DateTime selectday = VM.TargetDate.Date;
+        List<Task<ApiResult<SingleShiftData>>> taskList = new();
+
+        for (int i = 0; i < DayPerPage; i++)
         {
-          VM.ShiftRequestArray.Add(res.ReturnData);
+          DateTime targetDate = selectday.AddDays(i);
+          VM.ShiftRequestArray.Add(new SingleShiftData(ApiHolder.CurrentUserID, targetDate, false, targetDate, targetDate, new()));
+          taskList.Add(ApiHolder.Api.GetScheduledShiftByIDAsync(targetDate, ApiHolder.CurrentUserID));
         }
+
+        var results = await Task.WhenAll(taskList);
+
+        for (int i = 0; i < results.Length; i++)
+          if (results[i].IsSuccess && results[i].ReturnData is not null)
+            VM.ShiftRequestArray[i] = results[i].ReturnData;
+
+        _ = MessageBox.Show("読み込み完了しました", "ShiftManager");
+      }
+      finally
+      {
+        IsDataLoading = false;
       }
     }
 
@@ -61,24 +94,7 @@ namespace ShiftManager.Pages
 * output = N/A ;
 * end of specification ;
 *******************************************/
-    private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e) => OnLoaded(null, null);
+    private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e) => main();
 
-    /*******************************************
-    * specification ;
-    * name = OnLoaded ;
-    * Function = 画面がロードされた時シフト表の内容を表示する ;
-    * note = 補足説明 ;
-    * date = 07/03/2021 ;
-    * author = 佐藤真通 ;
-    * History = 更新履歴 ;
-    * input = 画面がロードされたことを知らせるイベントハンドラ ;
-    * output = N/A ;
-    * end of specification ;
-    *******************************************/
-    private void OnLoaded(object sender, System.Windows.RoutedEventArgs e)
-    {
-      VM.ShiftRequestArray.Clear();
-      main();
-    }
   }
 }
