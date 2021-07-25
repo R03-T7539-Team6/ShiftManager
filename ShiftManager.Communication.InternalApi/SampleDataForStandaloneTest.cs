@@ -51,6 +51,7 @@ namespace ShiftManager.Communication
 
           wLogList.Add(new SingleWorkLog(attendTime, leaveTime, new()));
         }
+        #endregion
 
         userDataList.Add(
           new UserData(
@@ -64,7 +65,6 @@ namespace ShiftManager.Communication
             new UserSetting(id, NotificationPublishTimings.None, new())
             )
           );
-        #endregion
 
         #region シフト希望
         rndInt = RandomNumberGenerator.GetInt32(MAX_SAMPLE_SHIFTREQ_PerUser - 10);
