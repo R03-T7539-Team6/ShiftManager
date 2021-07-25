@@ -1,5 +1,8 @@
 ﻿
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
 
 using ShiftManager.DataClasses;
 
@@ -7,36 +10,90 @@ namespace ShiftManager.Communication
 {
   internal class SampleDataForStandaloneTest
   {
-    public StoreData StoreData
+    static readonly int MinutesPerDay = (int)TimeSpan.FromDays(1).TotalMinutes;
+    static readonly int SAMPLE_USER_COUNT = 100;
+    static readonly int MAX_SAMPLE_WORKLOG = 64;
+    static readonly int MAX_SAMPLE_SHIFTREQ_PerUser = 64;
+    static readonly int MAX_SAMPLE_SCEDULEDSHIFT = 32;
+
+    public SampleDataForStandaloneTest()
     {
-      get =>
-new(
-STORE_ID,
+      List<IUserData> userDataList = new();
+      List<IShiftRequest> shiftReqList = new();
+      List<IScheduledShift> scheduledShiftList = new();
 
-new()
-{
-  { new(USER_DATA_ARR[0].UserID), USER_DATA_ARR[0] },
-  { new(USER_DATA_ARR[1].UserID), USER_DATA_ARR[1] },
-  { new(USER_DATA_ARR[2].UserID), USER_DATA_ARR[2] }
-},
+      for(int i = 0; i < SAMPLE_USER_COUNT; i++)
+      {
+        UserID id = new UserID($"ID{i:D6}");
 
-new()
-{
-  { ID0000.UserID, ID0000.ShiftRequest },
-  { ID0001.UserID, ID0001.ShiftRequest },
-  { ID0002.UserID, ID0002.ShiftRequest }
-},
+        #region 勤務実績
+        List<ISingleWorkLog> wLogList = new();
+        int rndInt = RandomNumberGenerator.GetInt32(MAX_SAMPLE_WORKLOG - 10);
 
-new()
-{
-  { SCHEDULED_SHIFT_ARR[0].TargetDate, SCHEDULED_SHIFT_ARR[0] },
-  { SCHEDULED_SHIFT_ARR[1].TargetDate, SCHEDULED_SHIFT_ARR[1] },
-  { SCHEDULED_SHIFT_ARR[2].TargetDate, SCHEDULED_SHIFT_ARR[2] },
-  { SCHEDULED_SHIFT_ARR[3].TargetDate, SCHEDULED_SHIFT_ARR[3] },
-  { SCHEDULED_SHIFT_ARR[4].TargetDate, SCHEDULED_SHIFT_ARR[4] }
-}
-);
+        for (int d = 0; d < rndInt + 10; d++) {
+          int v = RandomNumberGenerator.GetInt32(5);
+          if (v % 5 == 0)
+            continue;
+
+          DateTime workDate = DateTime.Today.AddDays(d * -1);
+          DateTime attendTime = workDate.AddMinutes(RandomNumberGenerator.GetInt32(MinutesPerDay));
+          TimeSpan maxWorkTimeLen = TimeSpan.FromDays(1) - attendTime.TimeOfDay;
+
+          if (maxWorkTimeLen == TimeSpan.Zero)
+            continue;
+
+          DateTime leaveTime = attendTime.AddMinutes(RandomNumberGenerator.GetInt32((int)maxWorkTimeLen.TotalMinutes));
+
+          wLogList.Add(new SingleWorkLog(attendTime, leaveTime, new()));
+        }
+
+        userDataList.Add(
+          new UserData(
+            id,
+            ID0000.HashedPW,
+            new NameData($"FN{i:D6}", $"LN{i:06}"),
+            STORE_ID,
+            UserGroup.SystemAdmin,
+            UserState.NotHired,
+            new WorkLog(id, new(dictionary: wLogList.ToDictionary(v => v.AttendanceTime))),
+            new UserSetting(id, NotificationPublishTimings.None, new())
+            )
+          );
+        #endregion
+
+        #region シフト希望
+        rndInt = RandomNumberGenerator.GetInt32(MAX_SAMPLE_SHIFTREQ_PerUser - 10);
+        List<ISingleShiftData> singleShiftList = new();
+        for (int d = 0; d < rndInt + 10; d++)
+        {
+          int v = RandomNumberGenerator.GetInt32(5);
+          if (v % 5 == 0)
+            continue;
+
+          DateTime workDate = DateTime.Today.AddDays(d);
+          DateTime attendTime = workDate.AddMinutes(RandomNumberGenerator.GetInt32(MinutesPerDay));
+          TimeSpan maxWorkTimeLen = TimeSpan.FromDays(1) - attendTime.TimeOfDay;
+
+          if (maxWorkTimeLen == TimeSpan.Zero)
+            continue;
+
+          DateTime leaveTime = attendTime.AddMinutes(RandomNumberGenerator.GetInt32((int)maxWorkTimeLen.TotalMinutes));
+
+          singleShiftList.Add(new SingleShiftData(id, workDate, false, attendTime, leaveTime, new())); ;
+        }
+        shiftReqList.Add(new ShiftRequest(id, DateTime.Now, singleShiftList.ToDictionary(x => x.WorkDate)));
+        #endregion
+      }
+
+      #region 勤務予定(予定シフト)
+
+      #endregion
+
+      StoreData = new(STORE_ID, userDataList.ToDictionary(v => new UserID(v.UserID)), shiftReqList.ToDictionary(v => new UserID(v.UserID)), scheduledShiftList.ToDictionary(v => v.TargetDate));
+
     }
+
+    public StoreData StoreData { get; }
     private static StoreID STORE_ID { get => new("STORE001"); }
     private static UserData[] USER_DATA_ARR
     {
