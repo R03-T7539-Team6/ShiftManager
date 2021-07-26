@@ -107,7 +107,7 @@
 
             <local:ShiftEditorBarControl
               x:Name="BarEditor"
-              VerticalAlignment="Center"
+              VerticalAlignment="Stretch"
               IsEnabled="{TemplateBinding EditableElements, Converter={StaticResource HasFlagConv}, ConverterParameter={x:Static local:ShiftEditorElements.ShiftBar}}"
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.ShiftBar}}"
               TargetDate="{TemplateBinding WorkDate}"
