@@ -81,6 +81,14 @@
           Grid.ColumnSpan="2"
           Background="DarkGray">
 
+      <TextBlock
+        HorizontalAlignment="Left"
+        VerticalAlignment="Bottom"
+        Margin="280,10,0,10"
+        FontSize="20"
+        Text="{Binding ElementName=MainFrame, Path=Content.Title}"/>
+
+
       <StackPanel
         Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenTrueConv}}"
         HorizontalAlignment="Right"
