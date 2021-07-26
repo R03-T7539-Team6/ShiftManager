@@ -55,6 +55,15 @@
         Margin="4"
         ItemsSource="{x:Static local:ScheduledShiftManagePage.ShiftSchedulingStateLabels}"
         SelectedItem="{Binding ShiftSchedulingState}"/>
+
+      <Button
+        Content="Save"
+        Click="SaveButtonClocked"
+        Grid.Column="5"
+        Padding="8,2"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Center"
+        Margin="4"/>
     </Grid>
 
     <MyCtrls:ShiftEditorHeaderControl

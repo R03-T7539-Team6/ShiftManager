@@ -354,6 +354,9 @@ namespace ShiftManager.Pages
 * end of specification ;
 *******************************************/
     private void Page_Unloaded(object sender, RoutedEventArgs e) => UpdateScheduledShift();
+
+    private void SaveButtonClocked(object sender, RoutedEventArgs e) => UpdateScheduledShift();
+    
   }
 
   public partial class ScheduledShiftManagePageViewModel : INotifyPropertyChanged, IContainsApiHolder
