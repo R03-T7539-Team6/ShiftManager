@@ -42,7 +42,7 @@ namespace ShiftManager.Communication.InternalApiTest
 
         yield return new TestCaseData(
           new UserID("ID000000"),
-          new HashedPassword("Mk0Lu/PAI+aHFF9PiR+6NFiNnzR8CDbDaNPvqdB+Dh/aHUcJMTCsBE7K9/uMWtgu7FqLcnsyxsu7fToHU1dfjA==", string.Empty, 0)
+          new HashedPassword("xMIjIuiIPYrmBoQqskJHHYlL2hc0TvKsdjbifXICxPzvUkh5/weTbWCoFECQabYZeVP+awQ9Cv+txfWzLtFxQQ==", string.Empty, 0)
         ).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetCategory(Category_INVALID);
 
 
