@@ -14,7 +14,7 @@ namespace ShiftManager.Pages
   /// </summary>
   public partial class ShiftRequestManagePage : Page, IContainsApiHolder
   {
-    const int DayPerPage = 14;
+    const int DayPerPage = 28;
     public IApiHolder ApiHolder { get; set; } = new ApiHolder();
     ScheduledShiftManagePageViewModel VM = new();
     public ShiftRequestManagePage()
