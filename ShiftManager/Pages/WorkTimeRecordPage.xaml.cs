@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
 using ShiftManager.Communication;
 using ShiftManager.DataClasses;
+
+using AutoNotify;
 
 namespace ShiftManager.Pages
 {
@@ -14,7 +18,7 @@ namespace ShiftManager.Pages
   public partial class WorkTimeRecordPage : Page, IContainsApiHolder
   {
     public IApiHolder ApiHolder { get; set; }
-    ScheduledShiftManagePageViewModel VM = new();
+    WorkTimeRecordPageViewModel VM = new();
     public WorkTimeRecordPage()
     {
       InitializeComponent();
@@ -22,7 +26,7 @@ namespace ShiftManager.Pages
       timer.Tick += timer_Tick;
       timer.Interval = new TimeSpan(0, 0, 1);
       timer.Start();
-      VM.ShiftRequestArray = new();
+      VM.ScheduledShiftArray = new();
       DataContext = VM;
       timer_Tick(default, EventArgs.Empty);
     }
@@ -72,7 +76,7 @@ namespace ShiftManager.Pages
         {
           MessageBox.Show("出勤登録完了");
           ClearIDBox();
-          VM.ShiftRequestArray.Clear();
+          VM.ScheduledShiftArray.Clear();
           main(targetUserID);
         }
         if (res.ResultCode == ApiResultCodes.UserID_Not_Found)
@@ -109,7 +113,7 @@ namespace ShiftManager.Pages
         {
           MessageBox.Show("休憩開始");
           ClearIDBox();
-          VM.ShiftRequestArray.Clear();
+          VM.ScheduledShiftArray.Clear();
           main(targetUserID);
         }
       }
@@ -144,7 +148,7 @@ namespace ShiftManager.Pages
         {
           MessageBox.Show("休憩時間終了");
           ClearIDBox();
-          VM.ShiftRequestArray.Clear();
+          VM.ScheduledShiftArray.Clear();
           main(targetUserID);
         }
         if (res.ResultCode == ApiResultCodes.UserID_Not_Found)
@@ -181,7 +185,7 @@ namespace ShiftManager.Pages
         {
           MessageBox.Show("退勤登録完了");
           ClearIDBox();
-          VM.ShiftRequestArray.Clear();
+          VM.ScheduledShiftArray.Clear();
           main(targetUserID);
         }
       }
@@ -209,9 +213,22 @@ namespace ShiftManager.Pages
       }
       else
       {
-        VM.ShiftRequestArray.Add(res.ReturnData);
+        VM.ScheduledShiftArray.Add(res.ReturnData);
       }
 
     }
+  }
+
+  public partial class WorkTimeRecordPageViewModel : INotifyPropertyChanged, IContainsApiHolder
+  {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    [AutoNotify]
+    private ObservableCollection<ISingleShiftData> _ScheduledShiftArray;
+
+    [AutoNotify]
+    private ObservableCollection<ISingleShiftData> _WorkLogArray;
+
+    public IApiHolder ApiHolder { get; set; }
   }
 }

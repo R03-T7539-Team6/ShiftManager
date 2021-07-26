@@ -5,7 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:MyCtrl="clr-namespace:ShiftManager.Controls"
       xmlns:MyCtrls="clr-namespace:ShiftManager.Controls"
-      xmlns:root="clr-namespace:ShiftManager" xmlns:pages="clr-namespace:ShiftManager.Pages" d:DataContext="{d:DesignInstance Type=pages:ScheduledShiftManagePageViewModel}"
+      xmlns:root="clr-namespace:ShiftManager" xmlns:pages="clr-namespace:ShiftManager.Pages"
+      d:DataContext="{d:DesignInstance Type=pages:WorkLogCheckViewModel}"
       mc:Ignorable="d" 
       FontSize="16"
       d:DesignHeight="450" d:DesignWidth="1000"
@@ -120,12 +121,12 @@
         x:Name="abc"
         Grid.Row="1"
         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-        ItemsSource="{Binding ShiftRequestArray}">
+        ItemsSource="{Binding ScheduledShiftArray}">
         <ListView.ItemTemplate>
           <DataTemplate>
             <MyCtrls:ShiftEditorControl
               EditableElements="None"
-              VisibleElements="{Binding VisibleElements, ElementName=ShiftEditorHeader}"
+              VisibleElements="Text, AttendTime, LeaveTime, BreakTime, ShiftBar, WorkTimeLen"
               Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleValueAddConv}, ConverterParameter=-40, Mode=OneWay}"
               WorkDate="{Binding WorkDate, Mode=TwoWay}"
               AttendanceTime="{Binding AttendanceTime, Mode=TwoWay}"
