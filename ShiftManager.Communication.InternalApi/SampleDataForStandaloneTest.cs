@@ -60,7 +60,7 @@ namespace ShiftManager.Communication
             new NameData($"FN{i:D6}", $"LN{i:D6}"),
             STORE_ID,
             UserGroup.SystemAdmin,
-            UserState.NotHired,
+            UserState.Normal,
             new WorkLog(id, new(dictionary: wLogList.ToDictionary(v => v.AttendanceTime))),
             new UserSetting(id, NotificationPublishTimings.None, new())
             )
