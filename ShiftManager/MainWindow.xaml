@@ -102,12 +102,6 @@
           VerticalAlignment="Center"
           Margin="4"/>
       </StackPanel>
-      
-      <Button
-          Content="ライセンス"
-          Click="LicenseClicked"
-          HorizontalAlignment="Left"
-          VerticalAlignment="Center" Margin="260,0,0,0"/>
     </Grid>
 
     <!--ページ選択用ボタン群表示用-->
@@ -140,6 +134,24 @@
         <Button Content="データ管理" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:DataManagePage}"/>
         <Button Content="勤怠登録モード" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkTimeRecordPage}"/>
         <!--#endregion-->
+
+        <Line Stroke="Black"
+              StrokeThickness="2"
+              Margin="0,5"
+              X2="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualWidth}"/>
+
+        <Button
+          Content="Third Party Licenses"
+          Click="LicenseClicked"/>
+
+        <Line Stroke="Black"
+              StrokeThickness="2"
+              Margin="0,5"
+              X2="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualWidth}"/>
+
+        <Button
+          Content="Close Application"
+          Click="CloseApp"/>
       </StackPanel>
 
       <Grid.Effect>

@@ -205,6 +205,8 @@ namespace ShiftManager
 
       TitleStackPanel_SizeChanged(TitleStackPanel, null);
     }
+
+    private void CloseApp(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
   }
 
   internal class MainWindowViewModel
