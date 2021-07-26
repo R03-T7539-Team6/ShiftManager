@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
+using ShiftManager.Communication;
 using ShiftManager.DataClasses;
 
 namespace ShiftManager.Pages
@@ -11,6 +14,7 @@ namespace ShiftManager.Pages
   /// </summary>
   public partial class ShiftRequestManagePage : Page, IContainsApiHolder
   {
+    const int DayPerPage = 28;
     public IApiHolder ApiHolder { get; set; } = new ApiHolder();
     ScheduledShiftManagePageViewModel VM = new();
     public ShiftRequestManagePage()
@@ -35,15 +39,21 @@ namespace ShiftManager.Pages
     private async void Save_Click(object sender, RoutedEventArgs e)
     {
       bool isSuccess = true;
-      for (int i = 0; i < 7; i++)
+
+      List<Task<ApiResult>> list = new();
+
+      for (int i = 0; i < DayPerPage; i++)
       {
-        SingleShiftData ssdata = new(VM.ShiftRequestArray[i]);
-        var res = await ApiHolder.Api.AddShiftRequestAsync(ssdata);
-        isSuccess &= res.IsSuccess;
+        System.Diagnostics.Debug.WriteLine($">>{i:D2} : {VM.ShiftRequestArray[i]}");
+        list.Add(ApiHolder.Api.AddShiftRequestAsync(VM.ShiftRequestArray[i]));
       }
 
-      if (!isSuccess)
-        _ = MessageBox.Show("データ送信に失敗しました");
+      var results = await Task.WhenAll(list);
+
+      foreach (var i in results)
+        isSuccess &= i.IsSuccess;
+
+      _ = MessageBox.Show(isSuccess ? "送信に成功しました" : "データ送信に失敗しました");
     }
 
     /*******************************************
@@ -60,6 +70,8 @@ namespace ShiftManager.Pages
     *******************************************/
     private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e) => OnLoaded(null, null);
 
+    bool DataLoadingCompleted { get; set; } = true;
+
 /*******************************************
 * specification ;
 * name = OnLoaded ;
@@ -72,14 +84,40 @@ namespace ShiftManager.Pages
 * output = N/A ;
 * end of specification ;
 *******************************************/
-    private void OnLoaded(object sender, RoutedEventArgs e)
+    private async void OnLoaded(object sender, RoutedEventArgs e)
     {
+      if (!DataLoadingCompleted)
+        return;
+      DataLoadingCompleted = false;
+
       VM.ShiftRequestArray.Clear();
-      for (int i = 0; i < 7; i++)
+      for (int i = 0; i < DayPerPage; i++)
       {
         DateTime targetDate = VM.TargetDate.Date.AddDays(i);
         VM.ShiftRequestArray.Add(new SingleShiftData(ApiHolder.CurrentUserID, targetDate, false, targetDate, targetDate, new()));
       }
+
+      List<Task<ApiResult<SingleShiftData>>> list = new();
+
+      for (int i = 0; i < DayPerPage; i++)
+      {
+        DateTime targetDate = VM.TargetDate.Date.AddDays(i);
+        System.Diagnostics.Debug.WriteLine(targetDate);
+
+        list.Add(ApiHolder.Api.GetShiftRequestByDateAsync(targetDate));
+      }
+
+      var results = await Task.WhenAll(list);
+
+      for (int i = 0; i < DayPerPage; i++)
+        if (results[i].ReturnData is not null)
+        {
+          VM.ShiftRequestArray[i] = results[i].ReturnData;
+          System.Diagnostics.Debug.WriteLine($"{i:D2} : {results[i].ReturnData}");
+        }
+
+      System.Diagnostics.Debug.WriteLine("Completed");
+      DataLoadingCompleted = true;
     }
   }
 }

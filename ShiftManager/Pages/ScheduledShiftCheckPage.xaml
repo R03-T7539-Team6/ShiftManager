@@ -18,31 +18,33 @@
   <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
     <Grid.RowDefinitions>
       <RowDefinition Height="auto"/>
-      <RowDefinition Height="auto"/>
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
     <DatePicker
-      Margin="4"
+      Margin="10,4"
       Grid.Row="0"
       HorizontalAlignment="Left"
-      VerticalAlignment="Bottom"
       SelectedDateChanged="DatePicker_SelectedDateChanged"
       SelectedDate="{Binding TargetDate}"/>
 
     <MyCtrls:ShiftEditorHeaderControl
-      Margin="-10,0"
-      Grid.Row="1"/>
+      Margin="30,0"
+      VisibleElements="AttendTime,BreakTime,LeaveTime,ShiftBar,Text,WorkTimeLen"
+      VerticalAlignment="Bottom"
+      Grid.Row="0"/>
     <ListView
       x:Name="abc"
+      Margin="10,0,10,10"
       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
       ItemsSource="{Binding ShiftRequestArray}"
-      Grid.Row="2">
+      Grid.Row="1">
       <ListView.ItemTemplate>
         <DataTemplate>
           <MyCtrls:ShiftEditorControl
             MinWidth="600"
-            EditableElements="None"     
+            EditableElements="None"
+            VisibleElements="AttendTime,BreakTime,LeaveTime,ShiftBar,Text,WorkTimeLen"
             Content="{Binding WorkDate, StringFormat=YYYY/MM/DD}"
             Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleValueAddConv}, ConverterParameter=-40, Mode=OneWay}"
             WorkDate="{Binding WorkDate, Mode=TwoWay}"

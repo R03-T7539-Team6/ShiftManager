@@ -18,7 +18,7 @@
     <root:UserIDToNameStringConverter x:Key="UserIDToNameStringConv"/>
   </Page.Resources>
   
-  <Grid>
+  <Grid Margin="10,0,10,10">
     <Grid.RowDefinitions>
       <RowDefinition Height="auto"/>
       <RowDefinition Height="auto"/>
@@ -43,11 +43,27 @@
         SelectedDateChanged="DatePicker_SelectedDateChanged"
         SelectedDate="{Binding TargetDate}"/>
 
+      <TextBlock
+        Text="ShiftSchedulingState:"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Center"
+        Grid.Column="2"
+        Margin="4"/>
       <ComboBox
         Grid.Column="3"
+        VerticalAlignment="Center"
         Margin="4"
         ItemsSource="{x:Static local:ScheduledShiftManagePage.ShiftSchedulingStateLabels}"
         SelectedItem="{Binding ShiftSchedulingState}"/>
+
+      <Button
+        Content="Save"
+        Click="SaveButtonClocked"
+        Grid.Column="5"
+        Padding="8,2"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Center"
+        Margin="4"/>
     </Grid>
 
     <MyCtrls:ShiftEditorHeaderControl

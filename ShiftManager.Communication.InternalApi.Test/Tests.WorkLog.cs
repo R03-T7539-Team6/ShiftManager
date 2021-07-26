@@ -95,11 +95,11 @@ namespace ShiftManager.Communication.InternalApiTest
     {
       CurrentTimeMock tp = new();
       InternalApi i = new() { CurrentTimeProvider = tp };
-      tp.CurrentTime = new(2021, 5, 31, 9, 1, 2);
+      tp.CurrentTime = new(2121, 5, 31, 9, 1, 2);
 
-      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoWorkStartTimeLoggingAsync(new UserID("ID0000")));
-      tp.CurrentTime = new(2021, 5, 31, 9, 2, 2);
-      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoWorkEndTimeLoggingAsync(new UserID("ID0000")));
+      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoWorkStartTimeLoggingAsync(new UserID("ID000000")));
+      tp.CurrentTime = new(2121, 5, 31, 9, 2, 2);
+      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoWorkEndTimeLoggingAsync(new UserID("ID000000")));
     }
 
     /*******************************************
@@ -119,15 +119,15 @@ namespace ShiftManager.Communication.InternalApiTest
     {
       CurrentTimeMock tp = new();
       InternalApi i = new() { CurrentTimeProvider = tp };
-      tp.CurrentTime = new(2021, 5, 31, 9, 1, 2);
+      tp.CurrentTime = new(2121, 5, 31, 9, 1, 2);
 
-      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoWorkStartTimeLoggingAsync(new UserID("ID0000")));
-      tp.CurrentTime = new(2021, 5, 31, 9, 5, 2);
-      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoBreakTimeStartLoggingAsync(new UserID("ID0000")));
-      tp.CurrentTime = new(2021, 5, 31, 9, 6, 2);
-      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoBreakTimeEndLoggingAsync(new UserID("ID0000")));
-      tp.CurrentTime = new(2021, 5, 31, 9, 8, 2);
-      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoWorkEndTimeLoggingAsync(new UserID("ID0000")));
+      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoWorkStartTimeLoggingAsync(new UserID("ID000000")));
+      tp.CurrentTime = new(2121, 5, 31, 9, 5, 2);
+      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoBreakTimeStartLoggingAsync(new UserID("ID000000")));
+      tp.CurrentTime = new(2121, 5, 31, 9, 6, 2);
+      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoBreakTimeEndLoggingAsync(new UserID("ID000000")));
+      tp.CurrentTime = new(2121, 5, 31, 9, 8, 2);
+      Assert.AreEqual(new ApiResult<DateTime>(true, ApiResultCodes.Success, tp.CurrentTime), await i.DoWorkEndTimeLoggingAsync(new UserID("ID000000")));
     }
   }
 }

@@ -108,10 +108,15 @@ namespace ShiftManager.Controls
       {
         var i = value ?? new SingleShiftData(null);
         UserID = i.UserID;
-        WorkDate = i.WorkDate;
+
+        if (i.WorkDate != default)
+          WorkDate = i.WorkDate.Date;
+
+        AttendanceTime = i.AttendanceTime == default ? WorkDate : i.AttendanceTime;
+        LeavingTime = i.LeavingTime == default ? WorkDate : i.LeavingTime;
+
         IsPaidHoliday = i.IsPaidHoliday;
-        AttendanceTime = i.AttendanceTime;
-        LeavingTime = i.LeavingTime;
+
         BreakTimeDictionary = new(i.BreakTimeDictionary);
 
         int BreakTimeLen = 0;

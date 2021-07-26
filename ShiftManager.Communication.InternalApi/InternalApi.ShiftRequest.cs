@@ -24,33 +24,23 @@ namespace ShiftManager.Communication
   *******************************************/
     public ApiResult AddShiftRequest(ISingleShiftData singleShiftData)
     {
+      if (singleShiftData is null)
+        return new(false, ApiResultCodes.NewData_Is_NULL);
+
       UserID targetUserID = new(singleShiftData.UserID);
       if (!TestD.ShiftRequestsDictionary.TryGetValue(targetUserID, out IShiftRequest? shiftRequest) || shiftRequest is null)
       {
-        TestD.ShiftRequestsDictionary.Add(targetUserID, new ShiftRequest(targetUserID, DateTime.Now, new() { { singleShiftData.WorkDate, singleShiftData } }));
+        TestD.ShiftRequestsDictionary.Add(targetUserID, new ShiftRequest(targetUserID, DateTime.Now, new() { [singleShiftData.WorkDate] = singleShiftData }));
 
         return new(true, ApiResultCodes.UserID_Not_Found);
       }
       else
       {
-        try
-        {
-          TestD.ShiftRequestsDictionary[targetUserID] = new ShiftRequest(shiftRequest) with
-          {
-            LastUpdate = DateTime.Now,
-            RequestsDictionary = new(shiftRequest.RequestsDictionary)
-          };
+        shiftRequest.RequestsDictionary[singleShiftData.WorkDate] = singleShiftData;
 
-          return new(true, ApiResultCodes.Success);
-        }
-        catch (ArgumentNullException)
-        {
-          return new(false, ApiResultCodes.NewData_Is_NULL);
-        }
-        catch (System.Collections.Generic.KeyNotFoundException)
-        {
-          return new(false, ApiResultCodes.Target_Date_Not_Found);
-        }
+        TestD.ShiftRequestsDictionary[targetUserID] = new ShiftRequest(shiftRequest) with { LastUpdate = DateTime.Now };
+
+        return new(true, ApiResultCodes.Success);
       }
     }
 
@@ -86,10 +76,10 @@ namespace ShiftManager.Communication
       if (CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In, null);//ログイン中しか使用できない
 
-      if (TestD.ShiftRequestsDictionary.TryGetValue(new(CurrentUserData.UserID), out IShiftRequest? shiftRequest) || shiftRequest is null)
+      if (!TestD.ShiftRequestsDictionary.TryGetValue(new(CurrentUserData.UserID), out IShiftRequest? shiftRequest) || shiftRequest is null)
         return new(false, ApiResultCodes.UserID_Not_Found, null);
 
-      if (shiftRequest.RequestsDictionary.TryGetValue(date, out ISingleShiftData? singleShiftData) || singleShiftData is null)
+      if (!shiftRequest.RequestsDictionary.TryGetValue(date, out ISingleShiftData? singleShiftData) || singleShiftData is null)
         return new(false, ApiResultCodes.Target_Date_Not_Found, null);
       else
         return new(true, ApiResultCodes.Success, new(singleShiftData));

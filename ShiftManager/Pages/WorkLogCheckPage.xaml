@@ -22,21 +22,31 @@
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
+    <DatePicker
+      Margin="10, 4"
+      HorizontalAlignment="Left"
+      SelectedDateChanged="DatePicker_SelectedDateChanged"
+      SelectedDate="{Binding TargetDate}"/>
+
     <MyCtrls:ShiftEditorHeaderControl
-      Margin="-10,0"
+      Margin="30,0"
+      VisibleElements="AttendTime,BreakTime,LeaveTime,ShiftBar,Text,WorkTimeLen"
       Grid.Row="0"/>
     <ListView
       x:Name="abc"
+      Margin="10,0,10,10"
       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-      ItemsSource="{Binding ShiftRequestArray}"
+      ItemsSource="{Binding WorkLogArray}"
       Grid.Row="1">
       <ListView.ItemTemplate>
         <DataTemplate>
           <MyCtrls:ShiftEditorControl
             MinWidth="600"
-            Content="{Binding WorkDate, StringFormat=YYYY/MM/DD}"
+            EditableElements="None"
+            VisibleElements="AttendTime,BreakTime,LeaveTime,ShiftBar,Text,WorkTimeLen"
+            Content="{Binding AttendanceTime.Date, StringFormat=YYYY/MM/DD}"
             Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleValueAddConv}, ConverterParameter=-40, Mode=OneWay}"
-            WorkDate="{Binding WorkDate, Mode=TwoWay}"
+            WorkDate="{Binding AttendanceTime.Date, Mode=OneWay}"
             AttendanceTime="{Binding AttendanceTime, Mode=TwoWay}"
             LeavingTime="{Binding LeavingTime, Mode=TwoWay}"
             BreakTimeDictionary="{Binding BreakTimeDictionary, Mode=TwoWay}"/>

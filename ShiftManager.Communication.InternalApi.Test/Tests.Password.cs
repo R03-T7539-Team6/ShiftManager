@@ -113,13 +113,17 @@ namespace ShiftManager.Communication.InternalApiTest
     #region GetPasswordHashingDataAsync
     static object[] GetPasswordHashingDataAsyncTest_TestCases { get; } =
     {
-      new object[]{new UserID("ID0001"), //Input
+      new object[]{new UserID("ID000000"), //Input
         new ApiResult<HashedPassword>(true, ApiResultCodes.Success,
-          new HashedPassword(string.Empty, "mdTM8HTo96Ba3kV77N9MSQ==", 10000)) },
+          new HashedPassword(string.Empty, "30/DmISxGM+mLG0kfnbF1Q==", 10000)) },
 
-      new object[]{new UserID("ID0002"), //Input
+      /*new object[]{new UserID("ID0001"), //Input
         new ApiResult<HashedPassword>(true, ApiResultCodes.Success,
-          new HashedPassword(string.Empty, "LkDfl7iv6fO5bShQoru4Iw==", 10000)) },
+          new HashedPassword(string.Empty, "mdTM8HTo96Ba3kV77N9MSQ==", 10000)) },*/
+
+      /*new object[]{new UserID("ID0002"), //Input
+        new ApiResult<HashedPassword>(true, ApiResultCodes.Success,
+          new HashedPassword(string.Empty, "LkDfl7iv6fO5bShQoru4Iw==", 10000)) },*/
 
       /**************************************************************************/
       new object[]{new UserID("InvalidUserID"), //Invalid Input

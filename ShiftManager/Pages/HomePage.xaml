@@ -14,27 +14,7 @@
     Background="White"
     Margin="50">
 
-    <TextBox
-      HorizontalAlignment="Center"
-      VerticalAlignment="Top"
-      Margin="50"
-      Text="{Binding ElementName=SEBC, Path=Width, Mode=TwoWay}"/>
+    <TextBlock Text="左のメニューから移動したいページを選択してください.&#xa;左上のハンバーガーボタンを推すことでメニューの開閉が可能です"/>
 
-    <Border
-      HorizontalAlignment="Stretch"
-      VerticalAlignment="Center"
-      BorderThickness="2"
-      BorderBrush="Aqua">
-      <ScrollViewer
-        VerticalScrollBarVisibility="Hidden"
-        HorizontalScrollBarVisibility="Auto">
-        <ctrls:ShiftEditorBarControl
-          x:Name="SEBC"
-        Margin="2"
-        Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollViewer}, Path=ActualWidth}"
-        Height="30"/>
-      </ScrollViewer>
-        
-    </Border>
   </Grid>
 </Page>

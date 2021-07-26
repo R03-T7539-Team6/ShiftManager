@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 using AutoNotify;
@@ -36,6 +38,7 @@ namespace ShiftManager.Pages
   /// </summary>
   public partial class WorkLogCheckPage : Page, IContainsApiHolder
   {
+    const int DayPerPage = 28;
     public IApiHolder ApiHolder { get; set; } = new ApiHolder();
     WorkLogCheckViewModel VM = new();
     public WorkLogCheckPage()
@@ -44,6 +47,9 @@ namespace ShiftManager.Pages
       VM.WorkLogArray = new();
       DataContext = VM;
     }
+
+    bool DataLoadingCompleted { get; set; } = true;
+    DateTime lastTargetDate { get; set; } = default;
 
     /*******************************************
         * specification ;
@@ -59,17 +65,60 @@ namespace ShiftManager.Pages
         *******************************************/
     public async void main()
     {
-      var res = await ApiHolder.Api.GetWorkLogAsync();
-      WorkLog wl = res.ReturnData;
-      DateTime today = DateTime.Today;
+      if (!DataLoadingCompleted && lastTargetDate == VM.TargetDate)
+        return;
 
-      for (int i = 0; i > -30; i--)
+      DataLoadingCompleted = false;
+
+      DateTime targetDate = VM.TargetDate;
+      lastTargetDate = targetDate;
+
+      DateTime date_Max = targetDate.AddDays(1);
+      DateTime date_Min = targetDate.AddDays(DayPerPage * -1 + 1);
+
+      if (string.IsNullOrWhiteSpace(ApiHolder.CurrentUserID.Value))
       {
-        if (wl.WorkLogDictionary.TryGetValue(today.AddDays(i), out var output))
-        {
-          VM.WorkLogArray.Add(output);
-        }
+        _ = MessageBox.Show("ログインされていません", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+        DataLoadingCompleted = false;
+        return;
       }
+
+      VM.WorkLogArray.Clear();
+
+      for (int i = 0; i < DayPerPage; i++)
+      {
+        DateTime dt = targetDate.AddDays(i * -1);
+        VM.WorkLogArray.Add(new SingleWorkLog(dt, dt, new()));
+      }
+
+      var res = await ApiHolder.Api.GetWorkLogAsync();
+
+      if (lastTargetDate != targetDate)
+        return;
+
+      if (!res.IsSuccess || res.ReturnData is null)
+      {
+        _ = MessageBox.Show($"データ取得に失敗しました\nErrorCode:{res.ResultCode}\nData:{res.ReturnData}", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+        DataLoadingCompleted = false;
+        return;
+      }
+
+      if (res.ReturnData.WorkLogDictionary.Count <= 0)
+      {
+        _ = MessageBox.Show($"勤務履歴が存在しません", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+        DataLoadingCompleted = false;
+        return;
+      }
+
+      foreach(var item in res.ReturnData.WorkLogDictionary.Values)
+      {
+        if (item.AttendanceTime < date_Min || date_Max <= item.AttendanceTime)
+          continue;
+
+        VM.WorkLogArray[(targetDate - item.AttendanceTime.Date).Days] = item;
+      }
+
+      DataLoadingCompleted = false;
     }
 
     /*******************************************
@@ -84,9 +133,10 @@ namespace ShiftManager.Pages
     * output = N/A ;
     * end of specification ;
     *******************************************/
-    private void OnLoaded(object sender, System.Windows.RoutedEventArgs e)
-    {
-      main();
-    }
+    private void OnLoaded(object sender, RoutedEventArgs e) => main();
+
+
+    private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e) => main();
+    
   }
 }

@@ -8,7 +8,7 @@
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         d:DataContext="{x:Type local:MainWindowViewModel}"
         mc:Ignorable="d"
-        Title="MainWindow"
+        Title="ShiftManager"
         Loaded="Window_Loaded"
         FontFamily="BIZ UDPGothic">
   <Window.Resources>
@@ -70,12 +70,24 @@
       FontFamily="BIZ UDPGothic"
       Grid.Row="1"
       Grid.Column="1"
-      Source="/Pages/HomePage.xaml"/>
+      Source="/Pages/HomePage.xaml">
+      <Frame.Effect>
+        <BlurEffect Radius="{Binding BlurRadius.Value}"/>
+      </Frame.Effect>
+    </Frame>
 
     <Grid Grid.Row="0"
           Grid.Column="0"
           Grid.ColumnSpan="2"
           Background="DarkGray">
+
+      <TextBlock
+        HorizontalAlignment="Left"
+        VerticalAlignment="Bottom"
+        Margin="280,10,0,10"
+        FontSize="20"
+        Text="{Binding ElementName=MainFrame, Path=Content.Title}"/>
+
 
       <StackPanel
         Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenTrueConv}}"
@@ -98,12 +110,6 @@
           VerticalAlignment="Center"
           Margin="4"/>
       </StackPanel>
-      
-      <Button
-          Content="ライセンス"
-          Click="LicenseClicked"
-          HorizontalAlignment="Left"
-          VerticalAlignment="Center" Margin="260,0,0,0"/>
     </Grid>
 
     <!--ページ選択用ボタン群表示用-->
@@ -122,7 +128,8 @@
         <Button Content="シフト希望登録" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftRequestManagePage}"/>
         <Button Content="予定シフト表示" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ScheduledShiftCheckPage}"/>
         <Button Content="勤務実績表示" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkLogCheckPage}"/>
-        <Button Content="シフト印刷" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftPrintPage}"/>
+        <!--<Button Content="シフト印刷" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftPrintPage}"/>-->
+        <Button Content="シフト印刷" IsEnabled="False" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ShiftPrintPage}"/>
         <Button Content="ユーザ設定" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:UserSettingPage}"/>
 
         <Line Stroke="Black"
@@ -133,9 +140,28 @@
         <!--#region 管理者用ボタン群  権限が無いなら表示しない-->
         <Button Content="予定シフト作成" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:ScheduledShiftManagePage}"/>
         <Button Content="新規従業員追加" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:SignUpPage}"/>
-        <Button Content="データ管理" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:DataManagePage}"/>
+        <!--<Button Content="データ管理" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:DataManagePage}"/>-->
+        <Button Content="データ管理" IsEnabled="False" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:DataManagePage}"/>
         <Button Content="勤怠登録モード" IsEnabled="{Binding IsSignedIn.Value}" Command="{Binding MainFramePageChanger}" CommandParameter="{x:Type pages:WorkTimeRecordPage}"/>
         <!--#endregion-->
+
+        <Line Stroke="Black"
+              StrokeThickness="2"
+              Margin="0,5"
+              X2="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualWidth}"/>
+
+        <Button
+          Content="Third Party Licenses"
+          Click="LicenseClicked"/>
+
+        <Line Stroke="Black"
+              StrokeThickness="2"
+              Margin="0,5"
+              X2="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ActualWidth}"/>
+
+        <Button
+          Content="Close Application"
+          Click="CloseApp"/>
       </StackPanel>
 
       <Grid.Effect>

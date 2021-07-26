@@ -21,60 +21,60 @@ namespace ShiftManager.Communication.InternalApiTest
       get
       {
         yield return new TestCaseData(
-          new UserID("ID0001"),
+          new UserID("ID000000"),
 
           //HashedPasswordについて, SaltとStretchCountの値は何でも構いません.
           //APIは当該フィールドを読み取りませんが, 念のため無意味なデータに置換してAPIに渡すことをお勧めします
-          new HashedPassword("xMIjIuiIPYrmBoQqskJHHYlL2hc0TvKsdjbifXICxPzvUkh5/weTbWCoFECQabYZeVP+awQ9Cv+txfWzLtFxQQ==", string.Empty, 0)
+          new HashedPassword("Mk0Lu/PAI+aHFF9PiR+6NFiNnzR8CDbDaNPvqdB+Dh/aHUcJMTCsBE7K9/uMWtgu7FqLcnsyxsu7fToHU1dfjA==", string.Empty, 0)
         ).Returns(new ApiResult(true, ApiResultCodes.Success)).SetCategory(Category_VALID);
 
         yield return new TestCaseData(
-          new UserID("ID0002"),
-          new HashedPassword("bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==", string.Empty, 0)
+          new UserID("ID000002"),
+          new HashedPassword("Mk0Lu/PAI+aHFF9PiR+6NFiNnzR8CDbDaNPvqdB+Dh/aHUcJMTCsBE7K9/uMWtgu7FqLcnsyxsu7fToHU1dfjA==", string.Empty, 0)
         ).Returns(new ApiResult(true, ApiResultCodes.Success)).SetCategory(Category_VALID);
 
         /**********************************************************************/
         //Invalid Input Test
         yield return new TestCaseData(
           new UserID("INVALID_USER_ID"),
-          new HashedPassword("bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==", string.Empty, 0)
+          new HashedPassword("Mk0Lu/PAI+aHFF9PiR+6NFiNnzR8CDbDaNPvqdB+Dh/aHUcJMTCsBE7K9/uMWtgu7FqLcnsyxsu7fToHU1dfjA==", string.Empty, 0)
         ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_INVALID);
 
         yield return new TestCaseData(
-          new UserID("ID0001"),
-          new HashedPassword("bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==", string.Empty, 0)
+          new UserID("ID000000"),
+          new HashedPassword("xMIjIuiIPYrmBoQqskJHHYlL2hc0TvKsdjbifXICxPzvUkh5/weTbWCoFECQabYZeVP+awQ9Cv+txfWzLtFxQQ==", string.Empty, 0)
         ).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetCategory(Category_INVALID);
 
 
         //空白やNULL, EmptyなID/ハッシュが渡された場合は, 通信せずにエラーを返します
         yield return new TestCaseData(
           new UserID((string)null),
-          new HashedPassword("bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==", string.Empty, 0)
+          new HashedPassword("Mk0Lu/PAI+aHFF9PiR+6NFiNnzR8CDbDaNPvqdB+Dh/aHUcJMTCsBE7K9/uMWtgu7FqLcnsyxsu7fToHU1dfjA==", string.Empty, 0)
         ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_NULL_Input);
 
         yield return new TestCaseData(
-          new UserID("ID0001"),
+          new UserID("ID000000"),
           new HashedPassword(null, string.Empty, 0)
         ).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetCategory(Category_NULL_Input);
 
         yield return new TestCaseData(
           new UserID(string.Empty),
-          new HashedPassword("bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==", string.Empty, 0)
+          new HashedPassword("Mk0Lu/PAI+aHFF9PiR+6NFiNnzR8CDbDaNPvqdB+Dh/aHUcJMTCsBE7K9/uMWtgu7FqLcnsyxsu7fToHU1dfjA==", string.Empty, 0)
         ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_Empty_Input);
 
         yield return new TestCaseData(
-          new UserID("ID0001"),
+          new UserID("ID000000"),
           new HashedPassword(string.Empty, string.Empty, 0)
         ).Returns(new ApiResult(false, ApiResultCodes.Password_Not_Match)).SetCategory(Category_Empty_Input);
 
         yield return new TestCaseData(
           new UserID("           "),
-          new HashedPassword("bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==", string.Empty, 0)
+          new HashedPassword("Mk0Lu/PAI+aHFF9PiR+6NFiNnzR8CDbDaNPvqdB+Dh/aHUcJMTCsBE7K9/uMWtgu7FqLcnsyxsu7fToHU1dfjA==", string.Empty, 0)
         ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_WhiteSpace_Input);
 
         yield return new TestCaseData(
           new UserID("　　　　　"),
-          new HashedPassword("bXdYV4Mtv5udvHw/uI68hVBPufcxD0bdeamIXhj2jkvQkW4tb4vOrbnQkKwwaDhFjzJdrprJkzyRK9rHId2spg==", string.Empty, 0)
+          new HashedPassword("Mk0Lu/PAI+aHFF9PiR+6NFiNnzR8CDbDaNPvqdB+Dh/aHUcJMTCsBE7K9/uMWtgu7FqLcnsyxsu7fToHU1dfjA==", string.Empty, 0)
         ).Returns(new ApiResult(false, ApiResultCodes.UserID_Not_Found)).SetCategory(Category_ZenkakuWhiteSpace_Input);
 
       }
@@ -137,6 +137,7 @@ namespace ShiftManager.Communication.InternalApiTest
   * output = テスト結果 ;
   * end of specification ;
   *******************************************/
+    [Ignore("ID等について完全自動生成にしたため")]
     [TestCaseSource(nameof(SignInAsyncTest_WithIDAndPassword_TestCase))]
     public async Task<ApiResult> SignInAsyncTest_WithIDAndPassword(string userID, string rawPassword)
     {
