@@ -7,7 +7,7 @@
       xmlns:MyCtrls="clr-namespace:ShiftManager.Controls"
       xmlns:root="clr-namespace:ShiftManager" xmlns:pages="clr-namespace:ShiftManager.Pages" d:DataContext="{d:DesignInstance Type=pages:ScheduledShiftManagePageViewModel}"
       mc:Ignorable="d" 
-      FontSize="18"
+      FontSize="16"
       d:DesignHeight="450" d:DesignWidth="1000"
       Title="WorkTimeRecordPage">
 
@@ -99,6 +99,8 @@
     </Grid>
 
     <Grid
+      Margin="10"
+      HorizontalAlignment="Stretch"
       VerticalAlignment="Stretch"
       MinWidth="600"
       Grid.Row="0"
@@ -112,7 +114,7 @@
       <MyCtrls:ShiftEditorHeaderControl
           x:Name="ShiftEditorHeader"
           VisibleElements="Text, AttendTime, LeaveTime, BreakTime, ShiftBar, WorkTimeLen"
-          Margin="-20,0"/>
+          Margin="20,0"/>
 
       <ListView
         x:Name="abc"
