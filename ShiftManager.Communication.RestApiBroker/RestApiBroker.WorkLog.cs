@@ -157,10 +157,10 @@ namespace ShiftManager.Communication
         if (lastWorkLog is null || lastWorkLog.LeavingTime == default)
           return new(false, ApiResultCodes.Work_Not_Ended, CurrentTime);
       }
-      else
-        WorkLogCache[uID] = new SingleWorkLog(CurrentTime, default, new());
 
-      var res = await Sv.CreateWorkLogAsync(RestDataConverter.GenerateFromSingleWorkLog(lastWorkLog, userID));
+      WorkLogCache[uID] = new SingleWorkLog(CurrentTime, default, new());
+
+      var res = await Sv.CreateWorkLogAsync(RestDataConverter.GenerateFromSingleWorkLog(WorkLogCache[uID], userID));
 
       return new(res.Content is not null, ToApiRes(res.Response.StatusCode), CurrentTime);
     }
