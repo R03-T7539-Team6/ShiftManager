@@ -8,7 +8,7 @@
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         d:DataContext="{x:Type local:MainWindowViewModel}"
         mc:Ignorable="d"
-        Title="MainWindow"
+        Title="ShiftManager"
         Loaded="Window_Loaded"
         FontFamily="BIZ UDPGothic">
   <Window.Resources>
