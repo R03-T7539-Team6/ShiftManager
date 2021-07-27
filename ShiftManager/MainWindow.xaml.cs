@@ -329,7 +329,7 @@ namespace ShiftManager
 
     public bool CanExecute(object parameter) => TargetFrame is not null && parameter is Type;
 
-    public async void Execute(object parameter)
+    public void Execute(object parameter)
     {
       if(IsProcessingInstance is not null)
         IsProcessingInstance.IsProcessing.Value = true;
