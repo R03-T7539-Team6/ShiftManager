@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
+using Reactive.Bindings;
+
 using ShiftManager.Communication;
 using ShiftManager.DataClasses;
 
@@ -11,9 +13,10 @@ namespace ShiftManager.Pages
   /// <summary>
   /// Interaction logic for LoginPage.xaml
   /// </summary>
-  public partial class SignInPage : UserControl, IContainsApiHolder
+  public partial class SignInPage : UserControl, IContainsApiHolder, IContainsIsProcessing
   {
     public IApiHolder ApiHolder { get; set; } = new ApiHolder();
+    public ReactivePropertySlim<bool> IsProcessing { get; set; }
 
     public event EventHandler Login;
 
@@ -36,20 +39,39 @@ namespace ShiftManager.Pages
 *******************************************/
     private async void ln_Click_2(object sender, RoutedEventArgs e)
     {
-      string UID = ID.Text;
-      string UPass = Pass.Password;
-      var re = await SignInAsyncTest_WithIDAndPassword(UID, UPass);
-
-      if (re.IsSuccess)
+      try
       {
-        Login?.Invoke(this, EventArgs.Empty);
+        if (IsProcessing is not null)
+          IsProcessing.Value = true;
 
-        //成功時は入力内容をクリアする
-        ID.Text = string.Empty;
-        Pass.Password = string.Empty;
+        string UID = ID.Text;
+        string UPass = Pass.Password;
+        var re = await SignInAsyncTest_WithIDAndPassword(UID, UPass);
+
+        if (re.IsSuccess)
+        {
+          Login?.Invoke(this, EventArgs.Empty);
+
+          //成功時は入力内容をクリアする
+          ID.Text = string.Empty;
+          Pass.Password = string.Empty;
+        }
+        else
+        {
+          _ = MessageBox.Show("サインインに失敗しました.\n" + re.ResultCode switch
+          {
+            ApiResultCodes.UserID_Not_Found => "ユーザIDが存在しません.",
+            ApiResultCodes.Password_Not_Match => "ユーザIDが存在しません.",
+            _ => "ErrorCode:" + re.ResultCode.ToString()
+          },
+          "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
       }
-
-      MessageBox.Show(re.IsSuccess.ToString() + " : " + re.ResultCode.ToString());
+      finally
+      {
+        if (IsProcessing is not null)
+          IsProcessing.Value = false;
+      }
     }
 
     /*******************************************
