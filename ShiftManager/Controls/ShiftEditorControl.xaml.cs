@@ -157,7 +157,13 @@ namespace ShiftManager.Controls
       {
         sebc.BreakTimeDictionaryUpdated += (_, _) => BreakTimeEditor.BreakTimeDictionaryUpdated();
         sebc.BreakTimeDictionaryUpdated += (_, _) => ChangeWorkTimeLen();
-        BreakTimeEditor.BreakTimeLenChanged += (_, _) => sebc.BreakTimeDictionary = BreakTimeEditor.BreakTimeDictionary;
+        BreakTimeEditor.BreakTimeLenChanged += (_, _) =>
+        {
+          if (sebc.BreakTimeDictionary == BreakTimeEditor.BreakTimeDictionary)
+            sebc.OnTimeValuesChanged(); //同じインスタンスなら値の更新を通知する
+          else
+            sebc.BreakTimeDictionary = BreakTimeEditor.BreakTimeDictionary; //違うインスタンスならインスタンスを更新する
+        };
       }
     }
 
