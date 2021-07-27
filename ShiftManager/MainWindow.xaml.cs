@@ -10,6 +10,7 @@ using System.Windows.Media.Animation;
 
 using Reactive.Bindings;
 
+using ShiftManager.Communication;
 using ShiftManager.DataClasses;
 
 namespace ShiftManager
@@ -17,10 +18,10 @@ namespace ShiftManager
   /// <summary>
   /// Interaction logic for MainWindow.xaml
   /// </summary>
-  public partial class MainWindow : Window, IContainsApiHolder, IContainsGetOnlyIsProcessing
+  public partial class MainWindow : Window, IContainsGetOnlyIsProcessing
   {
-    // public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.RestApiBroker() };
-    public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.InternalApi() };
+    public ApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new RestApiBroker() };
+    //public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.InternalApi() };
     private MainWindowViewModel MWVM { get; }
     public ReactivePropertySlim<bool> IsProcessing => MWVM?.IsProcessing;
 
@@ -56,6 +57,7 @@ namespace ShiftManager
       MWVM = new() { MainFramePageChanger = new(MainFrame) { IsProcessingInstance = this } };
       DataContext = MWVM;
       SignInPageElem.ApiHolder = this.ApiHolder;
+      SignInPageElem.IsProcessing = IsProcessing;
 
       MWVM.BlurRadius.Value = MWVM.IsSignedIn.Value ? 0 : BlurRadiusWhenSignOut;
     }
@@ -225,6 +227,70 @@ namespace ShiftManager
     }
 
     private void CloseApp(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
+
+    WindowState lastWindowState = WindowState.Normal;
+    DateTime lastF12KeyDown = default;
+    int F12KeyDownCount = 0;
+    const int F12KeyDownMax = 5;
+    private void Window_KeyDown(object sender, KeyEventArgs e)
+    {
+      switch (e.Key)
+      {
+        case Key.F11: //全画面/解除
+          if(WindowStyle == WindowStyle.None) //おそらく全画面状態である
+          {
+            //全画面解除
+            WindowStyle = WindowStyle.SingleBorderWindow;
+            WindowState = lastWindowState;
+          }
+          else //おそらく通常表示状態である
+          {
+            lastWindowState = WindowState;
+            WindowStyle = WindowStyle.None;
+            WindowState = WindowState.Maximized;
+          }
+          break;
+
+        case Key.F12:
+          /* lastDown : 00:00:00.000 (+0.5 => 00:00:00.500)
+           * Current1 : 00:00:00.300 => OK ( < 00:00:00.500)
+           * Current2 : 00:00:01.000 => Out ( > 00:00:00.500)
+           */
+          if (lastF12KeyDown.AddMilliseconds(500) > DateTime.Now)
+            F12KeyDownCount = 0;
+          lastF12KeyDown = DateTime.Now;
+
+          F12KeyDownCount++;
+
+          //押下回数が規定解数を超えたら, APIモード切替を行う
+          if (F12KeyDownCount >= F12KeyDownMax)
+          {
+            //現在のモードがオンライン動作モードである
+            if (ApiHolder.Api is RestApiBroker)
+            {
+              //切替確認
+              if (MessageBox.Show("開発者機能 : 動作モード切替\n現在オンライン動作モードで動作中です.  オフライン動作モードに切り替えますか?", "ShiftManager (Developer Function)", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                ApiHolder.Api = new InternalApi();
+              else
+                return;
+            }
+            else if (ApiHolder.Api is InternalApi)
+            {
+              //切替確認
+              if (MessageBox.Show("開発者機能 : 動作モード切替\n現在オフライン動作モードで動作中です.  オフライン動作モードに切り替えますか?", "ShiftManager (Developer Function)", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                ApiHolder.Api = new RestApiBroker();
+              else
+                return;
+            }
+            else
+              return;
+
+            SignOutClicked(this, null); //モード切替後は再度サインインが必要
+          }
+
+          break;
+      }
+    }
   }
 
   internal class MainWindowViewModel

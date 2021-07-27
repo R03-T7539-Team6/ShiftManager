@@ -9,6 +9,7 @@
   xmlns:pages="clr-namespace:ShiftManager.Pages"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
   d:DataContext="{x:Type local:MainWindowViewModel}"
+  KeyDown="Window_KeyDown"
   mc:Ignorable="d"
   Title="ShiftManager"
   Loaded="Window_Loaded"
