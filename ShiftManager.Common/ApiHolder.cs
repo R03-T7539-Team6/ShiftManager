@@ -6,15 +6,13 @@ namespace ShiftManager
 {
   public class ApiHolder : IApiHolder
   {
-    //public InternalApi Api { get; } = new();
-    public IApi Api { get; init; }
+    public IApi Api { get; set; }
     public StoreID CurrentStoreID { get => new StoreID("0000"); }
     public UserID CurrentUserID { get => new(Api.CurrentUserData?.UserID); }
     public NameData CurrentUserName { get => new(Api.CurrentUserData?.FullName); }
   }
   public interface IApiHolder
   {
-    //InternalApi Api { get; }
     IApi Api { get; }
 
     StoreID CurrentStoreID { get; }
