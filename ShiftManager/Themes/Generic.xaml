@@ -10,5 +10,7 @@
     <ResourceDictionary Source="/ShiftManager;component/Controls/BreakTimeEditorControl.xaml"/>
     <ResourceDictionary Source="/ShiftManager;component/Controls/PasswordStrengthVisualizerControl.xaml"/>
     <ResourceDictionary Source="/ShiftManager;component/Controls/Over24HTimeEditorControl.xaml"/>
+    <ResourceDictionary Source="/ShiftManager;component/Controls/MyProgressRing.xaml"/>
   </ResourceDictionary.MergedDictionaries>
+
 </ResourceDictionary>
