@@ -1,16 +1,17 @@
-﻿<Window x:Class="ShiftManager.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ShiftManager"
-        xmlns:pages="clr-namespace:ShiftManager.Pages"
-        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-        d:DataContext="{x:Type local:MainWindowViewModel}"
-        mc:Ignorable="d"
-        Title="ShiftManager"
-        Loaded="Window_Loaded"
-        FontFamily="BIZ UDPGothic">
+﻿<Window
+  x:Class="ShiftManager.MainWindow"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:local="clr-namespace:ShiftManager"
+  xmlns:pages="clr-namespace:ShiftManager.Pages"
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+  d:DataContext="{x:Type local:MainWindowViewModel}"
+  mc:Ignorable="d"
+  Title="ShiftManager"
+  Loaded="Window_Loaded"
+  FontFamily="BIZ UDPGothic">
   <Window.Resources>
     <sys:Double x:Key="FontSize_Title">24</sys:Double>
     <BooleanToVisibilityConverter x:Key="VisibleWhenTrueConv"/>
