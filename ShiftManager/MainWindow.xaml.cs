@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -21,7 +19,7 @@ namespace ShiftManager
   public partial class MainWindow : Window, IContainsGetOnlyIsProcessing
   {
     public ApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new RestApiBroker() };
-    //public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.InternalApi() };
+
     private MainWindowViewModel MWVM { get; }
     public ReactivePropertySlim<bool> IsProcessing => MWVM?.IsProcessing;
 
@@ -256,8 +254,11 @@ namespace ShiftManager
            * Current1 : 00:00:00.300 => OK ( < 00:00:00.500)
            * Current2 : 00:00:01.000 => Out ( > 00:00:00.500)
            */
-          if (lastF12KeyDown.AddMilliseconds(500) > DateTime.Now)
+          if (lastF12KeyDown.AddMilliseconds(500) < DateTime.Now)
+          {
             F12KeyDownCount = 0;
+            Title = Title.TrimEnd('.'); //回数確認用に付加した末尾の「.」を除去する
+          }
           lastF12KeyDown = DateTime.Now;
 
           F12KeyDownCount++;
@@ -270,15 +271,21 @@ namespace ShiftManager
             {
               //切替確認
               if (MessageBox.Show("開発者機能 : 動作モード切替\n現在オンライン動作モードで動作中です.  オフライン動作モードに切り替えますか?", "ShiftManager (Developer Function)", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+              {
                 ApiHolder.Api = new InternalApi();
+                Title = "ShiftManager (Offline Mode)";
+              }
               else
                 return;
             }
             else if (ApiHolder.Api is InternalApi)
             {
               //切替確認
-              if (MessageBox.Show("開発者機能 : 動作モード切替\n現在オフライン動作モードで動作中です.  オフライン動作モードに切り替えますか?", "ShiftManager (Developer Function)", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+              if (MessageBox.Show("開発者機能 : 動作モード切替\n現在オフライン動作モードで動作中です.  オンライン動作モードに切り替えますか?", "ShiftManager (Developer Function)", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+              {
                 ApiHolder.Api = new RestApiBroker();
+                Title = "ShiftManager (Online Mode)";
+              }
               else
                 return;
             }
@@ -286,6 +293,10 @@ namespace ShiftManager
               return;
 
             SignOutClicked(this, null); //モード切替後は再度サインインが必要
+          }
+          else
+          {
+            Title += "."; //回数チェック用
           }
 
           break;

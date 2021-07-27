@@ -11,7 +11,7 @@
   d:DataContext="{x:Type local:MainWindowViewModel}"
   KeyDown="Window_KeyDown"
   mc:Ignorable="d"
-  Title="ShiftManager"
+  Title="ShiftManager (Online Mode)"
   Loaded="Window_Loaded"
   FontFamily="BIZ UDPGothic">
   <Window.Resources>
