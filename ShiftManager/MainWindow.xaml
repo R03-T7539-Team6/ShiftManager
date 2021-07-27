@@ -5,6 +5,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:local="clr-namespace:ShiftManager"
+  xmlns:ctrls="clr-namespace:ShiftManager.Controls"
   xmlns:pages="clr-namespace:ShiftManager.Pages"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
   d:DataContext="{x:Type local:MainWindowViewModel}"
@@ -68,6 +69,7 @@
       x:Name="MainFrame"
       NavigationUIVisibility="Hidden"
       Navigating="MainFrame_Navigating"
+      Navigated="MainFrame_Navigated"
       FontFamily="BIZ UDPGothic"
       Grid.Row="1"
       Grid.Column="1"
@@ -173,6 +175,37 @@
       </Grid.Effect>
     </Grid>
 
+    <Rectangle
+      Fill="Black"
+      Opacity="0.5"
+      Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenFalseConv}}"
+      Grid.Row="1"
+      Grid.Column="1"/>
+
+    <pages:SignInPage
+      x:Name="SignInPageElem"
+      Login="SignInPageElem_Login"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Center"
+      Height="300"
+      Width="500"
+      Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenFalseConv}}"
+      Grid.Row="1"
+      Grid.Column="1">
+      <pages:SignInPage.Effect>
+        <DropShadowEffect
+          BlurRadius="40"
+          ShadowDepth="20"
+          Opacity="0.6"/>
+      </pages:SignInPage.Effect>
+    </pages:SignInPage>
+
+    <ctrls:MyProgressRing
+      IsEnabled="{Binding IsProcessing.Value}"
+      Grid.Column="1"
+      Grid.Row="0"
+      Grid.RowSpan="2"/>
+
     <StackPanel
       Name="TitleStackPanel"
       SizeChanged="TitleStackPanel_SizeChanged"
@@ -195,32 +228,6 @@
         Padding="5"
         FontSize="{StaticResource FontSize_Title}"/>
     </StackPanel>
-
-    <Rectangle
-      Fill="Black"
-      Opacity="0.5"
-      Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenFalseConv}}"
-      Grid.Row="1"
-      Grid.Column="1"/>
-
-    <pages:SignInPage
-      x:Name="SignInPageElem"
-      Login="SignInPageElem_Login"
-      FontFamily="Yu Gothic UI"
-      HorizontalAlignment="Center"
-      VerticalAlignment="Center"
-      Height="300"
-      Width="500"
-      Visibility="{Binding IsSignedIn.Value, Converter={StaticResource VisibleWhenFalseConv}}"
-      Grid.Row="1"
-      Grid.Column="1">
-      <pages:SignInPage.Effect>
-        <DropShadowEffect
-          BlurRadius="40"
-          ShadowDepth="20"
-          Opacity="0.6"/>
-      </pages:SignInPage.Effect>
-    </pages:SignInPage>
 
   </Grid>
 </Window>
