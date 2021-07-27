@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,11 +17,12 @@ namespace ShiftManager
   /// <summary>
   /// Interaction logic for MainWindow.xaml
   /// </summary>
-  public partial class MainWindow : Window, IContainsApiHolder
+  public partial class MainWindow : Window, IContainsApiHolder, IContainsGetOnlyIsProcessing
   {
     // public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.RestApiBroker() };
     public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.InternalApi() };
     private MainWindowViewModel MWVM { get; }
+    public ReactivePropertySlim<bool> IsProcessing => MWVM?.IsProcessing;
 
     static readonly double BlurRadiusWhenSignOut = 10;
 
@@ -51,7 +53,7 @@ namespace ShiftManager
     public MainWindow()
     {
       InitializeComponent();
-      MWVM = new() { MainFramePageChanger = new(MainFrame) };
+      MWVM = new() { MainFramePageChanger = new(MainFrame) { IsProcessingInstance = this } };
       DataContext = MWVM;
       SignInPageElem.ApiHolder = this.ApiHolder;
 
@@ -94,8 +96,20 @@ namespace ShiftManager
 *******************************************/
     private void MainFrame_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e)
     {
+      if (MWVM?.IsSignedIn is not null)
+        MWVM.IsProcessing.Value = true;
+
       if (e.Content is IContainsApiHolder i)
         i.ApiHolder = ApiHolder;
+
+
+      if (MWVM?.IsProcessing is not null && e.Content is IContainsIsProcessing isProcessing)
+        isProcessing.IsProcessing = MWVM.IsProcessing; //ページから処理中表示を出すため
+    }
+    private void MainFrame_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
+    {
+      if (MWVM?.IsProcessing is not null && e.Content is not IContainsIsProcessing)
+        MWVM.IsProcessing.Value = false; //向こうに処理完了を通知する実装が無い場合のみ, ここで処理完了したことにする
     }
 
     /*******************************************
@@ -112,24 +126,28 @@ namespace ShiftManager
 *******************************************/
     private async void SignOutClicked(object sender, RoutedEventArgs e)
     {
+      MWVM.IsProcessing.Value = true;
+
       _ = await ApiHolder.Api.SignOutAsync();
       MWVM.IsSignedIn.Value = false;
-      // MainFrame.Content = null;
+
       MWVM.BlurRadius.Value = BlurRadiusWhenSignOut;
+
+      MWVM.IsProcessing.Value = false;
     }
 
-/*******************************************
-* specification ;
-* name = LicenseClicked ;
-* Function = ライセンスボタンがクリックされた時にライセンス情報のテキストフォルダを読み込んでサブウィンドウに渡す ;
-* note = 補足説明 ;
-* date = 07/04/2021 ;
-* author = 佐藤真通 ;
-* History = 更新履歴 ;
-* input = ライセンスボタンが押されたことを知らせるイベントハンドラ ;
-* output = N/A ;
-* end of specification ;
-*******************************************/
+    /*******************************************
+    * specification ;
+    * name = LicenseClicked ;
+    * Function = ライセンスボタンがクリックされた時にライセンス情報のテキストフォルダを読み込んでサブウィンドウに渡す ;
+    * note = 補足説明 ;
+    * date = 07/04/2021 ;
+    * author = 佐藤真通 ;
+    * History = 更新履歴 ;
+    * input = ライセンスボタンが押されたことを知らせるイベントハンドラ ;
+    * output = N/A ;
+    * end of specification ;
+    *******************************************/
     private void LicenseClicked(object sender, RoutedEventArgs e)
     {
       var assembly = Assembly.GetExecutingAssembly();
@@ -221,6 +239,17 @@ namespace ShiftManager
 #endif
     public ReactivePropertySlim<NameData_PropertyChanged> UserName { get; } = new(new());
     public ReactivePropertySlim<double> BlurRadius { get; } = new(0);
+
+    public ReactivePropertySlim<bool> IsProcessing { get; } = new(false);
+  }
+
+  internal interface IContainsIsProcessing
+  {
+    public ReactivePropertySlim<bool> IsProcessing { get; set; }
+  }
+  internal interface IContainsGetOnlyIsProcessing
+  {
+    public ReactivePropertySlim<bool> IsProcessing { get; }
   }
 
   /// <summary>指定のFrameに, CommandParmeterで指定された型のPageを表示する</summary>
@@ -228,11 +257,18 @@ namespace ShiftManager
   {
     public event EventHandler CanExecuteChanged;
     public Frame TargetFrame { get; }
+    public IContainsGetOnlyIsProcessing IsProcessingInstance { get; init; }
 
     public FramePageChanger(Frame _TargetFrame) => TargetFrame = _TargetFrame;
 
     public bool CanExecute(object parameter) => TargetFrame is not null && parameter is Type;
 
-    public void Execute(object parameter) => TargetFrame.Content = (parameter as Type)?.GetConstructor(new Type[0]).Invoke(null);
+    public async void Execute(object parameter)
+    {
+      if(IsProcessingInstance is not null)
+        IsProcessingInstance.IsProcessing.Value = true;
+
+      TargetFrame.Content = (parameter as Type)?.GetConstructor(new Type[0]).Invoke(null);
+    }
   }
 }

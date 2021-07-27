@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
+using Reactive.Bindings;
+
 using ShiftManager.Communication;
 using ShiftManager.DataClasses;
 
@@ -12,7 +14,7 @@ namespace ShiftManager.Pages
   /// <summary>
   /// Interaction logic for ShiftRequestManagePage.xaml
   /// </summary>
-  public partial class ShiftRequestManagePage : Page, IContainsApiHolder
+  public partial class ShiftRequestManagePage : Page, IContainsApiHolder, IContainsIsProcessing
   {
     const int DayPerPage = 28;
     public IApiHolder ApiHolder { get; set; } = new ApiHolder();
@@ -40,6 +42,9 @@ namespace ShiftManager.Pages
     {
       bool isSuccess = true;
 
+      if (IsProcessing is not null)
+        IsProcessing.Value = true;
+
       List<Task<ApiResult>> list = new();
 
       for (int i = 0; i < DayPerPage; i++)
@@ -53,7 +58,11 @@ namespace ShiftManager.Pages
       foreach (var i in results)
         isSuccess &= i.IsSuccess;
 
-      _ = MessageBox.Show(isSuccess ? "送信に成功しました" : "データ送信に失敗しました");
+      if (!isSuccess)
+        _ = MessageBox.Show("送信に失敗しました", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+
+      if (IsProcessing is not null)
+        IsProcessing.Value = false;
     }
 
     /*******************************************
@@ -71,24 +80,28 @@ namespace ShiftManager.Pages
     private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e) => OnLoaded(null, null);
 
     bool DataLoadingCompleted { get; set; } = true;
+    public ReactivePropertySlim<bool> IsProcessing { get; set; }
 
-/*******************************************
-* specification ;
-* name = OnLoaded ;
-* Function = 画面がロードされた時に予定シフト表の内容を更新する ;
-* note = 補足説明 ;
-* date = 07/03/2021 ;
-* author = 佐藤真通 ;
-* History = 更新履歴 ;
-* input = 画面がロードされたことを知らせるイベントハンドラ ;
-* output = N/A ;
-* end of specification ;
-*******************************************/
+    /*******************************************
+    * specification ;
+    * name = OnLoaded ;
+    * Function = 画面がロードされた時に予定シフト表の内容を更新する ;
+    * note = 補足説明 ;
+    * date = 07/03/2021 ;
+    * author = 佐藤真通 ;
+    * History = 更新履歴 ;
+    * input = 画面がロードされたことを知らせるイベントハンドラ ;
+    * output = N/A ;
+    * end of specification ;
+    *******************************************/
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
       if (!DataLoadingCompleted)
         return;
       DataLoadingCompleted = false;
+
+      if (IsProcessing is not null)
+        IsProcessing.Value = true;
 
       VM.ShiftRequestArray.Clear();
       for (int i = 0; i < DayPerPage; i++)
@@ -118,6 +131,9 @@ namespace ShiftManager.Pages
 
       System.Diagnostics.Debug.WriteLine("Completed");
       DataLoadingCompleted = true;
+
+      if (IsProcessing is not null)
+        IsProcessing.Value = false;
     }
   }
 }

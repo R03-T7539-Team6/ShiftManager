@@ -9,23 +9,38 @@ using ShiftManager.Communication;
 using ShiftManager.DataClasses;
 
 using AutoNotify;
+using Reactive.Bindings;
 
 namespace ShiftManager.Pages
 {
   /// <summary>
   /// Interaction logic for WorkTimeRecordPage.xaml
   /// </summary>
-  public partial class WorkTimeRecordPage : Page, IContainsApiHolder
+  public partial class WorkTimeRecordPage : Page, IContainsApiHolder, IContainsIsProcessing
   {
     public IApiHolder ApiHolder { get; set; }
+    public ReactivePropertySlim<bool> IsProcessing { get; set; }
+    void TurnOnProcessingSW()
+    {
+      if (IsProcessing is not null)
+        IsProcessing.Value = true;
+    }
+    void TurnOffProcessingSW()
+    {
+      if (IsProcessing is not null)
+        IsProcessing.Value = false;
+    }
+
     WorkTimeRecordPageViewModel VM = new();
     public WorkTimeRecordPage()
     {
       InitializeComponent();
+
       DispatcherTimer timer = new DispatcherTimer();
       timer.Tick += timer_Tick;
       timer.Interval = new TimeSpan(0, 0, 1);
       timer.Start();
+      
       VM.ScheduledShiftArray = new();
       DataContext = VM;
       timer_Tick(default, EventArgs.Empty);
@@ -45,11 +60,8 @@ namespace ShiftManager.Pages
     * output = 現在時刻 ;
     * end of specification ;
     *******************************************/
-    private void timer_Tick(object sender, EventArgs e)
-    {
-      DateTime d = DateTime.Now;
-      time.Text = $"{d.Hour:00}:{d.Minute:00}:{d.Second:00}";
-    }
+    private void timer_Tick(object sender, EventArgs e) => time.Text = $"{DateTime.Now:HH:mm:ss}";
+    
 
     /*******************************************
     * specification ;
@@ -67,6 +79,8 @@ namespace ShiftManager.Pages
     {
       if (!string.IsNullOrWhiteSpace(UID.Text))
       {
+        TurnOnProcessingSW();
+
         string userID = UID.Text;
         UserID targetUserID = new(userID);
         ApiResult<DateTime> res = await ApiHolder.Api.DoWorkStartTimeLoggingAsync(targetUserID);
@@ -81,6 +95,8 @@ namespace ShiftManager.Pages
         }
         if (res.ResultCode == ApiResultCodes.UserID_Not_Found)
           MessageBox.Show("IDが違います");
+
+        TurnOffProcessingSW();
       }
     }
 
@@ -100,6 +116,8 @@ namespace ShiftManager.Pages
     {
       if (!string.IsNullOrWhiteSpace(UID.Text))
       {
+        TurnOnProcessingSW();
+
         string userID = UID.Text;
         UserID targetUserID = new(userID);
         ApiResult<DateTime> res = await ApiHolder.Api.DoBreakTimeStartLoggingAsync(targetUserID);
@@ -116,6 +134,8 @@ namespace ShiftManager.Pages
           VM.ScheduledShiftArray.Clear();
           main(targetUserID);
         }
+
+        TurnOffProcessingSW();
       }
     }
 
@@ -135,6 +155,8 @@ namespace ShiftManager.Pages
     {
       if (!string.IsNullOrWhiteSpace(UID.Text))
       {
+        TurnOnProcessingSW();
+
         string userID = UID.Text;
         UserID targetUserID = new(userID);
         ApiResult<DateTime> res = await ApiHolder.Api.DoBreakTimeEndLoggingAsync(targetUserID);
@@ -154,6 +176,8 @@ namespace ShiftManager.Pages
         if (res.ResultCode == ApiResultCodes.UserID_Not_Found)
           MessageBox.Show("IDが違います");
       }
+
+      TurnOffProcessingSW();
     }
 
     /*******************************************
@@ -172,6 +196,8 @@ namespace ShiftManager.Pages
     {
       if (!string.IsNullOrWhiteSpace(UID.Text))
       {
+        TurnOnProcessingSW();
+
         string userID = UID.Text;
         UserID targetUserID = new(userID);
         ApiResult<DateTime> res = await ApiHolder.Api.DoWorkEndTimeLoggingAsync(targetUserID);
@@ -188,6 +214,8 @@ namespace ShiftManager.Pages
           VM.ScheduledShiftArray.Clear();
           main(targetUserID);
         }
+
+        TurnOffProcessingSW();
       }
     }
 
@@ -217,6 +245,8 @@ namespace ShiftManager.Pages
       }
 
     }
+
+    private void Page_Loaded(object sender, RoutedEventArgs e) => TurnOffProcessingSW();
   }
 
   public partial class WorkTimeRecordPageViewModel : INotifyPropertyChanged, IContainsApiHolder
