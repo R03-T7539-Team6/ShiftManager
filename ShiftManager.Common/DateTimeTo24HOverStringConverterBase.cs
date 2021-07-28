@@ -20,7 +20,7 @@ namespace ShiftManager
       LastHH = value.Hour + (int)(value.Date - BaseDate.Date).TotalHours;
       LastMM = value.Minute;
 
-      LastView = $"{LastHH:D2}:{LastMM:D2}";
+      LastView = $"{LastHH:D2}:{value:mm}";
       return LastView;
     }
 
