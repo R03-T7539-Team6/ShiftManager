@@ -325,7 +325,7 @@ namespace ShiftManager.Controls
     public void UpdateIndex() => Index = BreakTimeDictionary.Keys.ToList().IndexOf(StartTime);
 
     private Dictionary<string, List<string>> ErrorsDic = new() { { nameof(StartTime), new() } };
-    public IEnumerable GetErrors(string propertyName) => ErrorsDic[propertyName];
+    public IEnumerable GetErrors(string propertyName) => ErrorsDic.TryGetValue(propertyName, out var value) && value is not null ? value : new List<string>();
 
     private int _Index;
     public int Index

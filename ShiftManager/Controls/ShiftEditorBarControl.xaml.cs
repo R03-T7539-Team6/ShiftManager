@@ -61,7 +61,7 @@ namespace ShiftManager.Controls
     private Dictionary<DateTime, int> _LocalBreakTimeDicRec = new();
     private Dictionary<DateTime, int> LocalBreakTimeDicRec { get => _LocalBreakTimeDicRec; set => _LocalBreakTimeDicRec = new(value); }
 
-    private void OnTimeValuesChanged()
+    public void OnTimeValuesChanged()
     {
       if (BreakTimeDictionary is null)
         return;

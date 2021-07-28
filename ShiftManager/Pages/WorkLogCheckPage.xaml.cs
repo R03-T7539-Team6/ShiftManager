@@ -7,6 +7,8 @@ using System.Windows.Controls;
 
 using AutoNotify;
 
+using Reactive.Bindings;
+
 using ShiftManager.DataClasses;
 
 namespace ShiftManager.Pages
@@ -36,7 +38,7 @@ namespace ShiftManager.Pages
   /// <summary>
   /// Interaction logic for WorkLogCheckPage.xaml
   /// </summary>
-  public partial class WorkLogCheckPage : Page, IContainsApiHolder
+  public partial class WorkLogCheckPage : Page, IContainsApiHolder, IContainsIsProcessing
   {
     const int DayPerPage = 28;
     public IApiHolder ApiHolder { get; set; } = new ApiHolder();
@@ -50,6 +52,7 @@ namespace ShiftManager.Pages
 
     bool DataLoadingCompleted { get; set; } = true;
     DateTime lastTargetDate { get; set; } = default;
+    public ReactivePropertySlim<bool> IsProcessing { get; set; }
 
     /*******************************************
         * specification ;
@@ -68,57 +71,67 @@ namespace ShiftManager.Pages
       if (!DataLoadingCompleted && lastTargetDate == VM.TargetDate)
         return;
 
-      DataLoadingCompleted = false;
-
       DateTime targetDate = VM.TargetDate;
-      lastTargetDate = targetDate;
 
-      DateTime date_Max = targetDate.AddDays(1);
-      DateTime date_Min = targetDate.AddDays(DayPerPage * -1 + 1);
-
-      if (string.IsNullOrWhiteSpace(ApiHolder.CurrentUserID.Value))
+      try
       {
-        _ = MessageBox.Show("ログインされていません", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
         DataLoadingCompleted = false;
-        return;
+
+        if (IsProcessing is not null)
+          IsProcessing.Value = true;
+
+        lastTargetDate = targetDate;
+
+        DateTime date_Max = targetDate.AddDays(1);
+        DateTime date_Min = targetDate.AddDays(DayPerPage * -1 + 1);
+
+        if (string.IsNullOrWhiteSpace(ApiHolder.CurrentUserID.Value))
+        {
+          _ = MessageBox.Show("ログインされていません", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+          return;
+        }
+
+        VM.WorkLogArray.Clear();
+
+        for (int i = 0; i < DayPerPage; i++)
+        {
+          DateTime dt = targetDate.AddDays(i * -1);
+          VM.WorkLogArray.Add(new SingleWorkLog(dt, dt, new()));
+        }
+
+        var res = await ApiHolder.Api.GetWorkLogAsync();
+
+        if (lastTargetDate != targetDate)
+          return;
+
+        if (!res.IsSuccess || res.ReturnData is null)
+        {
+          _ = MessageBox.Show($"データ取得に失敗しました\nErrorCode:{res.ResultCode}\nData:{res.ReturnData}", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+          return;
+        }
+
+        if (res.ReturnData.WorkLogDictionary.Count <= 0)
+        {
+          _ = MessageBox.Show($"勤務履歴が存在しません", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+          return;
+        }
+
+        foreach (var item in res.ReturnData.WorkLogDictionary.Values)
+        {
+          if (item.AttendanceTime < date_Min || date_Max <= item.AttendanceTime)
+            continue;
+
+          VM.WorkLogArray[(targetDate - item.AttendanceTime.Date).Days] = item;
+        }
       }
-
-      VM.WorkLogArray.Clear();
-
-      for (int i = 0; i < DayPerPage; i++)
+      finally
       {
-        DateTime dt = targetDate.AddDays(i * -1);
-        VM.WorkLogArray.Add(new SingleWorkLog(dt, dt, new()));
+        if (lastTargetDate == targetDate)
+          DataLoadingCompleted = true;
+
+        if (IsProcessing is not null)
+          IsProcessing.Value = false;
       }
-
-      var res = await ApiHolder.Api.GetWorkLogAsync();
-
-      if (lastTargetDate != targetDate)
-        return;
-
-      if (!res.IsSuccess || res.ReturnData is null)
-      {
-        _ = MessageBox.Show($"データ取得に失敗しました\nErrorCode:{res.ResultCode}\nData:{res.ReturnData}", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
-        DataLoadingCompleted = false;
-        return;
-      }
-
-      if (res.ReturnData.WorkLogDictionary.Count <= 0)
-      {
-        _ = MessageBox.Show($"勤務履歴が存在しません", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
-        DataLoadingCompleted = false;
-        return;
-      }
-
-      foreach(var item in res.ReturnData.WorkLogDictionary.Values)
-      {
-        if (item.AttendanceTime < date_Min || date_Max <= item.AttendanceTime)
-          continue;
-
-        VM.WorkLogArray[(targetDate - item.AttendanceTime.Date).Days] = item;
-      }
-
-      DataLoadingCompleted = false;
     }
 
     /*******************************************

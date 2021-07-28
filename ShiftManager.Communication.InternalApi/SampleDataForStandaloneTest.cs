@@ -35,7 +35,7 @@ namespace ShiftManager.Communication
         List<ISingleWorkLog> wLogList = new();
         int rndInt = RandomNumberGenerator.GetInt32(MAX_SAMPLE_WORKLOG - 10);
 
-        for (int d = 0; d < rndInt + 10; d++) {
+        for (int d = 1; d < rndInt + 10; d++) { //昨日の分から生成する
           int v = RandomNumberGenerator.GetInt32(5);
           if (v % 5 == 0)
             continue;
@@ -60,7 +60,7 @@ namespace ShiftManager.Communication
             new NameData($"FN{i:D6}", $"LN{i:D6}"),
             STORE_ID,
             UserGroup.SystemAdmin,
-            UserState.NotHired,
+            UserState.Normal,
             new WorkLog(id, new(dictionary: wLogList.ToDictionary(v => v.AttendanceTime))),
             new UserSetting(id, NotificationPublishTimings.None, new())
             )

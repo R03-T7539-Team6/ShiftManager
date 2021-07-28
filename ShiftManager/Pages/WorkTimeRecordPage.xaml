@@ -5,9 +5,11 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:MyCtrl="clr-namespace:ShiftManager.Controls"
       xmlns:MyCtrls="clr-namespace:ShiftManager.Controls"
-      xmlns:root="clr-namespace:ShiftManager" xmlns:pages="clr-namespace:ShiftManager.Pages" d:DataContext="{d:DesignInstance Type=pages:ScheduledShiftManagePageViewModel}"
+      xmlns:root="clr-namespace:ShiftManager" xmlns:pages="clr-namespace:ShiftManager.Pages"
+      d:DataContext="{d:DesignInstance Type=pages:WorkLogCheckViewModel}"
+      Loaded="Page_Loaded"
       mc:Ignorable="d" 
-      FontSize="18"
+      FontSize="16"
       d:DesignHeight="450" d:DesignWidth="1000"
       Title="WorkTimeRecordPage">
 
@@ -99,6 +101,8 @@
     </Grid>
 
     <Grid
+      Margin="10"
+      HorizontalAlignment="Stretch"
       VerticalAlignment="Stretch"
       MinWidth="600"
       Grid.Row="0"
@@ -107,23 +111,68 @@
       <Grid.RowDefinitions>
         <RowDefinition Height="auto"/>
         <RowDefinition Height="*"/>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="*"/>
       </Grid.RowDefinitions>
-      
+
+      <TextBlock
+        Text="本日の予定シフト"
+        Grid.Row="0"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Center"
+        Margin="16,0"/>
+
       <MyCtrls:ShiftEditorHeaderControl
-          x:Name="ShiftEditorHeader"
           VisibleElements="Text, AttendTime, LeaveTime, BreakTime, ShiftBar, WorkTimeLen"
-          Margin="-20,0"/>
+          Margin="20,0"/>
 
       <ListView
         x:Name="abc"
         Grid.Row="1"
         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-        ItemsSource="{Binding ShiftRequestArray}">
+        ItemsSource="{Binding ScheduledShiftArray}">
         <ListView.ItemTemplate>
           <DataTemplate>
             <MyCtrls:ShiftEditorControl
               EditableElements="None"
-              VisibleElements="{Binding VisibleElements, ElementName=ShiftEditorHeader}"
+              VisibleElements="Text, AttendTime, LeaveTime, BreakTime, ShiftBar, WorkTimeLen"
+              Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleValueAddConv}, ConverterParameter=-40, Mode=OneWay}"
+              WorkDate="{Binding WorkDate, Mode=TwoWay}"
+              AttendanceTime="{Binding AttendanceTime, Mode=TwoWay}"
+              LeavingTime="{Binding LeavingTime, Mode=TwoWay}"
+              BreakTimeDictionary="{Binding BreakTimeDictionary, Mode=TwoWay}">
+              <MultiBinding Converter="{StaticResource UserIDToNameStringConv}">
+                <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=Page}" Path="."/>
+                <Binding Path="UserID"/>
+              </MultiBinding>
+            </MyCtrls:ShiftEditorControl>
+          </DataTemplate>
+        </ListView.ItemTemplate>
+      </ListView>
+
+      <TextBlock
+        Text="勤務実績"
+        Grid.Row="2"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Center"
+        Margin="16,0"/>
+
+      <MyCtrls:ShiftEditorHeaderControl
+          x:Name="ShiftEditorHeader"
+        Grid.Row="2"
+          VisibleElements="Text, AttendTime, LeaveTime, BreakTime, ShiftBar, WorkTimeLen"
+          Margin="20,0"/>
+
+      <ListView
+        x:Name="WorkLogListView"
+        Grid.Row="3"
+        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+        ItemsSource="{Binding WorkLogArray}">
+        <ListView.ItemTemplate>
+          <DataTemplate>
+            <MyCtrls:ShiftEditorControl
+              EditableElements="None"
+              VisibleElements="Text, AttendTime, LeaveTime, BreakTime, ShiftBar, WorkTimeLen"
               Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleValueAddConv}, ConverterParameter=-40, Mode=OneWay}"
               WorkDate="{Binding WorkDate, Mode=TwoWay}"
               AttendanceTime="{Binding AttendanceTime, Mode=TwoWay}"

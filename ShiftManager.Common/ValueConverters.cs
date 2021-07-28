@@ -49,7 +49,7 @@ namespace ShiftManager
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
       TimeSpan ts = (TimeSpan)value;
-      return $"{(int)ts.TotalHours:D2}:{ts.Minutes:D2}";
+      return $"{(int)ts.TotalHours:D2}:{ts:mm}";
     }
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => TimeSpan.Parse(value as string);
   }

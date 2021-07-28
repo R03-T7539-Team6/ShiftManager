@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
@@ -11,6 +14,8 @@ using System.Windows.Input;
 
 using AutoNotify;
 
+using Reactive.Bindings;
+
 using ShiftManager.DataClasses;
 
 namespace ShiftManager.Pages
@@ -18,10 +23,13 @@ namespace ShiftManager.Pages
   /// <summary>
   /// Interaction logic for ScheduledShiftManagePage.xaml
   /// </summary>
-  public partial class ScheduledShiftManagePage : Page, IContainsApiHolder
+  public partial class ScheduledShiftManagePage : Page, IContainsApiHolder, IContainsIsProcessing
   {
     public IApiHolder ApiHolder { get => VM.ApiHolder; set => VM.ApiHolder = value; }
     ScheduledShiftManagePageViewModel VM = new();
+
+    DateTime LastShowingDate { get; set; }
+    public ReactivePropertySlim<bool> IsProcessing { get; set; }
 
     /*******************************************
 * specification ;
@@ -42,6 +50,7 @@ namespace ShiftManager.Pages
       VM.ShiftRequestArray = new();
       VM.ScheduledShiftArray = new();
       DataContext = VM;
+      LastShowingDate = VM.TargetDate;
     }
 
     ImmutableArray<ShiftRequest> ShiftRequests;
@@ -72,11 +81,20 @@ namespace ShiftManager.Pages
 * output = N/A ;
 * end of specification ;
 *******************************************/
-    private void ReloadData()
+    private async void ReloadData()
     {
+      if (IsProcessing is not null)
+        IsProcessing.Value = true;
+
       VM.ApiHolder = ApiHolder;
-      ReloadShiftRequest();
-      ReloadScheduledShift();
+      
+      var userIDArr = await ReloadShiftRequest();
+      _ = await ReloadScheduledShift(userIDArr);
+      
+      LastShowingDate = VM.TargetDate;
+
+      if (IsProcessing is not null)
+        IsProcessing.Value = false;
     }
 
     /*******************************************
@@ -91,23 +109,51 @@ namespace ShiftManager.Pages
 * output = N/A ;
 * end of specification ;
 *******************************************/
-    private async void ReloadShiftRequest()
+    private async Task<UserID[]> ReloadShiftRequest(UserID[] IDArr = null)
     {
+      DateTime targetDate = VM.TargetDate.Date;
+      List<UserID> additionalUserID = new();
+
+      if (!(IDArr?.Length > 0)) //NULLであるか, あるいは長さが0以下の場合
+        IDArr = (await ApiHolder.Api.GetUsersByUserStateAsync(UserState.Normal)).ReturnData.Select(v => new UserID(v.UserID)).ToArray();
+
+      VM.ShiftRequestArray.Clear();
+
+      for (int i = 0; i < IDArr.Length; i++)
+        VM.ShiftRequestArray.Add(new SingleShiftData(IDArr[i], targetDate, false, targetDate, targetDate, new()));
+      
+
       var shiftReqs = await ApiHolder.Api.GetAllShiftRequestAsync();
       if (!shiftReqs.IsSuccess)
       {
         _ = MessageBox.Show("Cannot Get ShiftRequest\nErrorCode:" + shiftReqs.ResultCode.ToString(), "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
-        return;
+        return IDArr;
       }
 
       ShiftRequests = shiftReqs.ReturnData;
-      VM.ShiftRequestArray.Clear();
       foreach (var i in ShiftRequests)
       {
-        if (!i.RequestsDictionary.TryGetValue(VM.TargetDate, out ISingleShiftData ssd))
-          ssd = new SingleShiftData(i.UserID, VM.TargetDate, false, VM.TargetDate, VM.TargetDate, new());
-        VM.ShiftRequestArray.Add(ssd);
+        bool IDFound = false;
+
+        for (int index = 0; index < IDArr.Length; index++)
+          if (IDArr[index] == new UserID(i.UserID))
+          {
+            if (!i.RequestsDictionary.TryGetValue(targetDate, out ISingleShiftData ssd))
+              ssd = new SingleShiftData(i.UserID, targetDate, false, targetDate, targetDate, new());
+
+            VM.ShiftRequestArray[index] = ssd;
+            IDFound = true;
+            break;
+          }
+
+        if (!IDFound)
+        {
+          VM.ShiftRequestArray.Add(new SingleShiftData(i.UserID, targetDate, false, targetDate, targetDate, new()));
+          additionalUserID.Add(new(i.UserID));
+        }
       }
+
+      return IDArr.Concat(additionalUserID).ToArray();
     }
 
     /*******************************************
@@ -122,26 +168,53 @@ namespace ShiftManager.Pages
 * output = N/A ;
 * end of specification ;
 *******************************************/
-    private async void ReloadScheduledShift()
+    private async Task<UserID[]> ReloadScheduledShift(UserID[] IDArr = null)
     {
-      var ret = await ApiHolder.Api.GetScheduledShiftByDateAsync(VM.TargetDate);
+      DateTime targetDate = VM.TargetDate.Date;
+      List<UserID> additionalUserID = new();
+
+      if (!(IDArr?.Length > 0)) //NULLであるか, あるいは長さが0以下の場合
+        IDArr = (await ApiHolder.Api.GetUsersByUserStateAsync(UserState.Normal)).ReturnData.Select(v => new UserID(v.UserID)).ToArray();
+
+      VM.ScheduledShiftArray.Clear();
+
+      for (int i = 0; i < IDArr.Length; i++)
+        VM.ScheduledShiftArray.Add(new SingleShiftData(IDArr[i], targetDate, false, targetDate, targetDate, new()));
+
+      var ret = await ApiHolder.Api.GetScheduledShiftByDateAsync(targetDate);
       if (!ret.IsSuccess)
       {
         if (ret.ResultCode == Communication.ApiResultCodes.Target_Date_Not_Found)
-          ret = await ApiHolder.Api.GenerateScheduledShiftAsync(VM.TargetDate);
+          ret = await ApiHolder.Api.GenerateScheduledShiftAsync(targetDate);
         else
         {
-          MessageBox.Show("Error has occured\nErrorCode:" + ret.ResultCode.ToString(), "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
-          return;
+          _ = MessageBox.Show("Error has occured\nErrorCode:" + ret.ResultCode.ToString(), "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+          return IDArr;
         }
       }
-      VM.ScheduledShiftArray.Clear();
 
       if (ret.ReturnData is null)
-        return;
+        return IDArr;
 
-      foreach (var i in ret.ReturnData?.ShiftDictionary.Values)
-        VM.ScheduledShiftArray.Add(new SingleShiftData(i));
+      Dictionary<UserID, ISingleShiftData> shiftDic = new(ret.ReturnData.ShiftDictionary);
+
+      for (int index = 0; index < IDArr.Length; index++)
+      {
+        if(shiftDic.TryGetValue(IDArr[index], out var value))
+        {
+          VM.ScheduledShiftArray[index] = new SingleShiftData(value);
+          shiftDic.Remove(IDArr[index]);
+        }
+      }
+
+      foreach (var item in shiftDic.Values)
+      {
+        VM.ScheduledShiftArray.Add(new SingleShiftData(item));
+        VM.ShiftRequestArray.Add(new SingleShiftData(item.UserID, targetDate, false, targetDate, targetDate, new())); //スクロール位置同期が崩れないように, シフト希望にも空要素を追加しておく
+        additionalUserID.Add(new(item.UserID));
+      }
+
+      return IDArr.Concat(additionalUserID).ToArray();
     }
 
     /*******************************************
@@ -162,7 +235,10 @@ namespace ShiftManager.Pages
       if (VM.ScheduledShiftArray.Count <= 0)
         return;
 
-      DateTime targetDate = VM.ScheduledShiftArray[0].WorkDate.Date;
+      if (IsProcessing is not null)
+        IsProcessing.Value = true;
+
+      DateTime targetDate = LastShowingDate;
       var scheduledShifts = await ApiHolder.Api.UpdateSingleScheduledShiftListAsync(targetDate, VM.ScheduledShiftArray);
 
       if (!scheduledShifts.IsSuccess)
@@ -170,6 +246,9 @@ namespace ShiftManager.Pages
           UpdateScheduledShift();
 
       UpdateShiftSchedulingState(targetDate);
+
+      if (IsProcessing is not null)
+        IsProcessing.Value = false;
     }
 
     /*******************************************
@@ -292,6 +371,9 @@ namespace ShiftManager.Pages
 * end of specification ;
 *******************************************/
     private void Page_Unloaded(object sender, RoutedEventArgs e) => UpdateScheduledShift();
+
+    private void SaveButtonClocked(object sender, RoutedEventArgs e) => UpdateScheduledShift();
+    
   }
 
   public partial class ScheduledShiftManagePageViewModel : INotifyPropertyChanged, IContainsApiHolder
