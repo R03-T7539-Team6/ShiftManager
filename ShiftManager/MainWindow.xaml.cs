@@ -52,6 +52,12 @@ namespace ShiftManager
     public MainWindow()
     {
       InitializeComponent();
+
+#if DEBUG
+      if (TryFindResource("WindowStyleToDebug") is Style s)
+        this.Style = s;
+#endif
+
       MWVM = new() { MainFramePageChanger = new(MainFrame) { IsProcessingInstance = this } };
       DataContext = MWVM;
       SignInPageElem.ApiHolder = this.ApiHolder;
