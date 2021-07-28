@@ -126,7 +126,7 @@
               Foreground="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=WorkTimeLenForeground, Mode=OneWay}"
               HorizontalContentAlignment="Center"
               VerticalAlignment="Center"
-              Width="50"
+              Width="60"
               Grid.Column="5"
               Margin="4"
               Padding="4">
