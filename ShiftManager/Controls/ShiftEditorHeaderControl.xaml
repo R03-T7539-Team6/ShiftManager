@@ -82,7 +82,7 @@
               HorizontalAlignment="Center"
               TextAlignment="Center"
               Text="勤務"
-              Width="50"/>
+              Width="60"/>
 
             <TextBlock
               Visibility="{TemplateBinding VisibleElements, Converter={StaticResource ENumFlagToVisibilityConv}, ConverterParameter={x:Static local:ShiftEditorElements.DeleteButton}}"

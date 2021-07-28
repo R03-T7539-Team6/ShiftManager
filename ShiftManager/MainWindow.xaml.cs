@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -9,6 +8,7 @@ using System.Windows.Media.Animation;
 
 using Reactive.Bindings;
 
+using ShiftManager.Communication;
 using ShiftManager.DataClasses;
 
 namespace ShiftManager
@@ -16,11 +16,12 @@ namespace ShiftManager
   /// <summary>
   /// Interaction logic for MainWindow.xaml
   /// </summary>
-  public partial class MainWindow : Window, IContainsApiHolder
+  public partial class MainWindow : Window, IContainsGetOnlyIsProcessing
   {
-    // public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.RestApiBroker() };
-    public IApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new Communication.InternalApi() };
+    public ApiHolder ApiHolder { get; set; } = new ApiHolder() { Api = new RestApiBroker() };
+
     private MainWindowViewModel MWVM { get; }
+    public ReactivePropertySlim<bool> IsProcessing => MWVM?.IsProcessing;
 
     static readonly double BlurRadiusWhenSignOut = 10;
 
@@ -51,9 +52,16 @@ namespace ShiftManager
     public MainWindow()
     {
       InitializeComponent();
-      MWVM = new() { MainFramePageChanger = new(MainFrame) };
+
+#if DEBUG
+      if (TryFindResource("WindowStyleToDebug") is Style s)
+        this.Style = s;
+#endif
+
+      MWVM = new() { MainFramePageChanger = new(MainFrame) { IsProcessingInstance = this } };
       DataContext = MWVM;
       SignInPageElem.ApiHolder = this.ApiHolder;
+      SignInPageElem.IsProcessing = IsProcessing;
 
       MWVM.BlurRadius.Value = MWVM.IsSignedIn.Value ? 0 : BlurRadiusWhenSignOut;
     }
@@ -94,8 +102,20 @@ namespace ShiftManager
 *******************************************/
     private void MainFrame_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e)
     {
+      if (MWVM?.IsSignedIn is not null)
+        MWVM.IsProcessing.Value = true;
+
       if (e.Content is IContainsApiHolder i)
         i.ApiHolder = ApiHolder;
+
+
+      if (MWVM?.IsProcessing is not null && e.Content is IContainsIsProcessing isProcessing)
+        isProcessing.IsProcessing = MWVM.IsProcessing; //ページから処理中表示を出すため
+    }
+    private void MainFrame_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
+    {
+      if (MWVM?.IsProcessing is not null && e.Content is not IContainsIsProcessing)
+        MWVM.IsProcessing.Value = false; //向こうに処理完了を通知する実装が無い場合のみ, ここで処理完了したことにする
     }
 
     /*******************************************
@@ -112,24 +132,28 @@ namespace ShiftManager
 *******************************************/
     private async void SignOutClicked(object sender, RoutedEventArgs e)
     {
+      MWVM.IsProcessing.Value = true;
+
       _ = await ApiHolder.Api.SignOutAsync();
       MWVM.IsSignedIn.Value = false;
-      // MainFrame.Content = null;
+
       MWVM.BlurRadius.Value = BlurRadiusWhenSignOut;
+
+      MWVM.IsProcessing.Value = false;
     }
 
-/*******************************************
-* specification ;
-* name = LicenseClicked ;
-* Function = ライセンスボタンがクリックされた時にライセンス情報のテキストフォルダを読み込んでサブウィンドウに渡す ;
-* note = 補足説明 ;
-* date = 07/04/2021 ;
-* author = 佐藤真通 ;
-* History = 更新履歴 ;
-* input = ライセンスボタンが押されたことを知らせるイベントハンドラ ;
-* output = N/A ;
-* end of specification ;
-*******************************************/
+    /*******************************************
+    * specification ;
+    * name = LicenseClicked ;
+    * Function = ライセンスボタンがクリックされた時にライセンス情報のテキストフォルダを読み込んでサブウィンドウに渡す ;
+    * note = 補足説明 ;
+    * date = 07/04/2021 ;
+    * author = 佐藤真通 ;
+    * History = 更新履歴 ;
+    * input = ライセンスボタンが押されたことを知らせるイベントハンドラ ;
+    * output = N/A ;
+    * end of specification ;
+    *******************************************/
     private void LicenseClicked(object sender, RoutedEventArgs e)
     {
       var assembly = Assembly.GetExecutingAssembly();
@@ -207,6 +231,83 @@ namespace ShiftManager
     }
 
     private void CloseApp(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
+
+    WindowState lastWindowState = WindowState.Normal;
+    DateTime lastF12KeyDown = default;
+    int F12KeyDownCount = 0;
+    const int F12KeyDownMax = 5;
+    private void Window_KeyDown(object sender, KeyEventArgs e)
+    {
+      switch (e.Key)
+      {
+        case Key.F11: //全画面/解除
+          if(WindowStyle == WindowStyle.None) //おそらく全画面状態である
+          {
+            //全画面解除
+            WindowStyle = WindowStyle.SingleBorderWindow;
+            WindowState = lastWindowState;
+          }
+          else //おそらく通常表示状態である
+          {
+            lastWindowState = WindowState;
+            WindowStyle = WindowStyle.None;
+            WindowState = WindowState.Maximized;
+          }
+          break;
+
+        case Key.F12:
+          /* lastDown : 00:00:00.000 (+0.5 => 00:00:00.500)
+           * Current1 : 00:00:00.300 => OK ( < 00:00:00.500)
+           * Current2 : 00:00:01.000 => Out ( > 00:00:00.500)
+           */
+          if (lastF12KeyDown.AddMilliseconds(500) < DateTime.Now)
+          {
+            F12KeyDownCount = 0;
+            Title = Title.TrimEnd('.'); //回数確認用に付加した末尾の「.」を除去する
+          }
+          lastF12KeyDown = DateTime.Now;
+
+          F12KeyDownCount++;
+
+          //押下回数が規定解数を超えたら, APIモード切替を行う
+          if (F12KeyDownCount >= F12KeyDownMax)
+          {
+            //現在のモードがオンライン動作モードである
+            if (ApiHolder.Api is RestApiBroker)
+            {
+              //切替確認
+              if (MessageBox.Show("開発者機能 : 動作モード切替\n現在オンライン動作モードで動作中です.  オフライン動作モードに切り替えますか?", "ShiftManager (Developer Function)", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+              {
+                ApiHolder.Api = new InternalApi();
+                Title = "ShiftManager (Offline Mode)";
+              }
+              else
+                return;
+            }
+            else if (ApiHolder.Api is InternalApi)
+            {
+              //切替確認
+              if (MessageBox.Show("開発者機能 : 動作モード切替\n現在オフライン動作モードで動作中です.  オンライン動作モードに切り替えますか?", "ShiftManager (Developer Function)", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+              {
+                ApiHolder.Api = new RestApiBroker();
+                Title = "ShiftManager (Online Mode)";
+              }
+              else
+                return;
+            }
+            else
+              return;
+
+            SignOutClicked(this, null); //モード切替後は再度サインインが必要
+          }
+          else
+          {
+            Title += "."; //回数チェック用
+          }
+
+          break;
+      }
+    }
   }
 
   internal class MainWindowViewModel
@@ -221,6 +322,17 @@ namespace ShiftManager
 #endif
     public ReactivePropertySlim<NameData_PropertyChanged> UserName { get; } = new(new());
     public ReactivePropertySlim<double> BlurRadius { get; } = new(0);
+
+    public ReactivePropertySlim<bool> IsProcessing { get; } = new(false);
+  }
+
+  internal interface IContainsIsProcessing
+  {
+    public ReactivePropertySlim<bool> IsProcessing { get; set; }
+  }
+  internal interface IContainsGetOnlyIsProcessing
+  {
+    public ReactivePropertySlim<bool> IsProcessing { get; }
   }
 
   /// <summary>指定のFrameに, CommandParmeterで指定された型のPageを表示する</summary>
@@ -228,11 +340,18 @@ namespace ShiftManager
   {
     public event EventHandler CanExecuteChanged;
     public Frame TargetFrame { get; }
+    public IContainsGetOnlyIsProcessing IsProcessingInstance { get; init; }
 
     public FramePageChanger(Frame _TargetFrame) => TargetFrame = _TargetFrame;
 
     public bool CanExecute(object parameter) => TargetFrame is not null && parameter is Type;
 
-    public void Execute(object parameter) => TargetFrame.Content = (parameter as Type)?.GetConstructor(new Type[0]).Invoke(null);
+    public void Execute(object parameter)
+    {
+      if(IsProcessingInstance is not null)
+        IsProcessingInstance.IsProcessing.Value = true;
+
+      TargetFrame.Content = (parameter as Type)?.GetConstructor(new Type[0]).Invoke(null);
+    }
   }
 }

@@ -37,6 +37,7 @@
         Grid.Row="0"
         Grid.Column="1"
         VerticalAlignment="Center"
+        VerticalContentAlignment="Center"
         Height="32"
         Margin="10"
         FontSize="18"/>
@@ -54,6 +55,7 @@
         Grid.Row="1"
         Grid.Column="1"
         VerticalAlignment="Center"
+        VerticalContentAlignment="Center"
         Margin="10"
         Height="32"
         FontSize="18"

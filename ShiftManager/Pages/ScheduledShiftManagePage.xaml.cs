@@ -14,6 +14,8 @@ using System.Windows.Input;
 
 using AutoNotify;
 
+using Reactive.Bindings;
+
 using ShiftManager.DataClasses;
 
 namespace ShiftManager.Pages
@@ -21,12 +23,13 @@ namespace ShiftManager.Pages
   /// <summary>
   /// Interaction logic for ScheduledShiftManagePage.xaml
   /// </summary>
-  public partial class ScheduledShiftManagePage : Page, IContainsApiHolder
+  public partial class ScheduledShiftManagePage : Page, IContainsApiHolder, IContainsIsProcessing
   {
     public IApiHolder ApiHolder { get => VM.ApiHolder; set => VM.ApiHolder = value; }
     ScheduledShiftManagePageViewModel VM = new();
 
     DateTime LastShowingDate { get; set; }
+    public ReactivePropertySlim<bool> IsProcessing { get; set; }
 
     /*******************************************
 * specification ;
@@ -80,10 +83,18 @@ namespace ShiftManager.Pages
 *******************************************/
     private async void ReloadData()
     {
+      if (IsProcessing is not null)
+        IsProcessing.Value = true;
+
       VM.ApiHolder = ApiHolder;
+      
       var userIDArr = await ReloadShiftRequest();
       _ = await ReloadScheduledShift(userIDArr);
+      
       LastShowingDate = VM.TargetDate;
+
+      if (IsProcessing is not null)
+        IsProcessing.Value = false;
     }
 
     /*******************************************
@@ -224,6 +235,9 @@ namespace ShiftManager.Pages
       if (VM.ScheduledShiftArray.Count <= 0)
         return;
 
+      if (IsProcessing is not null)
+        IsProcessing.Value = true;
+
       DateTime targetDate = LastShowingDate;
       var scheduledShifts = await ApiHolder.Api.UpdateSingleScheduledShiftListAsync(targetDate, VM.ScheduledShiftArray);
 
@@ -232,6 +246,9 @@ namespace ShiftManager.Pages
           UpdateScheduledShift();
 
       UpdateShiftSchedulingState(targetDate);
+
+      if (IsProcessing is not null)
+        IsProcessing.Value = false;
     }
 
     /*******************************************
