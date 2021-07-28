@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -54,12 +55,22 @@ namespace ShiftManager.Pages
       }
 
       var results = await Task.WhenAll(list);
-
+      List<ApiResultCodes> ErrorCodes = new();
       foreach (var i in results)
+      {
         isSuccess &= i.IsSuccess;
+        if (!ErrorCodes.Contains(i.ResultCode))
+          ErrorCodes.Add(i.ResultCode);
+      }
 
       if (!isSuccess)
-        _ = MessageBox.Show("送信に失敗しました", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+      {
+        StringBuilder ErrorCodesString = new();
+        foreach (var i in ErrorCodes)
+          _ = ErrorCodesString.Append(i).AppendLine();
+
+        _ = MessageBox.Show("送信に失敗しました\n" + ErrorCodesString.ToString(), "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+      }
 
       if (IsProcessing is not null)
         IsProcessing.Value = false;
