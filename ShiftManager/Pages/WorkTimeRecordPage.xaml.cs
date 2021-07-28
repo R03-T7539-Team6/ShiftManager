@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -10,6 +11,7 @@ using ShiftManager.DataClasses;
 
 using AutoNotify;
 using Reactive.Bindings;
+using System.Collections.Generic;
 
 namespace ShiftManager.Pages
 {
@@ -41,7 +43,6 @@ namespace ShiftManager.Pages
       timer.Interval = new TimeSpan(0, 0, 1);
       timer.Start();
       
-      VM.ScheduledShiftArray = new();
       DataContext = VM;
       timer_Tick(default, EventArgs.Empty);
     }
@@ -90,8 +91,10 @@ namespace ShiftManager.Pages
         {
           MessageBox.Show("出勤登録完了");
           ClearIDBox();
-          VM.ScheduledShiftArray.Clear();
+
           main(targetUserID);
+
+          WorkLogSetter(userID, DateTime.Today, v => v with { AttendanceTime = res.ReturnData });
         }
         if (res.ResultCode == ApiResultCodes.UserID_Not_Found)
           MessageBox.Show("IDが違います");
@@ -131,8 +134,14 @@ namespace ShiftManager.Pages
         {
           MessageBox.Show("休憩開始");
           ClearIDBox();
-          VM.ScheduledShiftArray.Clear();
+
           main(targetUserID);
+
+          WorkLogSetter(userID, DateTime.Today,(v)=>
+          {
+            v.BreakTimeDictionary.Add(res.ReturnData, 0);
+            return v;
+          });
         }
 
         TurnOffProcessingSW();
@@ -170,8 +179,15 @@ namespace ShiftManager.Pages
         {
           MessageBox.Show("休憩時間終了");
           ClearIDBox();
-          VM.ScheduledShiftArray.Clear();
+
           main(targetUserID);
+
+          WorkLogSetter(userID, DateTime.Today, (v) =>
+          {
+            DateTime break_in_time = v.BreakTimeDictionary.Last().Key;
+            v.BreakTimeDictionary[break_in_time] = (int)(res.ReturnData - break_in_time).TotalMinutes;
+            return v;
+          });
         }
         if (res.ResultCode == ApiResultCodes.UserID_Not_Found)
           MessageBox.Show("IDが違います");
@@ -211,42 +227,79 @@ namespace ShiftManager.Pages
         {
           MessageBox.Show("退勤登録完了");
           ClearIDBox();
-          VM.ScheduledShiftArray.Clear();
+
           main(targetUserID);
+
+          WorkLogSetter(userID, DateTime.Today, v => v with { LeavingTime = res.ReturnData });
         }
 
         TurnOffProcessingSW();
       }
     }
 
-    /*******************************************
-    * specification ;
-    * name = main ;
-    * Function = ボタンが押された時に勤怠実績を表示する ;
-    * note = 補足説明 ;
-    * date = 07/03/2021 ;
-    * author = 佐藤真通 ;
-    * History = 更新履歴 ;
-    * input = ユーザID ;
-    * output = 勤怠実績 ;
-    * end of specification ;
-    *******************************************/
-    public async void main(UserID userID)
+    public void main(UserID userID)
     {
+      /*
       DateTime selectday = DateTime.Today;
-      ApiResult<SingleShiftData> res = await ApiHolder.Api.GetScheduledShiftByIDAsync(selectday, userID);
-      if (!res.IsSuccess)
-      {
-        MessageBox.Show("データ取得に失敗しました");
-      }
-      else
-      {
-        VM.ScheduledShiftArray.Add(res.ReturnData);
-      }
 
+      ApiResult<SingleShiftData> res = await ApiHolder.Api.GetScheduledShiftByIDAsync(selectday, userID);
+
+      if (!res.IsSuccess)
+        MessageBox.Show("データ取得に失敗しました");
+      else
+        VM.ScheduledShiftArray.Add(res.ReturnData);
+      */
     }
 
-    private void Page_Loaded(object sender, RoutedEventArgs e) => TurnOffProcessingSW();
+    private async void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+      TurnOnProcessingSW();
+      DateTime today = DateTime.Today;
+
+      //今日の予定シフトを表示する
+
+      var res = await ApiHolder.Api.GetScheduledShiftByDateAsync(today);
+
+      if(res.ReturnData is not null)
+      {
+        VM.ScheduledShiftArray.Clear();
+        List<ISingleShiftData> list = new();
+        foreach (var i in res.ReturnData.ShiftDictionary.Values)
+          list.Add(i);
+
+        list.Sort((i1, i2) => DateTime.Compare(i1.AttendanceTime, i2.AttendanceTime));
+
+        foreach (var i in list)
+          VM.ScheduledShiftArray.Add(i);
+      }
+
+      //今日の勤怠実績があれば表示する => 未対応
+      
+      TurnOffProcessingSW();
+    }
+
+    private bool WorkLogSetter(string userID, DateTime targetDate, Func<SingleShiftData, ISingleShiftData> updater)
+    {
+      if (string.IsNullOrWhiteSpace(userID) || targetDate == default || updater is null)
+        return false; //無効値処理
+
+      var arr = VM.WorkLogArray; //VM.WorkLogArrって長いので
+
+      if (arr.Count > 0)
+        for (int i = 0; i < arr.Count; i++)
+        {
+          if(arr[i].UserID.Value == userID) //UserIDが一致した場合のみ, 値の更新を行う  一日に2回の打刻は考慮しない
+          {
+            arr[i] = updater.Invoke(new(arr[i]));
+            return true;
+          }
+        }
+
+      // WorkLogArrayが空だったか, あるいは指定のユーザのデータが存在しなかった
+      SingleShiftData ssd = new(new UserID(userID), targetDate, false, targetDate, targetDate, new());
+      arr.Add(updater.Invoke(ssd));
+      return true;
+    }
   }
 
   public partial class WorkTimeRecordPageViewModel : INotifyPropertyChanged, IContainsApiHolder
@@ -254,10 +307,10 @@ namespace ShiftManager.Pages
     public event PropertyChangedEventHandler PropertyChanged;
 
     [AutoNotify]
-    private ObservableCollection<ISingleShiftData> _ScheduledShiftArray;
+    private ObservableCollection<ISingleShiftData> _ScheduledShiftArray = new();
 
     [AutoNotify]
-    private ObservableCollection<ISingleShiftData> _WorkLogArray;
+    private ObservableCollection<ISingleShiftData> _WorkLogArray = new();
 
     public IApiHolder ApiHolder { get; set; }
   }
