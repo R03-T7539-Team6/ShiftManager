@@ -1,4 +1,4 @@
-# ShiftManager.Communication.ServerIF
+# ShiftManager.DataClasses
 ShiftManagerにて使用するデータ型を定義/実装しています.  サーバとの通信にはまた別の型を使用していますが, その定義や, 本プロジェクトに含まれる型との相互変換に関しては, [ShiftManager.Communication.ServerIF.csproj](../ShiftManager.Communication.ServerIF/README.md)に含まれています.
 
 ## 依存関係
