@@ -12,7 +12,7 @@
 - ReactiveProperty.Core (Version 7.11.0)
   - ReactivePropertySlimを使用するために使用
 - zxcvbn-core (Version 7.0.92)
-  - [Controls/PasswordStrengthVisualizerControl.xaml.cs](./Controls/PasswordStrengthVisualizerControl.xaml.cs#60)にて, パスワード強度チェックを行うために使用
+  - [Controls/PasswordStrengthVisualizerControl.xaml.cs](./Controls/PasswordStrengthVisualizerControl.xaml.cs#L60)にて, パスワード強度チェックを行うために使用
 - [RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator.csproj](../RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator/README.md)
 - [ShiftManager.Common.csproj](../ShiftManager.Common/README.md)
 - [ShiftManager.Communication.Common.csproj](../ShiftManager.Communication.Common/README.md)
