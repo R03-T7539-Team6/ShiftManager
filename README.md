@@ -27,3 +27,8 @@ WPFを使用しているため, 2021年7月29日現在, 一部プロジェクト
 いずれのプロジェクトについても, PCに.NET 5.0 SDKをインストールしていただくと, プロジェクトをビルド可能になります.
 
 ## ライセンス
+RoslynSDK.SourceGeneratorSamples.AutoNotifyGeneratorプロジェクトに関しては, RoslynSDKリポジトリに含まれるコードを, RoslynSDKリポジトリに設定されたMITライセンスに基づいて複製利用しているため, MITライセンスが適用されます.  詳細は, [RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator/LICENSE.txt](./RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator/LICENSE.txt)および[RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator/README.md](./RoslynSDK.SourceGeneratorSamples.AutoNotifyGenerator/README.md)をご確認ください.
+
+各ShiftManagerプロジェクトに関しては, ライセンスを設定しません.  但し, GitHubの利用規約に基づき, GitHubユーザは, GitHubの機能を通じてコンテンツを使用/表示/実行し, またGitHub上で複製(fork)する権利を有します.  
+[GitHub Terms of Service (D. User-Generated Content)](https://docs.github.com/en/github/site-policy/github-terms-of-service#d-user-generated-content)
+
