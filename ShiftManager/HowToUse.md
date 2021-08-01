@@ -203,7 +203,7 @@ F11キーを押下することで, 通常モードと全画面モードを切り
 また, 初期状態でのウィンドウ状態を指定するには, 実行時引数に以下のオプションを指定します (未実装) なお, 既定値は`true`です
 
 ```
---InitWithFullscreen true
+--InitWithFullScreen true
 ```
 (true:フルスクリーン状態, false:通常状態)
 
