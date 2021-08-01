@@ -112,6 +112,8 @@
     E204_No_Content,
     E400_Bad_Request,
     E403_Forbidded,
-    E404_Not_Found
+    E404_Not_Found,
+
+    Not_Supported
   }
 }
