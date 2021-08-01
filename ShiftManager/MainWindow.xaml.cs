@@ -10,6 +10,7 @@ using Reactive.Bindings;
 
 using ShiftManager.Communication;
 using ShiftManager.DataClasses;
+using ShiftManager.Pages;
 
 namespace ShiftManager
 {
@@ -53,18 +54,47 @@ namespace ShiftManager
     {
       InitializeComponent();
 
-#if DEBUG
-      if (TryFindResource("WindowStyleToDebug") is Style s)
+      if (App.ShiftManagerStartupSettings.IsUIDebugMode && TryFindResource("WindowStyleToDebug") is Style s)
         this.Style = s;
-#endif
 
       MWVM = new() { MainFramePageChanger = new(MainFrame) { IsProcessingInstance = this } };
+      MWVM.IsMenuExpanded.Value = App.ShiftManagerStartupSettings.DefaultMenuState;
+
+      if (App.ShiftManagerStartupSettings.InitWithFullScreen)
+        ChangeToFullScreen();
+
       DataContext = MWVM;
       SignInPageElem.ApiHolder = this.ApiHolder;
       SignInPageElem.IsProcessing = IsProcessing;
 
+      MWVM.CanSignOut.Value = App.ShiftManagerStartupSettings.CanSignOut;
+      MWVM.CanOpenCloseMenu.Value = App.ShiftManagerStartupSettings.CanOpenCloseMenu;
+
+      if (App.ShiftManagerStartupSettings.OfflineStart)
+        ChangeToOfflineMode();
+      else
+        ChangeToOnlineMode();
+
+      // 初期表示ページの設定
+      MWVM.MainFramePageChanger.Execute(SelectPageFromEnum(App.ShiftManagerStartupSettings.InitPage));
+
       MWVM.BlurRadius.Value = MWVM.IsSignedIn.Value ? 0 : BlurRadiusWhenSignOut;
     }
+
+    private Page SelectPageFromEnum(in PageList p) => p switch
+    {
+      PageList.DataManage => null, //未実装
+      PageList.Home => new HomePage(),
+      PageList.ScheduledShiftCheck => new ScheduledShiftCheckPage(),
+      PageList.ScheduledShiftManage => new ScheduledShiftManagePage(),
+      PageList.ShiftPrint => null, //未実装
+      PageList.ShiftRequestManage => new ShiftRequestManagePage(),
+      PageList.SignUp => new SignUpPage(),
+      PageList.UserSetting => new UserSettingPage(),
+      PageList.WorkLogCheck => new WorkLogCheckPage(),
+      PageList.WorkTimeRecord => new WorkTimeRecordPage(),
+      _ => null
+    };
 
     /// <summary>SignInがSuccessした際に実行される</summary>
     /// <param name="sender">呼び出し元</param>
@@ -142,6 +172,8 @@ namespace ShiftManager
       MWVM.IsProcessing.Value = false;
     }
 
+    const string ThirdPartyLicenseFileName = "ShiftManager.Resources.ThirdPartyLicense.md";
+
     /*******************************************
     * specification ;
     * name = LicenseClicked ;
@@ -156,25 +188,22 @@ namespace ShiftManager
     *******************************************/
     private void LicenseClicked(object sender, RoutedEventArgs e)
     {
-      var assembly = Assembly.GetExecutingAssembly();
-      var resourceName = "ShiftManager.Resources.ThirdPartyLicense.md";
-      string manualFileContent;
-      using (var stream = assembly.GetManifestResourceStream(resourceName))
+      using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(ThirdPartyLicenseFileName);
+
+      if (stream is not null)
       {
-        if (stream != null)
-        {
-          using (var sr = new StreamReader(stream))
-          {
-            manualFileContent = sr.ReadToEnd();
-            var window = new Window1(manualFileContent);
-            window.Show();
-          }
-        }
+        using var sr = new StreamReader(stream);
+        string manualFileContent = sr.ReadToEnd();
+        var window = new Window1(manualFileContent);
+        window.Show();
       }
     }
 
     private void MenuOpenCloseClicked(object sender, RoutedEventArgs e)
     {
+      if (!MWVM.CanOpenCloseMenu.Value)
+        return;
+
       switch (CurrentMenuState)
       {
         case MenuState.Opened:
@@ -219,7 +248,7 @@ namespace ShiftManager
     }
     private void OpenMenu_Completed(object sender, EventArgs e) => CurrentMenuState = MenuState.Opened;
 
-    private void Window_Loaded(object sender, RoutedEventArgs e)
+    private async void Window_Loaded(object sender, RoutedEventArgs e)
     {
       if (FindResource(nameof(OpenMenuStoryboard) + "Key") is Storyboard oms)
         OpenMenuStoryboard = oms;
@@ -228,6 +257,26 @@ namespace ShiftManager
         CloseMenuStoryboard = cms;
 
       TitleStackPanel_SizeChanged(TitleStackPanel, null);
+
+
+      MenuGrid.Visibility = MWVM.IsMenuExpanded.Value ? Visibility.Visible : Visibility.Collapsed;
+      CurrentMenuState = MWVM.IsMenuExpanded.Value ? MenuState.Opened : MenuState.Closed;
+      if (!MWVM.IsMenuExpanded.Value)
+        CloseMenuStoryboard.Begin();
+
+
+      bool isInitIDAvailable = !string.IsNullOrWhiteSpace(App.ShiftManagerStartupSettings.ID);
+      bool isInitPWAvailable = !string.IsNullOrWhiteSpace(App.ShiftManagerStartupSettings.PW);
+
+      if (isInitIDAvailable || isInitPWAvailable)
+      {
+        MWVM.IsSignedIn.Value = false;
+        SignInPageElem.ID.Text = App.ShiftManagerStartupSettings.ID;
+        SignInPageElem.Pass.Password = App.ShiftManagerStartupSettings.PW;
+
+        if (isInitIDAvailable && isInitPWAvailable)
+          await SignInPageElem.DoSignIn();
+      }
     }
 
     private void CloseApp(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
@@ -241,21 +290,19 @@ namespace ShiftManager
       switch (e.Key)
       {
         case Key.F11: //全画面/解除
-          if(WindowStyle == WindowStyle.None) //おそらく全画面状態である
-          {
-            //全画面解除
-            WindowStyle = WindowStyle.SingleBorderWindow;
-            WindowState = lastWindowState;
-          }
+          if (!App.ShiftManagerStartupSettings.CanChangeToFullScreen)
+            return;
+
+          if (WindowStyle == WindowStyle.None) //おそらく全画面状態である
+            ChangeToNormalStateFromFullScreen();
           else //おそらく通常表示状態である
-          {
-            lastWindowState = WindowState;
-            WindowStyle = WindowStyle.None;
-            WindowState = WindowState.Maximized;
-          }
+            ChangeToFullScreen();
           break;
 
         case Key.F12:
+          if (!App.ShiftManagerStartupSettings.CanChangeRunningMode)
+            return;
+
           /* lastDown : 00:00:00.000 (+0.5 => 00:00:00.500)
            * Current1 : 00:00:00.300 => OK ( < 00:00:00.500)
            * Current2 : 00:00:01.000 => Out ( > 00:00:00.500)
@@ -269,44 +316,72 @@ namespace ShiftManager
 
           F12KeyDownCount++;
 
-          //押下回数が規定解数を超えたら, APIモード切替を行う
+          //押下回数が規定回数を超えたら, APIモード切替を行う
           if (F12KeyDownCount >= F12KeyDownMax)
           {
-            //現在のモードがオンライン動作モードである
-            if (ApiHolder.Api is RestApiBroker)
-            {
-              //切替確認
-              if (MessageBox.Show("開発者機能 : 動作モード切替\n現在オンライン動作モードで動作中です.  オフライン動作モードに切り替えますか?", "ShiftManager (Developer Function)", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-              {
-                ApiHolder.Api = new InternalApi();
-                Title = "ShiftManager (Offline Mode)";
-              }
-              else
-                return;
-            }
-            else if (ApiHolder.Api is InternalApi)
-            {
-              //切替確認
-              if (MessageBox.Show("開発者機能 : 動作モード切替\n現在オフライン動作モードで動作中です.  オンライン動作モードに切り替えますか?", "ShiftManager (Developer Function)", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-              {
-                ApiHolder.Api = new RestApiBroker();
-                Title = "ShiftManager (Online Mode)";
-              }
-              else
-                return;
-            }
-            else
-              return;
-
-            SignOutClicked(this, null); //モード切替後は再度サインインが必要
+            ChangeRunningMode();
+            F12KeyDownCount = 0; //回数リセット
           }
           else
-          {
             Title += "."; //回数チェック用
-          }
 
           break;
       }
+    }
+
+    private void ChangeToFullScreen()
+    {
+      lastWindowState = WindowState;
+      WindowStyle = WindowStyle.None;
+      WindowState = WindowState.Maximized;
+    }
+    private void ChangeToNormalStateFromFullScreen()
+    {
+      //全画面解除
+      WindowStyle = WindowStyle.SingleBorderWindow;
+      WindowState = lastWindowState;
+    }
+    private void ChangeRunningMode(bool passCheck = false)
+    {
+      //現在のモードがオンライン動作モードである
+      if (ApiHolder.Api is RestApiBroker)
+      {
+        if (passCheck //切替確認を行うかどうか
+          || MessageBox.Show(
+            "開発者機能 : 動作モード切替\n" +
+            "現在オンライン動作モードで動作中です.  オフライン動作モードに切り替えますか?",
+            "ShiftManager (Developer Function)",
+            MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes) //切替確認
+          ChangeToOfflineMode();
+        else
+          return;
+      }
+      else if (ApiHolder.Api is InternalApi)
+      {
+        if (passCheck //切替確認を行うかどうか
+          || MessageBox.Show(
+            "開発者機能 : 動作モード切替\n" +
+            "現在オフライン動作モードで動作中です.  オンライン動作モードに切り替えますか?",
+            "ShiftManager (Developer Function)",
+            MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes) //切替確認
+          ChangeToOnlineMode();
+        else
+          return;
+      }
+      else
+        return;
+
+      SignOutClicked(this, null); //モード切替後は再度サインインが必要
+    }
+    private void ChangeToOfflineMode()
+    {
+      ApiHolder.Api = new InternalApi();
+      Title = "ShiftManager (Offline Mode)";
+    }
+    private void ChangeToOnlineMode()
+    {
+      ApiHolder.Api = new RestApiBroker();
+      Title = "ShiftManager (Online Mode)";
     }
   }
 
@@ -314,6 +389,7 @@ namespace ShiftManager
   {
     public FramePageChanger MainFramePageChanger { get; init; }
     public ReactivePropertySlim<bool> IsMenuExpanded { get; } = new(true);
+    public ReactivePropertySlim<bool> CanOpenCloseMenu { get; } = new(true);
     public ReactivePropertySlim<bool> IsSignedIn { get; }
 #if DEBUG
       = new(true);
@@ -324,6 +400,7 @@ namespace ShiftManager
     public ReactivePropertySlim<double> BlurRadius { get; } = new(0);
 
     public ReactivePropertySlim<bool> IsProcessing { get; } = new(false);
+    public ReactivePropertySlim<bool> CanSignOut { get; } = new(true);
   }
 
   internal interface IContainsIsProcessing
@@ -344,14 +421,18 @@ namespace ShiftManager
 
     public FramePageChanger(Frame _TargetFrame) => TargetFrame = _TargetFrame;
 
-    public bool CanExecute(object parameter) => TargetFrame is not null && parameter is Type;
+    public bool CanExecute(object parameter) => TargetFrame is not null && parameter is Type or Page;
 
     public void Execute(object parameter)
     {
       if(IsProcessingInstance is not null)
         IsProcessingInstance.IsProcessing.Value = true;
 
-      TargetFrame.Content = (parameter as Type)?.GetConstructor(new Type[0]).Invoke(null);
+      TargetFrame.Content =
+        parameter is Page p ? p :
+        parameter is Type t ? t.GetConstructor(Array.Empty<Type>())
+                               .Invoke(null)
+        : TargetFrame.Content;
     }
   }
 }

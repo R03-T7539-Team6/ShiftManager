@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "ShiftManager": {
+      "commandName": "Project"
+    },
+    "ShiftManagerUIDebug": {
+      "commandName": "Project",
+      "commandLineArgs": "--IsUIDebugMode true"
+    },
+    "OfflineDebug": {
+      "commandName": "Project",
+      "commandLineArgs": "--ID ID000000 --PW 0000 --CanChangeRunningMode true --OfflineStart true"
+    }
+  }
+}
