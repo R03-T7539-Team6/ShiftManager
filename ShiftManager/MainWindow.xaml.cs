@@ -25,8 +25,6 @@ namespace ShiftManager
 
     static readonly double BlurRadiusWhenSignOut = 10;
 
-    static readonly double BlurRadiusWhenSignOut = 10;
-
     enum MenuState
     {
       Opened,
