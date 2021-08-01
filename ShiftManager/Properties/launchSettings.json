@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "ShiftManager": {
+      "commandName": "Project"
+    },
+    "ShiftManagerUIDebug": {
+      "commandName": "Project",
+      "commandLineArgs": "--IsUIDebugMode true"
+    }
+  }
+}
