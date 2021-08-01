@@ -196,6 +196,7 @@
 
         <Button
           Content="ログアウト"
+          IsEnabled="{Binding CanSignOut.Value}"
           Click="SignOutClicked"
           HorizontalAlignment="Left"
           VerticalAlignment="Center"
@@ -304,6 +305,7 @@
       Orientation="Horizontal">
       <Button
         Content="≡"
+        IsEnabled="{Binding CanOpenCloseMenu.Value}"
         ClickMode="Press"
         Click="MenuOpenCloseClicked"
         HorizontalAlignment="Left"
