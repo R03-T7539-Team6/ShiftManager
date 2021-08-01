@@ -95,42 +95,19 @@ namespace ShiftManager.Communication
   * output = 実行結果 ;
   * end of specification ;
   *******************************************/
-    public Task<ApiResult> UpdateSingleScheduledShiftListAsync(DateTime targetDate, IReadOnlyCollection<ISingleShiftData> singleShiftDatas)
-      => Task.Run(() => UpdateScheduledShift(targetDate, (i) => new ScheduledShift(i) with { ShiftDictionary = singleShiftDatas.ToDictionary(i => new UserID(i.UserID)) }));
-
-
-    /*******************************************
-  * specification ;
-  * name = UpdateScheduledShift ;
-  * Function = 予定シフト情報を更新します ;
-  * note = v1.0では未対応 ;
-  * date = 07/05/2021 ;
-  * author = 藤田一範 ;
-  * History = v1.0:新規作成 ;
-  * input = 更新対象の日付, 予定シフト情報更新用メソッド ;
-  * output = 実行結果 ;
-  * end of specification ;
-  *******************************************/
-    private ApiResult UpdateScheduledShift(DateTime targetDate, Func<IScheduledShift, ScheduledShift> DataUpdater)
+    public async Task<ApiResult> UpdateSingleScheduledShiftListAsync(DateTime targetDate, IReadOnlyCollection<ISingleShiftData> singleShiftDatas)
     {
-      return new(false, ApiResultCodes.Unknown_Error); //実装準備扱い
-      /*
-      if (!TestD.ScheduledShiftDictionary.TryGetValue(targetDate, out IScheduledShift? scheduledShift) || scheduledShift is null)
-        return new(false, ApiResultCodes.Target_Date_Not_Found);
-      var newData = DataUpdater.Invoke(scheduledShift);
-      try
-      {
-        TestD.ScheduledShiftDictionary[targetDate] = newData;
-        return new(true, ApiResultCodes.Success);
-      }
-      catch (KeyNotFoundException)
-      {
-        return new(false, ApiResultCodes.Target_Date_Not_Found);
-      }
-      catch (ArgumentNullException)
-      {
-        return new(false, ApiResultCodes.NewData_Is_NULL);
-      }*/
+      var res = await Sv.GetCurrentStoreShiftScheduleFileAsync(CurrentUserData?.StoreID.Value ?? string.Empty, targetDate);
+      if (res.Content is null)
+        return new(false, ApiResultCodes.Data_Not_Found);
+
+      //UserID指定でサーバ上のShiftIDを取得して, それをもってデータ更新タスクを組む
+
+      //データ更新(アップロード)タスク実行
+
+      return new(true, ApiResultCodes.Success);
     }
+
+
   }
 }
