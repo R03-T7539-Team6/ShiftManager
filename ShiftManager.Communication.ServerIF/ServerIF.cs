@@ -16,20 +16,28 @@ namespace ShiftManager.Communication
     #region ログインとサインアップ
     public Task<ServerResponse<RestUser>> SignUp_WithNoTokenAsync(RestUser user) => Api.ExecuteWithDataAsync<RestUser, RestUser>("/signup", user, RestSharp.Method.POST);
 
+    const string ERROR_RESPONSE_INVALID_JSON_FORMAT = "Invalid json provided";
+    const string ERROR_RESPONSE_WRONG_USER_ID = "Wrong User ID";
+    const string ERROR_RESPONSE_WRONG_PASSWORD = "Wrong Password";
     public async Task<ServerResponse<RestSignInResponse>> SignInAsync(RestUser user)
     {
       var res = await Api.ExecuteWithDataAsync<RestUser, RestSignInResponse>("/login", user, RestSharp.Method.POST);
+
       if (res.Response.StatusCode == System.Net.HttpStatusCode.OK && res.Content?.token is not null)
         Api.Token = res.Content.token;
-      else if(res.Response.StatusCode== System.Net.HttpStatusCode.BadRequest)
+      else if(res.Content is null)
       {
-        res = new ServerErrorResponse<RestSignInResponse>(res.Response, res.Content, res.Response.Content switch
-        {
-          "Invalid json provided" => ErrorType.Invalid_Json_Format,
-          "Wrong User ID" => ErrorType.Wrong_ID,
-          "Wrong Password" => ErrorType.Wrong_PW,
-          _ => ErrorType.Unknown
-        });
+        ErrorType err = ErrorType.Unknown;
+        string res_s = res.Response.Content;
+
+        if (res_s.Contains(ERROR_RESPONSE_INVALID_JSON_FORMAT))
+          err = ErrorType.Invalid_Json_Format;
+        else if (res_s.Contains(ERROR_RESPONSE_WRONG_USER_ID))
+          err = ErrorType.Wrong_ID;
+        else if (res_s.Contains(ERROR_RESPONSE_WRONG_PASSWORD))
+          err = ErrorType.Wrong_PW;
+
+        res = new ServerErrorResponse<RestSignInResponse>(res.Response, res.Content, err);
       }
 
       return res;
