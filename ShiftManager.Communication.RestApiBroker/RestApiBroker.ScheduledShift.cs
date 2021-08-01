@@ -64,7 +64,7 @@ namespace ShiftManager.Communication
   * end of specification ;
   *******************************************/
     public Task<ApiResult> UpdateRequiredWorkerCountListAsync(DateTime targetDate, IReadOnlyCollection<int> requiredWorkerCountList)
-      => Task.Run(() => UpdateScheduledShift(targetDate, (i) => new ScheduledShift(i) with { RequiredWorkerCountList = new(requiredWorkerCountList) }));
+      => Task.Run(() => new ApiResult(true, ApiResultCodes.Not_Supported));
 
 
     /*******************************************
@@ -80,7 +80,8 @@ namespace ShiftManager.Communication
   * end of specification ;
   *******************************************/
     public Task<ApiResult> UpdateShiftSchedulingStateAsync(DateTime targetDate, ShiftSchedulingState shiftSchedulingState)
-      => Task.Run(() => UpdateScheduledShift(targetDate, (i) => new ScheduledShift(i) with { SchedulingState = shiftSchedulingState }));
+      => Task.Run(() => new ApiResult(true, ApiResultCodes.Not_Supported));
+    
 
     /*******************************************
   * specification ;
