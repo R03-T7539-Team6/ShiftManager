@@ -22,6 +22,7 @@ namespace ShiftManager.Communication
     public int TimeOut { get; init; } = 10 * 1000;
     const string application_json = "application/json";
 
+    static RestResponse EmptyRestResponse => new RestResponse();
 
     private static readonly JsonSerializerSettings jsonSerializerSettings = new()
     {
@@ -39,7 +40,20 @@ namespace ShiftManager.Communication
     /// <typeparam name="T">変換先データ型</typeparam>
     /// <param name="json">変換元Json</param>
     /// <returns>変換結果</returns>
-    public static T? FromJson<T>(in string json) => JsonConvert.DeserializeObject<T>(json, jsonSerializerSettings);
+    public static T? FromJson<T>(in string json) where T : class
+    {
+      try
+      {
+        return JsonConvert.DeserializeObject<T>(json.Replace("\"0001-01-01T00:00:00Z\"", "null").Replace("\"0000-12-31T15:00:00Z\"", "null"), jsonSerializerSettings);
+
+      }
+      catch (JsonSerializationException ex)
+      {
+        System.Diagnostics.Debug.WriteLine(ex);
+        return null;
+      }
+    }
+    
 
     /// <summary>サーバにリクエストを打ちます</summary>
     /// <typeparam name="TPost">送るデータの型</typeparam>
@@ -64,13 +78,27 @@ namespace ShiftManager.Communication
     /// <param name="reqType">リクエストタイプ</param>
     /// <returns>レスポンスの情報</returns>
     public async Task<ServerResponse> ExecuteWithDataAsync<T>(string path, T data, Method reqType = Method.POST) where T : class
-      => await ExecuteAsync(new RestRequest(path, reqType).AddParameter(application_json, ToJson(data), ParameterType.RequestBody));
+    {
+      try
+      {
+        return await ExecuteAsync(new RestRequest(path, reqType).AddParameter(application_json, ToJson(data), ParameterType.RequestBody));
+      }
+      catch (Exception e)
+      {
+        System.Diagnostics.Debug.WriteLine(e);
+        return new ServerErrorResponse<object>(EmptyRestResponse, e, ErrorType.Unknown);
+      }
+    }
     
     public async Task<ServerResponse<TRes>> ExecuteAsync<TRes>(string path, Method reqType = Method.GET) where TRes : class
     {
       var res = await ExecuteAsync(path, reqType);
+      TRes? content = FromJson<TRes>(res.Response.Content);
 
-      return new(res.Response, FromJson<TRes>(res.Response.Content));
+      if (content is null)
+        return new ServerErrorResponse<TRes>(res.Response, null, ErrorType.Invalid_Json_Format);
+      else
+        return new(res.Response, content);
     }
 
     /// <summary>サーバにリクエストを打ちます</summary>
