@@ -148,6 +148,13 @@ namespace ShiftManager.Communication
         TestD.UserDataDictionary.Values.Select(i => new UserData(i) with { HashedPassword = new HashedPassword(string.Empty, string.Empty, 0) }).ToImmutableArray()
         ));
 
+    /// <summary>ID指定にてユーザーの氏名を取得する</summary>
+    /// <param name="userID">ユーザID</param>
+    /// <returns>氏名データ</returns>
+    public NameData GetUserNameFromCacheByID(IUserID userID)
+      => TestD.UserDataDictionary.TryGetValue(new UserID(userID), out var val) && val is not null
+      ? new(val.FullName) : new();
+
     /*******************************************
   * specification ;
   * name = GetIsScheduledShiftFinalVersionAsync ;

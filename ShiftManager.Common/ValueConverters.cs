@@ -67,9 +67,8 @@ namespace ShiftManager
     {
       if (values.Length >= 2 && values[0] is IContainsApiHolder api && values[1] is IUserID id)
       {
-        var res = api.ApiHolder.Api.GetUserDataByIDAsync(id).Result;
-        if (res.IsSuccess && res.ReturnData is not null)
-          return res.ReturnData.FullName.LastName + " " + res.ReturnData.FullName.FirstName;
+        var res = api.ApiHolder.Api.GetUserNameFromCacheByID(id);
+          return res.LastName + " " + res.FirstName;
       }
       return null;
     }

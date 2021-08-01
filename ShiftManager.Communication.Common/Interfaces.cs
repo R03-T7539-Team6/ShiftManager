@@ -125,6 +125,8 @@ namespace ShiftManager.Communication
     /// <returns>実行結果</returns>
     Task<ApiResult<UserData>> GetUserDataByIDAsync(IUserID userID);
 
+    NameData GetUserNameFromCacheByID(IUserID userID);
+
     /// <summary>指定のユーザデータを追加する  既にユーザが存在した場合はエラーが返る</summary>
     /// <param name="userData">追加するユーザデータ</param>
     /// <returns>実行結果</returns>
