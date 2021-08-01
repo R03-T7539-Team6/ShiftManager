@@ -25,19 +25,20 @@ namespace ShiftManager.Pages
       InitializeComponent();
     }
 
-/*******************************************
-* specification ;
-* name = In_Click_2 ;
-* Function = ログインボタンが押された時にログインを試行する関数を呼び出す ;
-* note = 補足説明 ;
-* date = 07/03/2021 ;
-* author = 佐藤真通 ;
-* History = 更新履歴 ;
-* input = ログインボタンが押されたことを知らせるイベントハンドラ ;
-* output = N/A ;
-* end of specification ;
-*******************************************/
-    private async void ln_Click_2(object sender, RoutedEventArgs e)
+    /*******************************************
+    * specification ;
+    * name = DoSignIn ;
+    * Function = ログインボタンが押された時にログインを試行する関数を呼び出す ;
+    * note = 補足説明 ;
+    * date = 07/03/2021 ;
+    * author = 佐藤真通 ;
+    * History = 更新履歴 ;
+    * input = ログインボタンが押されたことを知らせるイベントハンドラ ;
+    * output = N/A ;
+    * end of specification ;
+    *******************************************/
+    private async void DoSignIn(object sender, RoutedEventArgs e) => await DoSignIn();
+    public async Task DoSignIn()
     {
       try
       {

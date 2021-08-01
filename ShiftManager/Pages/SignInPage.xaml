@@ -73,7 +73,7 @@
         Height="47"
         Width="150"
         FontSize="24"
-        Click="ln_Click_2"
+        Click="DoSignIn"
         ClickMode="Press"/>
     </Grid>
   </Border>
