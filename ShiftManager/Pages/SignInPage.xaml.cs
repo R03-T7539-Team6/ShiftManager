@@ -61,7 +61,7 @@ namespace ShiftManager.Pages
           _ = MessageBox.Show("サインインに失敗しました.\n" + re.ResultCode switch
           {
             ApiResultCodes.UserID_Not_Found => "ユーザIDが存在しません.",
-            ApiResultCodes.Password_Not_Match => "ユーザIDが存在しません.",
+            ApiResultCodes.Password_Not_Match => "パスワードが違います.",
             _ => "ErrorCode:" + re.ResultCode.ToString()
           },
           "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
