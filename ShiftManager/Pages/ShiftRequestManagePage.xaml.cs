@@ -49,10 +49,7 @@ namespace ShiftManager.Pages
       List<Task<ApiResult>> list = new();
 
       for (int i = 0; i < DayPerPage; i++)
-      {
-        System.Diagnostics.Debug.WriteLine($">>{i:D2} : {VM.ShiftRequestArray[i]}");
         list.Add(ApiHolder.Api.AddShiftRequestAsync(VM.ShiftRequestArray[i]));
-      }
 
       var results = await Task.WhenAll(list);
       List<ApiResultCodes> ErrorCodes = new();
@@ -126,8 +123,6 @@ namespace ShiftManager.Pages
       for (int i = 0; i < DayPerPage; i++)
       {
         DateTime targetDate = VM.TargetDate.Date.AddDays(i);
-        System.Diagnostics.Debug.WriteLine(targetDate);
-
         list.Add(ApiHolder.Api.GetShiftRequestByDateAsync(targetDate));
       }
 
@@ -135,12 +130,8 @@ namespace ShiftManager.Pages
 
       for (int i = 0; i < DayPerPage; i++)
         if (results[i].ReturnData is not null)
-        {
           VM.ShiftRequestArray[i] = results[i].ReturnData;
-          System.Diagnostics.Debug.WriteLine($"{i:D2} : {results[i].ReturnData}");
-        }
 
-      System.Diagnostics.Debug.WriteLine("Completed");
       DataLoadingCompleted = true;
 
       if (IsProcessing is not null)
