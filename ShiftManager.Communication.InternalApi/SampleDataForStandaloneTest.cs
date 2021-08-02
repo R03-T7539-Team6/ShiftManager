@@ -27,7 +27,7 @@ namespace ShiftManager.Communication
       List<IShiftRequest> shiftReqList = new();
       List<IScheduledShift> scheduledShiftList = new();
 
-      for(int i = 0; i < SAMPLE_USER_COUNT; i++)
+      for (int i = 0; i < SAMPLE_USER_COUNT; i++)
       {
         UserID id = new UserID($"ID{i:D6}");
 
@@ -35,7 +35,8 @@ namespace ShiftManager.Communication
         List<ISingleWorkLog> wLogList = new();
         int rndInt = RandomNumberGenerator.GetInt32(MAX_SAMPLE_WORKLOG - 10);
 
-        for (int d = 1; d < rndInt + 10; d++) { //昨日の分から生成する
+        for (int d = 1; d < rndInt + 10; d++)
+        { //昨日の分から生成する
           int v = RandomNumberGenerator.GetInt32(5);
           if (v % 5 == 0)
             continue;

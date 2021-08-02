@@ -23,7 +23,7 @@ namespace ShiftManager.Communication.ServerIF.Test
 
     [Test]
     public void FromJson_EmptyInput() => Assert.AreEqual(null, RestAPI.FromJson<TestDataClass>(string.Empty));
-    
+
 
     [Test]
     public void FromJson_NullInput() => Assert.Throws(typeof(ArgumentNullException), () => RestAPI.FromJson<TestDataClass>(null));

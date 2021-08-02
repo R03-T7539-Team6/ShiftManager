@@ -5,8 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-using RestSharp;
-
 using ShiftManager.Communication.RestData;
 using ShiftManager.DataClasses;
 
@@ -120,7 +118,7 @@ namespace ShiftManager.Communication
 
       var shiftReq = await Sv.GetCurrentUserShiftRequestFileAsync(); //既存のものが無いか確認する
 
-      if(shiftReq.Response.StatusCode != HttpStatusCode.OK) //存在しなかった場合のみ生成を行う
+      if (shiftReq.Response.StatusCode != HttpStatusCode.OK) //存在しなかった場合のみ生成を行う
       {
         shiftReq = await Sv.CreateCurrentUserShiftRequestFileAsync(new()
         {
@@ -190,7 +188,8 @@ namespace ShiftManager.Communication
         return new(false, ApiResultCodes.Data_Not_Found, Array.Empty<UserData>().ToImmutableArray());
 
       UserData[] udarr = res.Content.worker_lists.Select(i => i.ToUserData()).ToArray();
-      foreach (var i in udarr) {
+      foreach (var i in udarr)
+      {
         UserID id = new(i.UserID);
         if (UserDataDic.ContainsKey(id))
           UserDataDic[new(i.UserID)] = i;

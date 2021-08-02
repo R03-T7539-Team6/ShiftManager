@@ -169,7 +169,7 @@ namespace ShiftManager.Controls
 
     static private void OnWorkDateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-      if(d is ShiftEditorControl s)
+      if (d is ShiftEditorControl s)
       {
         if (s.AttendanceTimeBinding.Converter is DateTimeTo24HOverStringConverter c1)
           c1.BaseDate = s.WorkDate.Date;

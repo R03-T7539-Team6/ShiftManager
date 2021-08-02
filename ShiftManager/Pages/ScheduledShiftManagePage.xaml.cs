@@ -87,10 +87,10 @@ namespace ShiftManager.Pages
         IsProcessing.Value = true;
 
       VM.ApiHolder = ApiHolder;
-      
+
       var userIDArr = await ReloadShiftRequest();
       _ = await ReloadScheduledShift(userIDArr);
-      
+
       LastShowingDate = VM.TargetDate;
 
       if (IsProcessing is not null)
@@ -121,7 +121,7 @@ namespace ShiftManager.Pages
 
       for (int i = 0; i < IDArr.Length; i++)
         VM.ShiftRequestArray.Add(new SingleShiftData(IDArr[i], targetDate, false, targetDate, targetDate, new()));
-      
+
 
       var shiftReqs = await ApiHolder.Api.GetAllShiftRequestAsync();
       if (!shiftReqs.IsSuccess)
@@ -200,7 +200,7 @@ namespace ShiftManager.Pages
 
       for (int index = 0; index < IDArr.Length; index++)
       {
-        if(shiftDic.TryGetValue(IDArr[index], out var value))
+        if (shiftDic.TryGetValue(IDArr[index], out var value))
         {
           VM.ScheduledShiftArray[index] = new SingleShiftData(value);
           shiftDic.Remove(IDArr[index]);
@@ -373,7 +373,7 @@ namespace ShiftManager.Pages
     private void Page_Unloaded(object sender, RoutedEventArgs e) => UpdateScheduledShift();
 
     private void SaveButtonClocked(object sender, RoutedEventArgs e) => UpdateScheduledShift();
-    
+
   }
 
   public partial class ScheduledShiftManagePageViewModel : INotifyPropertyChanged, IContainsApiHolder

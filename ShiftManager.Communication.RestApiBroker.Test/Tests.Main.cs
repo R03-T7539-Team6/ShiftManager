@@ -1,9 +1,4 @@
-﻿using System.Net;
-using System.Threading.Tasks;
-
-using NUnit.Framework;
-
-namespace ShiftManager.Communication.RestApiTest
+﻿namespace ShiftManager.Communication.RestApiTest
 {
   public class MainTests
   {

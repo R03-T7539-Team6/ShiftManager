@@ -2,7 +2,7 @@
 
 namespace ShiftManager
 {
-  public static  class HHMMStyleTextValidatior
+  public static class HHMMStyleTextValidatior
   {
     /*******************************************
 * specification ;

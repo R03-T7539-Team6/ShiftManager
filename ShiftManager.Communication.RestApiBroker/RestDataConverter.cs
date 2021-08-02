@@ -44,7 +44,7 @@ namespace ShiftManager.Communication.RestData
       dst.user_id = i.UserID.Value;
       dst.work_date = i.WorkDate.Date;
       dst.is_paid_holiday = i.IsPaidHoliday;
-      
+
       dst.attendance_time = i.AttendanceTime;
       dst.leaving_time = i.LeavingTime;
 
@@ -92,7 +92,7 @@ namespace ShiftManager.Communication.RestData
     #region ShiftSchedule
     public static ScheduledShift ToScheduledShift(this RestShiftSchedule i)
       => new(i.target_date?.Date ?? default, i.start_of_schedule ?? default, i.end_of_schedule ?? default, ShiftStateStringToValue(i.shift_state),
-        i.shifts?.Select(i => i.ToSingleShiftData() as ISingleShiftData).ToDictionary(i => new UserID(i.UserID)) ?? new(), new() { (int)(i.worker_num ?? 0)});
+        i.shifts?.Select(i => i.ToSingleShiftData() as ISingleShiftData).ToDictionary(i => new UserID(i.UserID)) ?? new(), new() { (int)(i.worker_num ?? 0) });
 
     public static RestShiftSchedule FromScheduledShift(this RestShiftSchedule dst, in IScheduledShift i, string store_id)
     {

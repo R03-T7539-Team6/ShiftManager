@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,18 +32,18 @@ namespace ShiftManager.Pages
     }
 
     bool IsDataLoading = false;
-/*******************************************
-* specification ;
-* name = main ;
-* Function = Apiを呼び出して予定シフトを取得する ;
-* note = 補足説明 ;
-* date = 07/03/2021 ;
-* author = 佐藤真通 ;
-* History = N/A ;
-* input = N/A ;
-* output = N/A ;
-* end of specification ;
-*******************************************/
+    /*******************************************
+    * specification ;
+    * name = main ;
+    * Function = Apiを呼び出して予定シフトを取得する ;
+    * note = 補足説明 ;
+    * date = 07/03/2021 ;
+    * author = 佐藤真通 ;
+    * History = N/A ;
+    * input = N/A ;
+    * output = N/A ;
+    * end of specification ;
+    *******************************************/
     public async void main()
     {
       if (IsDataLoading)
@@ -94,18 +93,18 @@ namespace ShiftManager.Pages
       }
     }
 
-/*******************************************
-* specification ;
-* name = DatePicker_SelectedDateChanged ;
-* Function = 選択する日付が変更された時に予定シフト表の内容を更新する ;
-* note = 補足説明 ;
-* date = 07/03/2021 ;
-* author = 佐藤真通 ;
-* History = 更新履歴 ;
-* input = 選択する日付が変わったことを知らせるイベントハンドラ ;
-* output = N/A ;
-* end of specification ;
-*******************************************/
+    /*******************************************
+    * specification ;
+    * name = DatePicker_SelectedDateChanged ;
+    * Function = 選択する日付が変更された時に予定シフト表の内容を更新する ;
+    * note = 補足説明 ;
+    * date = 07/03/2021 ;
+    * author = 佐藤真通 ;
+    * History = 更新履歴 ;
+    * input = 選択する日付が変わったことを知らせるイベントハンドラ ;
+    * output = N/A ;
+    * end of specification ;
+    *******************************************/
     private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e) => main();
 
   }

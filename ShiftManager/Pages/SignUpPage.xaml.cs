@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Controls;
 
-using ShiftManager.Communication;
 using ShiftManager.DataClasses;
 
 namespace ShiftManager.Pages
@@ -31,7 +30,8 @@ namespace ShiftManager.Pages
     * output = N/A ;
     * end of specification ;
     *******************************************/
-    private async void OnSavePushed(object sender, EventArgs e){
+    private async void OnSavePushed(object sender, EventArgs e)
+    {
       //TODO: Saveボタンが押されたときの処理を書く.
       if (string.IsNullOrWhiteSpace(USC.UserIDText))
       {

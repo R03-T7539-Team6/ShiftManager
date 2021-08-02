@@ -339,7 +339,7 @@ namespace ShiftManager.Controls
       if (Template.FindName(nameof(TargetGrid), this) is Grid grid)
         TargetGrid = grid;
 
-      if(TargetGrid is not null)
+      if (TargetGrid is not null)
       {
         TargetGrid.MouseDown += TargetGrid_MouseDown;
         TargetGrid.MouseMove += TargetGrid_MouseMove;
@@ -375,7 +375,7 @@ namespace ShiftManager.Controls
 
       if (CurrentCellMode == CellMode.Hour02)
       {
-        for(int i = 0; i < TimeTBDictionary.Count / 2; i++)
+        for (int i = 0; i < TimeTBDictionary.Count / 2; i++)
         {
           Grid.SetColumn(TimeTBDictionary[i * 2], i);
           _ = TargetGrid.Children.Add(TimeTBDictionary[i * 2]);
@@ -493,7 +493,7 @@ namespace ShiftManager.Controls
           if (i.Value.Right is not null)
             TargetGrid.Children.Remove(i.Value.Right);
 
-          if(From == i.Key.From && i.Key.To == To) //完全一致ならここで終了
+          if (From == i.Key.From && i.Key.To == To) //完全一致ならここで終了
           {
             WorkTimes.Remove(i.Key);
             return false;
@@ -507,7 +507,7 @@ namespace ShiftManager.Controls
           return ReplaceWorkTimesKey(i.Key, i.Key with { From = To });
         else if (i.Key.To == To && i.Key.From < From) //終端一致 かつ WorkTime始端がTargetCellよりも左にある : 一部除去 (短縮: 終端を左にずらす)
           return ReplaceWorkTimesKey(i.Key, i.Key with { To = From });
-        else if(i.Key.From < From && To < i.Key.To) //該当セルとその両隣がWorkTime => 中抜き
+        else if (i.Key.From < From && To < i.Key.To) //該当セルとその両隣がWorkTime => 中抜き
         {
           ReplaceWorkTimesKey(i.Key, i.Key with { To = From }); //左側
           WorkTimes.Add(new(To, i.Key.To), new(null, null, null)); //右側
@@ -566,7 +566,7 @@ namespace ShiftManager.Controls
       TimeSpan cellMinuteStep = GetCellMinuteStep();
       List<UIElement> addList = new();
       Dictionary<TimeSpanFromTo, TripleRectangle> TmpDic = new();
-      foreach(var i in WorkTimes)
+      foreach (var i in WorkTimes)
       {
         var (leftGrid, centerGrid, rightGrid) = i.Value;
 
@@ -587,7 +587,7 @@ namespace ShiftManager.Controls
 
         if ((!NeededLeftGrid && !NeededRightGrid) || IsSameCell) //端数が必要ない OR 同じセル内で完結する
         {
-          if(centerGrid is null)
+          if (centerGrid is null)
           {
             Rectangle rect = new() { DataContext = this };
             rect.SetBinding(Shape.FillProperty, nameof(WorkTimeBrush));
@@ -613,7 +613,7 @@ namespace ShiftManager.Controls
             TargetGrid.Children.Remove(leftGrid);
             leftGrid = null;
           }
-          if(rightGrid is not null)
+          if (rightGrid is not null)
           {
             TargetGrid.Children.Remove(rightGrid);
             rightGrid = null;
@@ -742,7 +742,7 @@ namespace ShiftManager.Controls
     private void ReputSeparator()
     {
       int CellCount = GetCellCount();
-      for(int i = 1; i < CellCount; i++)
+      for (int i = 1; i < CellCount; i++)
       {
         Line line = new()
         {

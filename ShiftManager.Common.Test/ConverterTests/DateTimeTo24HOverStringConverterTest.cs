@@ -65,7 +65,7 @@ namespace ShiftManager.Test
   *******************************************/
     [TestCaseSource(nameof(Convert_TestCases))]
     public string ConvertTest(in DateTime value, in DateTime baseDate) => new DateTimeTo24HOverStringConverterBase() { BaseDate = baseDate }.Convert(value, null, null, null) as string;
-    
+
 
     /*[TestCaseSource(nameof(ConvertBack_TestCases))]
     public DateTime ConvertBackTest(in string value, in DateTime parameter) => (DateTime)target.ConvertBack(value, null, null, null)[0];*/

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -6,12 +7,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
+using AutoNotify;
+
+using Reactive.Bindings;
+
 using ShiftManager.Communication;
 using ShiftManager.DataClasses;
-
-using AutoNotify;
-using Reactive.Bindings;
-using System.Collections.Generic;
 
 namespace ShiftManager.Pages
 {
@@ -42,7 +43,7 @@ namespace ShiftManager.Pages
       timer.Tick += timer_Tick;
       timer.Interval = new TimeSpan(0, 0, 1);
       timer.Start();
-      
+
       DataContext = VM;
       timer_Tick(default, EventArgs.Empty);
     }
@@ -62,7 +63,7 @@ namespace ShiftManager.Pages
     * end of specification ;
     *******************************************/
     private void timer_Tick(object sender, EventArgs e) => time.Text = $"{DateTime.Now:HH:mm:ss}";
-    
+
 
     /*******************************************
     * specification ;
@@ -86,7 +87,7 @@ namespace ShiftManager.Pages
         UserID targetUserID = new(userID);
 
         ApiResult<DateTime> res = await ApiHolder.Api.DoWorkStartTimeLoggingAsync(targetUserID);
-        
+
         switch (res.ResultCode)
         {
           case ApiResultCodes.Work_Not_Ended:
@@ -224,7 +225,7 @@ namespace ShiftManager.Pages
             WorkLogSetter(userID, DateTime.Today, (v) =>
             {
               DateTime break_in_time = v.BreakTimeDictionary.LastOrDefault().Key;
-              if(break_in_time == default)
+              if (break_in_time == default)
               {
                 _ = MessageBox.Show("休憩開始時刻の取得に失敗しました.\nサーバ上のデータは正常に更新されていますが, 画面上には休憩時間が反映されません.", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
                 return v;
@@ -324,7 +325,7 @@ namespace ShiftManager.Pages
 
       var res = await ApiHolder.Api.GetScheduledShiftByDateAsync(today);
 
-      if(res.ReturnData is not null)
+      if (res.ReturnData is not null)
       {
         VM.ScheduledShiftArray.Clear();
         List<ISingleShiftData> list = new();
@@ -338,7 +339,7 @@ namespace ShiftManager.Pages
       }
 
       //今日の勤怠実績があれば表示する => 未対応
-      
+
       TurnOffProcessingSW();
     }
 
@@ -352,7 +353,7 @@ namespace ShiftManager.Pages
       if (arr.Count > 0)
         for (int i = 0; i < arr.Count; i++)
         {
-          if(arr[i].UserID.Value == userID) //UserIDが一致した場合のみ, 値の更新を行う  一日に2回の打刻は考慮しない
+          if (arr[i].UserID.Value == userID) //UserIDが一致した場合のみ, 値の更新を行う  一日に2回の打刻は考慮しない
           {
             arr[i] = updater.Invoke(new(arr[i]));
             return true;

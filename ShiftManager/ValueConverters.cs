@@ -4,8 +4,6 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-using ShiftManager.DataClasses;
-
 namespace ShiftManager
 {
   public class IntEquallyCheckConverter : IntEquallyCheckConverterBase, IValueConverter { }

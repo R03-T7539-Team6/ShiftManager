@@ -53,7 +53,7 @@ namespace ShiftManager.Communication
         return null;
       }
     }
-    
+
 
     /// <summary>サーバにリクエストを打ちます</summary>
     /// <typeparam name="TPost">送るデータの型</typeparam>
@@ -89,7 +89,7 @@ namespace ShiftManager.Communication
         return new ServerErrorResponse<object>(EmptyRestResponse, e, ErrorType.Unknown);
       }
     }
-    
+
     public async Task<ServerResponse<TRes>> ExecuteAsync<TRes>(string path, Method reqType = Method.GET) where TRes : class
     {
       var res = await ExecuteAsync(path, reqType);

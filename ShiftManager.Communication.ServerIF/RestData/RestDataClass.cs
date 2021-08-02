@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 
 using Newtonsoft.Json;
 
@@ -65,16 +64,16 @@ namespace ShiftManager.Communication.RestData
 
     public bool? is_paid_holiday { get; set; } = null;
     public bool? is_request { get; set; } = null;
-    
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? attendance_time { get; set; } = null;
-    
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? leaving_time { get; set; } = null;
-    
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? start_break_time { get; set; } = null;
-    
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? end_break_time { get; set; } = null;
   }

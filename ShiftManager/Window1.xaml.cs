@@ -12,7 +12,7 @@ namespace ShiftManager
     {
       InitializeComponent();
       text.Text = strData;
-      
+
     }
   }
 }

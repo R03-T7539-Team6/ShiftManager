@@ -90,7 +90,7 @@ namespace ShiftManager.Communication
         // サーバー側にシフトが存在しない場合 => 新規追加扱い
         res = await Sv.CreateSingleShiftAsync(req);
       }
-      else 
+      else
       { // 既にシフトが存在する場合 => IDを取得して更新扱い
         req.id = targetData?.id;
 
@@ -126,7 +126,7 @@ namespace ShiftManager.Communication
       var res = await Sv.GetCurrentUserSingleShiftRequestsAsync(date);
       var apiRes = ToApiRes(res.Response.StatusCode);
 
-      if (apiRes != ApiResultCodes.Success || res.Content is null || res.Content.Length <= 0 ) //失敗し, かつその原因が「データが存在しない」場合
+      if (apiRes != ApiResultCodes.Success || res.Content is null || res.Content.Length <= 0) //失敗し, かつその原因が「データが存在しない」場合
         return new(false, apiRes, null);
 
       var data = res.Content.FirstOrDefault(i => i.work_date?.Date == date.Date && i.user_id == CurrentUserData?.UserID.Value)?.ToSingleShiftData();

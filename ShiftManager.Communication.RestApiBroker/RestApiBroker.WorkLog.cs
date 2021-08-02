@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 using ShiftManager.Communication.RestData;
@@ -117,7 +116,7 @@ namespace ShiftManager.Communication
         return new(false, ApiResultCodes.Work_Not_Started, CurrentTime);
 
       //最後の要素に出勤打刻が行われていない || 最後の要素に退勤打刻が終わっている
-      if (lastWorkLog.attendance_time is null|| lastWorkLog.leaving_time is not null)
+      if (lastWorkLog.attendance_time is null || lastWorkLog.leaving_time is not null)
         return new(false, ApiResultCodes.Work_Not_Started, CurrentTime);
 
       //休憩記録が存在し, かつ最後の記録に休憩時間長が記録されていない

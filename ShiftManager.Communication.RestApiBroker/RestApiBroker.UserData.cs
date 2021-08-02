@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-using ShiftManager.DataClasses;
 using ShiftManager.Communication.RestData;
+using ShiftManager.DataClasses;
 
 namespace ShiftManager.Communication
 {
@@ -104,18 +104,6 @@ namespace ShiftManager.Communication
     public /*async*/ Task<ApiResult> UpdatePasswordAsync(IUserID userID, INameData nameData, IHashedPassword hashedPassword)
     {
       throw new NotSupportedException();
-/*
-      if (userID is null || nameData is null || hashedPassword is null)
-        return new(false, ApiResultCodes.Invalid_Input); //引数NULLは許容できない
-
-      if (string.IsNullOrWhiteSpace(hashedPassword.Hash) || string.IsNullOrWhiteSpace(hashedPassword.Salt) || hashedPassword.StretchCount <= 0)
-        return new(false, ApiResultCodes.Invalid_Input); //ハッシュ情報の不足も許容できない
-
-      if (userID.Value.Length != 8)
-        return new(false, ApiResultCodes.Invalid_Length_UserID);
-
-      return await SignInAsync(userID, hashedPassword);
-*/
     }
 
     public async Task<ApiResult<UserData>> UpdateUserDataAsync(IUserData userData)

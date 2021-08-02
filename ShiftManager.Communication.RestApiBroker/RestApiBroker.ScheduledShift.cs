@@ -77,7 +77,7 @@ namespace ShiftManager.Communication
   *******************************************/
     public Task<ApiResult> UpdateShiftSchedulingStateAsync(DateTime targetDate, ShiftSchedulingState shiftSchedulingState)
       => Task.Run(() => new ApiResult(true, ApiResultCodes.Not_Supported));
-    
+
 
     /*******************************************
   * specification ;
@@ -127,7 +127,7 @@ namespace ShiftManager.Communication
 
       //UserID指定でサーバ上のShiftIDを取得して, それをもってデータ更新タスクを組む
       List<Task<ServerResponse<RestShift>>> Tasks = new();
-      foreach(var i in singleShiftDatas)
+      foreach (var i in singleShiftDatas)
       {
         var tmp = shifts.FirstOrDefault(arg => arg.work_date?.Date == targetDate && arg.user_id == i.UserID.Value); //日付とUserIDが一致するものを探索する
         if (tmp is RestShift s) //nullチェック
@@ -159,7 +159,7 @@ namespace ShiftManager.Communication
 
       //データ更新(アップロード)タスク実行
       var results = await Task.WhenAll(Tasks);
-      foreach(var i in results)
+      foreach (var i in results)
       {
         System.Diagnostics.Debug.WriteLine($"UpdateSingleScheduledShiftListAsync => {i.Content}");
         var resCode = ToApiRes(i.Response.StatusCode);

@@ -425,7 +425,7 @@ namespace ShiftManager
 
     public void Execute(object parameter)
     {
-      if(IsProcessingInstance is not null)
+      if (IsProcessingInstance is not null)
         IsProcessingInstance.IsProcessing.Value = true;
 
       TargetFrame.Content =

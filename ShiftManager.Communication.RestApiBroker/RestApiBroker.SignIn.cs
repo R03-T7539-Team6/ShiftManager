@@ -49,7 +49,7 @@ namespace ShiftManager.Communication
           _ => ApiResultCodes.Unknown_Error
         });
 
-      if(result.Content?.user is null)
+      if (result.Content?.user is null)
         return new(false, ApiResultCodes.Unknown_Error);
 
       CurrentUserData = result.Content.user.ToUserData();

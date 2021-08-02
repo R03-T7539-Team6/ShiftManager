@@ -25,7 +25,7 @@ namespace ShiftManager.Communication
 
       if (res.Response.StatusCode == System.Net.HttpStatusCode.OK && res.Content?.token is not null)
         Api.Token = res.Content.token;
-      else if(res.Content is null)
+      else if (res.Content is null)
       {
         ErrorType err = ErrorType.Unknown;
         string res_s = res.Response.Content;
