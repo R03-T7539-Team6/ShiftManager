@@ -97,13 +97,79 @@ namespace ShiftManager.Communication
   *******************************************/
     public async Task<ApiResult> UpdateSingleScheduledShiftListAsync(DateTime targetDate, IReadOnlyCollection<ISingleShiftData> singleShiftDatas)
     {
-      var res = await Sv.GetCurrentStoreShiftScheduleFileAsync(CurrentUserData?.StoreID.Value ?? string.Empty, targetDate);
-      if (res.Content is null)
-        return new(false, ApiResultCodes.Data_Not_Found);
+      targetDate = targetDate.Date; //時刻部分の入力をカット
+
+      if (CurrentUserData is null)
+        return new(false, ApiResultCodes.Not_Logged_In);
+
+      string store_id = CurrentUserData.StoreID.Value;
+
+      var res = await Sv.GetCurrentStoreShiftScheduleFileAsync(store_id);
+      var schedule = res.Content;
+      if (schedule is null) //サーバ上にデータが存在しなかった
+      {
+        //新規に作成する
+        schedule = new()
+        {
+          shifts = null, // とりあえずnull (Requestに含めない)
+          shift_state = RestDataConstants.ShiftStatus.Working,
+          store_id = store_id,
+          target_date = targetDate,
+          worker_num = 1,
+          start_of_schedule = targetDate,
+          end_of_schedule = targetDate.AddDays(1)
+        };
+
+        var res_genTask = await Sv.CreateStoreShiftScheduleFileAsync(schedule);
+
+        var resCode = ToApiRes(res_genTask.Response.StatusCode);
+        if (resCode != ApiResultCodes.Success || res_genTask.Content is null)
+          return new(false, resCode); //失敗したらここで終了 (更新を行わない)
+      }
+
+      var shifts = schedule?.shifts ?? Array.Empty<RestShift>();
 
       //UserID指定でサーバ上のShiftIDを取得して, それをもってデータ更新タスクを組む
+      List<Task<ServerResponse<RestShift>>> Tasks = new();
+      foreach(var i in singleShiftDatas)
+      {
+        var tmp = shifts.FirstOrDefault(arg => arg.work_date?.Date == targetDate && arg.user_id == i.UserID.Value); //日付とUserIDが一致するものを探索する
+        if (tmp is RestShift s) //nullチェック
+        {
+          var newD = new RestShift(s).FromSingleShiftData(i);
+
+          System.Diagnostics.Debug.WriteLine($"\tUpdateFrom=>{s}");
+          System.Diagnostics.Debug.WriteLine($"\tUpdate To =>{newD}");
+
+          if (s == newD)
+            continue; //更新前後で同じデータなら更新しない (通信データ量削減)
+
+          Tasks.Add(
+            Sv.UpdateShiftAsync(newD) //サーバ上にシフトが存在するため, それを更新する
+            );
+        }
+        else //サーバ上に予定シフトデータが存在しなかった
+        {
+          var newD = RestDataConverter.GenerateFromSingleShiftData(i, null, store_id, false);
+
+          System.Diagnostics.Debug.WriteLine($"\tGenerated =>{newD}");
+          System.Diagnostics.Debug.WriteLine(newD);
+
+          Tasks.Add(
+            Sv.CreateSingleShiftAsync(newD) //新規にシフトを作成する
+            );
+        }
+      }
 
       //データ更新(アップロード)タスク実行
+      var results = await Task.WhenAll(Tasks);
+      foreach(var i in results)
+      {
+        System.Diagnostics.Debug.WriteLine($"UpdateSingleScheduledShiftListAsync => {i.Content}");
+        var resCode = ToApiRes(i.Response.StatusCode);
+        if (resCode != ApiResultCodes.Success)
+          return new(false, resCode);
+      }
 
       return new(true, ApiResultCodes.Success);
     }
