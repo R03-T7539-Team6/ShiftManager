@@ -62,7 +62,6 @@ namespace ShiftManager.Communication
     public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftAsync(bool is_request, DateTime targetDate) => Api.ExecuteAsync<RestShift[]>($"/shifts?is_request=" + is_request.ToString().ToLower() + "&" + GetTargetDateQuery(targetDate), RestSharp.Method.GET);
     public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftRequestsAsync() => GetCurrentUserSingleShiftAsync(true);
     public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftRequestsAsync(DateTime targetDate) => GetCurrentUserSingleShiftAsync(targetDate);
-    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftRequestsAsync(bool is_request, DateTime targetDate) => GetCurrentUserSingleShiftAsync(is_request, targetDate);
 
     public Task<ServerResponse<RestShift>> CreateSingleShiftAsync(RestShift shift) => Api.ExecuteWithDataAsync<RestShift, RestShift>("/shifts", shift, RestSharp.Method.POST);
 
