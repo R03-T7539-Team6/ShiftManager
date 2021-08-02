@@ -76,7 +76,7 @@ namespace ShiftManager.Pages
         {
           DateTime targetDate = selectday.AddDays(i);
           VM.ShiftRequestArray.Add(new SingleShiftData(ApiHolder.CurrentUserID, targetDate, false, targetDate, targetDate, new()));
-          taskList.Add(ApiHolder.Api.GetScheduledShiftByIDAsync(targetDate, ApiHolder.CurrentUserID));
+          taskList.Add(ApiHolder.Api.GetCurrentUserScheduledShiftAsync(targetDate));
         }
 
         var results = await Task.WhenAll(taskList);

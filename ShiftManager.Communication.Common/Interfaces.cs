@@ -45,11 +45,10 @@ namespace ShiftManager.Communication
   /// <summary>予定シフトの操作に関するメソッドを規定しています</summary>
   public interface InternalApi_ScheduledShift
   {
-    /// <summary>指定した人/指定した日の予定シフトを取得する  存在しなければ新規に作成されて返る</summary>
+    /// <summary>指定した日の予定シフトを取得する  存在しなければ新規に作成されて返る  (サインイン中のユーザのものを取得/作成します)</summary>
     /// <param name="targetDate">勤務予定日</param>
-    /// <param name="userID">ユーザID</param>
     /// <returns>実行結果</returns>
-    Task<ApiResult<SingleShiftData>> GetScheduledShiftByIDAsync(DateTime targetDate, IUserID userID);
+    Task<ApiResult<SingleShiftData>> GetCurrentUserScheduledShiftAsync(DateTime targetDate);
 
     /// <summary>予定シフトの編集状態を更新する</summary>
     /// <param name="targetDate">日付</param>

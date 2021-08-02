@@ -11,9 +11,8 @@ namespace ShiftManager.Communication
 
   public partial class RestApiBroker : InternalApi_ScheduledShift
   {
-    /// <summary>指定日の予定シフトを, ユーザID指定で取得します</summary>
+    /// <summary>指定日の予定シフトを, ユーザID指定で取得します  (自身の予定シフトしか取得できません)</summary>
     /// <param name="targetDate">取得する予定シフトの対象日</param>
-    /// <param name="userID">取得する予定シフトのユーザID</param>
     /// <returns>実行結果</returns>
     /*******************************************
   * specification ;
@@ -27,27 +26,24 @@ namespace ShiftManager.Communication
   * output = 実行結果 ;
   * end of specification ;
   *******************************************/
-    public async Task<ApiResult<SingleShiftData>> GetScheduledShiftByIDAsync(DateTime targetDate, IUserID userID)
+    public async Task<ApiResult<SingleShiftData>> GetCurrentUserScheduledShiftAsync(DateTime targetDate)
     {
       if (!IsLoggedIn || CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In, null);
-      var resStore = await Sv.GetStoreFileAsync(CurrentUserData.StoreID.Value);
+      var resStore = await Sv.GetCurrentUserSingleShiftAsync(false, targetDate);
 
-      if (resStore.Content?.shift_schedules is null)
+      if (resStore.Content is null)
         return new(false, ApiResultCodes.Unknown_Error, null);
 
-      if (resStore.Content.shift_schedules.Length <= 0)
-        return new(false, ApiResultCodes.Data_Not_Found, null);
+      if (resStore.Content.Length <= 0)
+        return new(false, ApiResultCodes.Target_Date_Not_Found, null);
 
-      var tmp1 = resStore.Content.shift_schedules.Where(i => i.target_date == targetDate);
-      foreach (var tmp2 in tmp1)
-      {
-        var tmp3 = tmp2.shifts?.Where(i => i.user_id == userID.Value).FirstOrDefault();
-        if (tmp3 != default)
-          return new(true, ApiResultCodes.Success, tmp3.ToSingleShiftData());
-      }
+      var tmp1 = resStore.Content.Where(i => i.work_date == targetDate && i.user_id == CurrentUserData.UserID.Value).FirstOrDefault();
 
-      return new(false, ApiResultCodes.Data_Not_Found, null);
+      if (tmp1 is not null)
+        return new(true, ApiResultCodes.Success, tmp1.ToSingleShiftData());
+
+      return new(false, ApiResultCodes.Target_Date_Not_Found, null);
     }
 
 
