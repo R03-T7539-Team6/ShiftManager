@@ -63,9 +63,19 @@ namespace ShiftManager.Communication
     public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftRequestsAsync() => GetCurrentUserSingleShiftAsync(true);
     public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftRequestsAsync(DateTime targetDate) => GetCurrentUserSingleShiftAsync(targetDate);
 
-    public Task<ServerResponse<RestShift>> CreateSingleShiftAsync(RestShift shift) => Api.ExecuteWithDataAsync<RestShift, RestShift>("/shifts", shift, RestSharp.Method.POST);
+    public Task<ServerResponse<RestShift>> CreateSingleShiftAsync(RestShift shift) => Api.ExecuteWithDataAsync<RestShift, RestShift>("/shifts", shift with { id = null }, RestSharp.Method.POST); //DataIDはクライアントから指定できないためnullを入れる
 
-    public Task<ServerResponse<RestShift>> UpdateShiftAsync(RestShift shift) => Api.ExecuteWithDataAsync<RestShift, RestShift>($"/shifts/{shift.id}", shift, RestSharp.Method.PUT); //変えたい情報だけが変わっていることを期待する
+    public Task<ServerResponse<RestShift>> UpdateShiftAsync(RestShift shift)
+      => Api.ExecuteWithDataAsync<RestShift, RestShift>($"/shifts/{shift.id}",
+        shift with //更新できない情報にはnullを入れておく
+        {
+          id = null,
+          is_request = null,
+          store_id = null,
+          user_id = null,
+          work_date = null
+        },
+        RestSharp.Method.PUT); //変えたい情報だけが変わっていることを期待する
 
     public Task<ServerResponse> DeleteSingleShiftAsync(int shiftID) => Api.ExecuteAsync($"/shifts/{shiftID}", RestSharp.Method.DELETE);
 
