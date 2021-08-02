@@ -256,6 +256,9 @@ namespace ShiftManager.Pages
       TurnOnProcessingSW();
       DateTime today = DateTime.Today;
 
+      //ユーザーリスト取得
+      await ApiHolder.Api.GetAllUserAsync(); //(こっちでは使用しない)
+
       //今日の予定シフトを表示する
 
       var res = await ApiHolder.Api.GetScheduledShiftByDateAsync(today);
