@@ -35,7 +35,7 @@ namespace ShiftManager.Communication.RestData
     public DateTime DeletedAt { get; set; }
   }
 
-  public class RestShift
+  public record RestShift
   {
     public uint? id { get; set; } = null;
     public string? user_id { get; set; } = null;
@@ -54,7 +54,7 @@ namespace ShiftManager.Communication.RestData
     public DateTime? end_break_time { get; set; } = null;
   }
 
-  public class RestShiftRequest
+  public record RestShiftRequest
   {
     public string? user_id { get; set; } = null;
     public string? store_id { get; set; } = null;
@@ -63,7 +63,7 @@ namespace ShiftManager.Communication.RestData
     public RestShift[]? shifts { get; set; } = null;
   }
 
-  public class RestShiftRequestWithModel : RestShiftRequest, IRestModel
+  public record RestShiftRequestWithModel : RestShiftRequest, IRestModel
   {
     public uint ID { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
@@ -74,7 +74,7 @@ namespace ShiftManager.Communication.RestData
     public DateTime DeletedAt { get; set; }
   }
 
-  public class RestShiftSchedule
+  public record RestShiftSchedule
   {
     public string? store_id { get; set; } = null;
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
@@ -89,7 +89,7 @@ namespace ShiftManager.Communication.RestData
     public uint? worker_num { get; set; } = null;
   }
 
-  public class RestShiftScheduleWithModel : RestShiftSchedule, IRestModel
+  public record RestShiftScheduleWithModel : RestShiftSchedule, IRestModel
   {
     public uint ID { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
@@ -100,7 +100,7 @@ namespace ShiftManager.Communication.RestData
     public DateTime DeletedAt { get; set; }
   }
 
-  public class RestStore
+  public record RestStore
   {
     public string? store_id { get; set; } = null;
     public RestUser[]? worker_lists { get; set; } = null;
@@ -108,7 +108,7 @@ namespace ShiftManager.Communication.RestData
     public RestShiftSchedule[]? shift_schedules { get; set; } = null;
   }
 
-  public class RestStoreWithModel : RestStore, IRestModel
+  public record RestStoreWithModel : RestStore, IRestModel
   {
     public uint ID { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
@@ -119,7 +119,7 @@ namespace ShiftManager.Communication.RestData
     public DateTime DeletedAt { get; set; }
   }
 
-  public class RestWorkLog
+  public record RestWorkLog
   {
     public string? user_id { get; set; } = null;
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
@@ -132,7 +132,7 @@ namespace ShiftManager.Communication.RestData
     public DateTime? end_break_time { get; set; } = null;
   }
 
-  public class RestWorkLogWithModel : RestWorkLog, IRestModel
+  public record RestWorkLogWithModel : RestWorkLog, IRestModel
   {
     public uint ID { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
@@ -143,7 +143,7 @@ namespace ShiftManager.Communication.RestData
     public DateTime DeletedAt { get; set; }
   }
 
-  public class RestSignInResponse
+  public record RestSignInResponse
   {
     public string? token { get; set; } = null;
     public RestUser? user { get; set; } = null;
