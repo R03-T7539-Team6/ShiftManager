@@ -27,10 +27,13 @@ namespace ShiftManager.Communication.RestData
   public class RestUserWithModel : RestUser, IRestModel
   {
     public uint ID { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime CreatedAt { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime UpdatedAt { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime DeletedAt { get; set; }
   }
@@ -56,18 +59,22 @@ namespace ShiftManager.Communication.RestData
     public string? store_id { get; set; } = null;
 
 
-    private DateTime? _work_date = null;
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? work_date { get => _work_date; set => _work_date = value?.Date; } //WorkDateは必ず00:00:00を入れなければならないため, 入力時に「時」以下を切る (但しnullでない場合のみ)
-    
+    private DateTime? _work_date = null;
+
     public bool? is_paid_holiday { get; set; } = null;
     public bool? is_request { get; set; } = null;
+    
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? attendance_time { get; set; } = null;
+    
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? leaving_time { get; set; } = null;
+    
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? start_break_time { get; set; } = null;
+    
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? end_break_time { get; set; } = null;
   }
@@ -76,6 +83,7 @@ namespace ShiftManager.Communication.RestData
   {
     public string? user_id { get; set; } = null;
     public string? store_id { get; set; } = null;
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? last_update { get; set; } = null;
     public RestShift[]? shifts { get; set; } = null;
@@ -84,10 +92,13 @@ namespace ShiftManager.Communication.RestData
   public record RestShiftRequestWithModel : RestShiftRequest, IRestModel
   {
     public uint ID { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime CreatedAt { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime UpdatedAt { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime DeletedAt { get; set; }
   }
@@ -95,12 +106,16 @@ namespace ShiftManager.Communication.RestData
   public record RestShiftSchedule
   {
     public string? store_id { get; set; } = null;
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? target_date { get; set; } = null;
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? start_of_schedule { get; set; } = null;
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? end_of_schedule { get; set; } = null;
+
     public string? shift_state { get; set; } = null;
     public RestShift[]? shifts { get; set; } = null;
     /// <summary>時間ごと必要人数</summary>
@@ -110,10 +125,13 @@ namespace ShiftManager.Communication.RestData
   public record RestShiftScheduleWithModel : RestShiftSchedule, IRestModel
   {
     public uint ID { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime CreatedAt { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime UpdatedAt { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime DeletedAt { get; set; }
   }
@@ -129,10 +147,13 @@ namespace ShiftManager.Communication.RestData
   public record RestStoreWithModel : RestStore, IRestModel
   {
     public uint ID { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime CreatedAt { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime UpdatedAt { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime DeletedAt { get; set; }
   }
@@ -140,12 +161,16 @@ namespace ShiftManager.Communication.RestData
   public record RestWorkLog
   {
     public string? user_id { get; set; } = null;
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? attendance_time { get; set; } = null;
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? leaving_time { get; set; } = null;
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? start_break_time { get; set; } = null;
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? end_break_time { get; set; } = null;
   }
@@ -153,10 +178,13 @@ namespace ShiftManager.Communication.RestData
   public record RestWorkLogWithModel : RestWorkLog, IRestModel
   {
     public uint ID { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime CreatedAt { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime UpdatedAt { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime DeletedAt { get; set; }
   }
