@@ -84,20 +84,32 @@ namespace ShiftManager.Pages
 
         string userID = UID.Text;
         UserID targetUserID = new(userID);
+
         ApiResult<DateTime> res = await ApiHolder.Api.DoWorkStartTimeLoggingAsync(targetUserID);
-        if (res.ResultCode == ApiResultCodes.Work_Not_Ended)
-          MessageBox.Show("まだ勤務中です");
-        if (res.ResultCode == ApiResultCodes.Success)
+        
+        switch (res.ResultCode)
         {
-          MessageBox.Show("出勤登録完了");
-          ClearIDBox();
+          case ApiResultCodes.Work_Not_Ended:
+            _ = MessageBox.Show("まだ勤務中です");
+            break;
 
-          main(targetUserID);
+          case ApiResultCodes.UserID_Not_Found:
+            _ = MessageBox.Show("IDが違います");
+            break;
 
-          WorkLogSetter(userID, DateTime.Today, v => v with { AttendanceTime = res.ReturnData });
+          case ApiResultCodes.Success:
+            _ = MessageBox.Show("出勤登録完了");
+            ClearIDBox();
+
+            main(targetUserID);
+
+            WorkLogSetter(userID, DateTime.Today, v => v with { AttendanceTime = res.ReturnData });
+            break;
+
+          default:
+            _ = MessageBox.Show("不明なエラーが発生しました\n" + res.ResultCode.ToString(), "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+            break;
         }
-        if (res.ResultCode == ApiResultCodes.UserID_Not_Found)
-          MessageBox.Show("IDが違います");
 
         TurnOffProcessingSW();
       }
@@ -123,25 +135,39 @@ namespace ShiftManager.Pages
 
         string userID = UID.Text;
         UserID targetUserID = new(userID);
+
         ApiResult<DateTime> res = await ApiHolder.Api.DoBreakTimeStartLoggingAsync(targetUserID);
-        if (res.ResultCode == ApiResultCodes.UserID_Not_Found)
-          MessageBox.Show("IDが違います");
-        if (res.ResultCode == ApiResultCodes.Work_Not_Started)
-          MessageBox.Show("出勤していません");
-        if (res.ResultCode == ApiResultCodes.BreakTime_Not_Ended)
-          MessageBox.Show("休憩中です");
-        if (res.ResultCode == ApiResultCodes.Success)
+
+        switch (res.ResultCode)
         {
-          MessageBox.Show("休憩開始");
-          ClearIDBox();
+          case ApiResultCodes.UserID_Not_Found:
+            _ = MessageBox.Show("IDが違います");
+            break;
 
-          main(targetUserID);
+          case ApiResultCodes.Work_Not_Started:
+            _ = MessageBox.Show("出勤していません");
+            break;
 
-          WorkLogSetter(userID, DateTime.Today,(v)=>
-          {
-            v.BreakTimeDictionary.Add(res.ReturnData, 0);
-            return v;
-          });
+          case ApiResultCodes.BreakTime_Not_Ended:
+            _ = MessageBox.Show("休憩中です");
+            break;
+
+          case ApiResultCodes.Success:
+            _ = MessageBox.Show("休憩開始");
+            ClearIDBox();
+
+            main(targetUserID);
+
+            WorkLogSetter(userID, DateTime.Today, (v) =>
+            {
+              v.BreakTimeDictionary[res.ReturnData] = 0; //これでも追加できるらしいので
+              return new SingleShiftData(v);
+            });
+            break;
+
+          default:
+            _ = MessageBox.Show("不明なエラーが発生しました\n" + res.ResultCode.ToString(), "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+            break;
         }
 
         TurnOffProcessingSW();
@@ -168,29 +194,50 @@ namespace ShiftManager.Pages
 
         string userID = UID.Text;
         UserID targetUserID = new(userID);
+
         ApiResult<DateTime> res = await ApiHolder.Api.DoBreakTimeEndLoggingAsync(targetUserID);
-        if (res.ResultCode == ApiResultCodes.Work_Not_Started)
-          MessageBox.Show("出勤記録がありません");
-        if (res.ResultCode == ApiResultCodes.BreakTime_Not_Started)
-          MessageBox.Show("休憩記録がありません");
-        if (res.ResultCode == ApiResultCodes.BreakTimeLen_Zero_Or_Less)
-          MessageBox.Show("休憩時間が短すぎます");
-        if (res.ResultCode == ApiResultCodes.Success)
+
+        switch (res.ResultCode)
         {
-          MessageBox.Show("休憩時間終了");
-          ClearIDBox();
+          case ApiResultCodes.UserID_Not_Found:
+            _ = MessageBox.Show("IDが違います");
+            break;
 
-          main(targetUserID);
+          case ApiResultCodes.Work_Not_Started:
+            _ = MessageBox.Show("出勤していません");
+            break;
 
-          WorkLogSetter(userID, DateTime.Today, (v) =>
-          {
-            DateTime break_in_time = v.BreakTimeDictionary.Last().Key;
-            v.BreakTimeDictionary[break_in_time] = (int)(res.ReturnData - break_in_time).TotalMinutes;
-            return v;
-          });
+          case ApiResultCodes.BreakTime_Not_Started:
+            _ = MessageBox.Show("休憩記録がありません");
+            break;
+
+          case ApiResultCodes.BreakTimeLen_Zero_Or_Less:
+            _ = MessageBox.Show("休憩時間が短すぎます");
+            break;
+
+          case ApiResultCodes.Success:
+            MessageBox.Show("休憩時間終了");
+            ClearIDBox();
+
+            main(targetUserID);
+
+            WorkLogSetter(userID, DateTime.Today, (v) =>
+            {
+              DateTime break_in_time = v.BreakTimeDictionary.LastOrDefault().Key;
+              if(break_in_time == default)
+              {
+                _ = MessageBox.Show("休憩開始時刻の取得に失敗しました.\nサーバ上のデータは正常に更新されていますが, 画面上には休憩時間が反映されません.", "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+                return v;
+              }
+              v.BreakTimeDictionary[break_in_time] = (int)(res.ReturnData - break_in_time).TotalMinutes;
+              return new SingleShiftData(v);
+            });
+            break;
+
+          default:
+            _ = MessageBox.Show("不明なエラーが発生しました\n" + res.ResultCode.ToString(), "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+            break;
         }
-        if (res.ResultCode == ApiResultCodes.UserID_Not_Found)
-          MessageBox.Show("IDが違います");
       }
 
       TurnOffProcessingSW();
@@ -216,21 +263,35 @@ namespace ShiftManager.Pages
 
         string userID = UID.Text;
         UserID targetUserID = new(userID);
+
         ApiResult<DateTime> res = await ApiHolder.Api.DoWorkEndTimeLoggingAsync(targetUserID);
-        if (res.ResultCode == ApiResultCodes.UserID_Not_Found)
-          MessageBox.Show("IDが違います");
-        if (res.ResultCode == ApiResultCodes.Work_Not_Started)
-          MessageBox.Show("出勤していません");
-        if (res.ResultCode == ApiResultCodes.BreakTime_Not_Ended)
-          MessageBox.Show("休憩中です");
-        if (res.ResultCode == ApiResultCodes.Success)
+
+        switch (res.ResultCode)
         {
-          MessageBox.Show("退勤登録完了");
-          ClearIDBox();
+          case ApiResultCodes.UserID_Not_Found:
+            _ = MessageBox.Show("IDが違います");
+            break;
 
-          main(targetUserID);
+          case ApiResultCodes.Work_Not_Started:
+            _ = MessageBox.Show("出勤していません");
+            break;
 
-          WorkLogSetter(userID, DateTime.Today, v => v with { LeavingTime = res.ReturnData });
+          case ApiResultCodes.BreakTime_Not_Ended:
+            _ = MessageBox.Show("休憩中です");
+            break;
+
+          case ApiResultCodes.Success:
+            _ = MessageBox.Show("退勤登録完了");
+            ClearIDBox();
+
+            main(targetUserID);
+
+            WorkLogSetter(userID, DateTime.Today, v => v with { LeavingTime = res.ReturnData });
+            break;
+
+          default:
+            _ = MessageBox.Show("不明なエラーが発生しました\n" + res.ResultCode.ToString(), "ShiftManager", MessageBoxButton.OK, MessageBoxImage.Error);
+            break;
         }
 
         TurnOffProcessingSW();
@@ -255,6 +316,9 @@ namespace ShiftManager.Pages
     {
       TurnOnProcessingSW();
       DateTime today = DateTime.Today;
+
+      //ユーザーリスト取得
+      await ApiHolder.Api.GetAllUserAsync(); //(こっちでは使用しない)
 
       //今日の予定シフトを表示する
 

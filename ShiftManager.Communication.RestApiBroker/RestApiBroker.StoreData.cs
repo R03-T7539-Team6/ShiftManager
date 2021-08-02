@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -162,6 +163,8 @@ namespace ShiftManager.Communication
       return new(true, resCode, res.Content.shift_requests.Select(i => i.ToShiftRequest()).ToImmutableArray());
     }
 
+    Dictionary<UserID, UserData> UserDataDic { get; } = new();
+
     /*******************************************
   * specification ;
   * name = GetAllUserAsync ;
@@ -186,7 +189,16 @@ namespace ShiftManager.Communication
       if (res.Content?.worker_lists is null)
         return new(false, ApiResultCodes.Data_Not_Found, Array.Empty<UserData>().ToImmutableArray());
 
-      return new(true, retCode, res.Content.worker_lists.Select(i => i.ToUserData()).ToImmutableArray());
+      UserData[] udarr = res.Content.worker_lists.Select(i => i.ToUserData()).ToArray();
+      foreach (var i in udarr) {
+        UserID id = new(i.UserID);
+        if (UserDataDic.ContainsKey(id))
+          UserDataDic[new(i.UserID)] = i;
+        else
+          UserDataDic.Add(id, i);
+      }
+
+      return new(true, retCode, udarr.ToImmutableArray());
     }
 
     /*******************************************
@@ -222,19 +234,26 @@ namespace ShiftManager.Communication
   *******************************************/
     public async Task<ApiResult<ScheduledShift>> GetScheduledShiftByDateAsync(DateTime dateTime)
     {
+      DateTime targetDate = dateTime.Date;
       if (!IsLoggedIn || CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In, null);
 
-      var res = await Sv.GetStoreFileAsync(CurrentUserData.StoreID.Value); //少し非効率かも
+      var res = await Sv.GetCurrentStoreShiftScheduleFileAsync(CurrentUserData.StoreID.Value); //ファイルは一つ.  shiftsにすべての日のやつが入る
 
       var retCode = ToApiRes(res.Response.StatusCode);
 
-      if (res.Response.StatusCode != HttpStatusCode.OK || res.Content?.shift_schedules is null)
+      if (res.Response.StatusCode != HttpStatusCode.OK || res.Content?.shifts is null)
         return new(false, retCode, null);
 
-      var ret = res.Content.shift_schedules.Where(i => i.target_date?.Date == dateTime.Date).Select(i => i.ToScheduledShift()).FirstOrDefault();
+      var ret = res.Content.shifts
+        .Where(i => i.work_date == targetDate) // 全日程のシフトのうち, 目的の日付のシフトのみを抽出
+        .Select(i => i.ToSingleShiftData() as ISingleShiftData) // それぞれISいんｇぇShiftDataに変換
+        .ToDictionary(i => new UserID(i.UserID)); // UserIDをKeyとする辞書型に変換
 
-      return new(true, retCode, ret);
+      return
+        new(true, retCode,
+          new ScheduledShift(targetDate, targetDate, targetDate.AddDays(1), ShiftSchedulingState.Working, ret, new() { 1 })
+        );
     }
 
     /*******************************************
@@ -276,7 +295,8 @@ namespace ShiftManager.Communication
       return new(true, ApiResultCodes.Success, res);
     }
 
-    
+    public NameData GetUserNameFromCacheByID(IUserID userID) => new(GetUserDataByID_Orig(userID).FullName);
+
 
     /*******************************************
   * specification ;
@@ -318,6 +338,15 @@ namespace ShiftManager.Communication
       return userData is null ? new(false, ApiResultCodes.UserID_Not_Found, null) : new(true, ApiResultCodes.Success, userData);
     }
 
+    public ApiResult<UserData> GetUserDataByID(IUserID userID)
+    {
+      if (UserDataDic.TryGetValue(new(userID), out var val))
+        return new(true, ApiResultCodes.Success, val);
+      else
+        return new(false, ApiResultCodes.Unknown_Error, null);
+    }
+
+    public UserData GetUserDataByID_Orig(IUserID userID) => UserDataDic.TryGetValue(new(userID), out var val) ? val : new(userID, new HashedPassword(), new NameData(), CurrentUserData?.StoreID ?? new StoreID(), UserGroup.None, UserState.Normal, new WorkLog(userID, new()), new UserSetting(userID, NotificationPublishTimings.None, new()));
     /*******************************************
   * specification ;
   * name = GetUsersByUserGroupAsync ;

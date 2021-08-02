@@ -16,20 +16,28 @@ namespace ShiftManager.Communication
     #region ログインとサインアップ
     public Task<ServerResponse<RestUser>> SignUp_WithNoTokenAsync(RestUser user) => Api.ExecuteWithDataAsync<RestUser, RestUser>("/signup", user, RestSharp.Method.POST);
 
+    const string ERROR_RESPONSE_INVALID_JSON_FORMAT = "Invalid json provided";
+    const string ERROR_RESPONSE_WRONG_USER_ID = "Wrong User ID";
+    const string ERROR_RESPONSE_WRONG_PASSWORD = "Wrong Password";
     public async Task<ServerResponse<RestSignInResponse>> SignInAsync(RestUser user)
     {
       var res = await Api.ExecuteWithDataAsync<RestUser, RestSignInResponse>("/login", user, RestSharp.Method.POST);
+
       if (res.Response.StatusCode == System.Net.HttpStatusCode.OK && res.Content?.token is not null)
         Api.Token = res.Content.token;
-      else if(res.Response.StatusCode== System.Net.HttpStatusCode.BadRequest)
+      else if(res.Content is null)
       {
-        res = new ServerErrorResponse<RestSignInResponse>(res.Response, res.Content, res.Response.Content switch
-        {
-          "Invalid json provided" => ErrorType.Invalid_Json_Format,
-          "Wrong User ID" => ErrorType.Wrong_ID,
-          "Wrong Password" => ErrorType.Wrong_PW,
-          _ => ErrorType.Unknown
-        });
+        ErrorType err = ErrorType.Unknown;
+        string res_s = res.Response.Content;
+
+        if (res_s.Contains(ERROR_RESPONSE_INVALID_JSON_FORMAT))
+          err = ErrorType.Invalid_Json_Format;
+        else if (res_s.Contains(ERROR_RESPONSE_WRONG_USER_ID))
+          err = ErrorType.Wrong_ID;
+        else if (res_s.Contains(ERROR_RESPONSE_WRONG_PASSWORD))
+          err = ErrorType.Wrong_PW;
+
+        res = new ServerErrorResponse<RestSignInResponse>(res.Response, res.Content, err);
       }
 
       return res;
@@ -47,13 +55,27 @@ namespace ShiftManager.Communication
     #endregion
 
 
-
+    static string GetTargetDateQuery(in DateTime dt) => $"target_date={dt:yyyy-MM-dd}T00:00:00Z";
     #region シフトに関する操作
-    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftRequestsAsync() => Api.ExecuteAsync<RestShift[]>("/shifts?is_request=true", RestSharp.Method.GET);
+    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftAsync(bool is_request) => Api.ExecuteAsync<RestShift[]>("/shifts?is_request=" + is_request.ToString().ToLower(), RestSharp.Method.GET);
+    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftAsync(DateTime targetDate) => Api.ExecuteAsync<RestShift[]>($"/shifts?" + GetTargetDateQuery(targetDate), RestSharp.Method.GET);
+    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftAsync(bool is_request, DateTime targetDate) => Api.ExecuteAsync<RestShift[]>($"/shifts?is_request=" + is_request.ToString().ToLower() + "&" + GetTargetDateQuery(targetDate), RestSharp.Method.GET);
+    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftRequestsAsync() => GetCurrentUserSingleShiftAsync(true);
+    public Task<ServerResponse<RestShift[]>> GetCurrentUserSingleShiftRequestsAsync(DateTime targetDate) => GetCurrentUserSingleShiftAsync(targetDate);
 
-    public Task<ServerResponse<RestShift>> CreateSingleShiftAsync(RestShift shift) => Api.ExecuteWithDataAsync<RestShift, RestShift>("/shifts", shift, RestSharp.Method.POST);
+    public Task<ServerResponse<RestShift>> CreateSingleShiftAsync(RestShift shift) => Api.ExecuteWithDataAsync<RestShift, RestShift>("/shifts", shift with { id = null }, RestSharp.Method.POST); //DataIDはクライアントから指定できないためnullを入れる
 
-    public Task<ServerResponse<RestShift>> UpdateShiftAsync(RestShift shift) => Api.ExecuteWithDataAsync<RestShift, RestShift>($"/shifts/{shift.id}", shift, RestSharp.Method.PUT); //変えたい情報だけが変わっていることを期待する
+    public Task<ServerResponse<RestShift>> UpdateShiftAsync(RestShift shift)
+      => Api.ExecuteWithDataAsync<RestShift, RestShift>($"/shifts/{shift.id}",
+        shift with //更新できない情報にはnullを入れておく
+        {
+          id = null,
+          is_request = null,
+          store_id = null,
+          user_id = null,
+          work_date = null
+        },
+        RestSharp.Method.PUT); //変えたい情報だけが変わっていることを期待する
 
     public Task<ServerResponse> DeleteSingleShiftAsync(int shiftID) => Api.ExecuteAsync($"/shifts/{shiftID}", RestSharp.Method.DELETE);
 
@@ -64,6 +86,8 @@ namespace ShiftManager.Communication
     public Task<ServerResponse> DeleteCurrentUserShiftRequestFileAsync(int id) => throw new NotSupportedException(); //Serverの実装待ち
 
     public Task<ServerResponse<RestShiftSchedule>> GetCurrentStoreShiftScheduleFileAsync(string storeID) => Api.ExecuteAsync<RestShiftSchedule>($"/shifts/schedule/{storeID}", RestSharp.Method.GET);
+    [Obsolete("バグがあり, 正常に取得できない (404 Not Foundが返される)")]
+    public Task<ServerResponse<RestShiftSchedule>> GetCurrentStoreShiftScheduleFileAsync(string storeID, DateTime targetDate) => Api.ExecuteAsync<RestShiftSchedule>($"/shifts/schedule/{storeID}?" + GetTargetDateQuery(targetDate), RestSharp.Method.GET);
 
     public Task<ServerResponse<RestShiftSchedule>> CreateStoreShiftScheduleFileAsync(RestShiftSchedule data) => Api.ExecuteWithDataAsync<RestShiftSchedule, RestShiftSchedule>("/shifts/schedule", data, RestSharp.Method.POST); //変えたい情報だけがJsonに含まれることを期待
     #endregion
@@ -75,11 +99,11 @@ namespace ShiftManager.Communication
     #endregion
 
     #region ログに関する操作
-    public Task<ServerResponse<RestWorkLog[]>> GetCurrentUserWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLog[]>("/logs", log, RestSharp.Method.GET);
+    public Task<ServerResponse<RestWorkLogWithModel[]>> GetCurrentUserWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLogWithModel[]>("/logs", log, RestSharp.Method.GET);
 
-    public Task<ServerResponse<RestWorkLog>> CreateWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLog>("/logs", log, RestSharp.Method.POST);
+    public Task<ServerResponse<RestWorkLogWithModel>> CreateWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLogWithModel>("/logs", log, RestSharp.Method.POST);
 
-    public Task<ServerResponse<RestWorkLog>> UpdateWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLog>("/logs", log, RestSharp.Method.PUT); //変えたい情報だけがJsonに含まれることを期待
+    public Task<ServerResponse<RestWorkLogWithModel>> UpdateWorkLogAsync(RestWorkLog log, uint id) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLogWithModel>("/logs/" + id.ToString(), log with { user_id = null }, RestSharp.Method.PUT); //変えたい情報だけがJsonに含まれることを期待
     #endregion
   }
 }

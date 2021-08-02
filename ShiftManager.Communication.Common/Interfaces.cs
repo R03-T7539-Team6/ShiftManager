@@ -45,11 +45,10 @@ namespace ShiftManager.Communication
   /// <summary>予定シフトの操作に関するメソッドを規定しています</summary>
   public interface InternalApi_ScheduledShift
   {
-    /// <summary>指定した人/指定した日の予定シフトを取得する  存在しなければ新規に作成されて返る</summary>
+    /// <summary>指定した日の予定シフトを取得する  存在しなければ新規に作成されて返る  (サインイン中のユーザのものを取得/作成します)</summary>
     /// <param name="targetDate">勤務予定日</param>
-    /// <param name="userID">ユーザID</param>
     /// <returns>実行結果</returns>
-    Task<ApiResult<SingleShiftData>> GetScheduledShiftByIDAsync(DateTime targetDate, IUserID userID);
+    Task<ApiResult<SingleShiftData>> GetCurrentUserScheduledShiftAsync(DateTime targetDate);
 
     /// <summary>予定シフトの編集状態を更新する</summary>
     /// <param name="targetDate">日付</param>
@@ -84,7 +83,7 @@ namespace ShiftManager.Communication
     Task<ApiResult> AddShiftRequestAsync(ISingleShiftData singleShiftData);
 
     /// <summary>現在のユーザの指定の日付のシフト希望を取得する  存在しなければ新規に作成されて返る</summary>
-    /// <remarks>内部的には, GetShiftRequestByIDAsyncを実行してそこから日付でピックアップしています</remarks>
+    /// <remarks>(InternalApiでは) GetShiftRequestByIDAsyncを実行してそこから日付でピックアップしています</remarks>
     /// <param name="date">希望した日付</param>
     /// <returns>実行結果</returns>
     Task<ApiResult<SingleShiftData>> GetShiftRequestByDateAsync(DateTime date);
@@ -124,6 +123,8 @@ namespace ShiftManager.Communication
     /// <param name="userID">取得するユーザのユーザID</param>
     /// <returns>実行結果</returns>
     Task<ApiResult<UserData>> GetUserDataByIDAsync(IUserID userID);
+
+    NameData GetUserNameFromCacheByID(IUserID userID);
 
     /// <summary>指定のユーザデータを追加する  既にユーザが存在した場合はエラーが返る</summary>
     /// <param name="userData">追加するユーザデータ</param>

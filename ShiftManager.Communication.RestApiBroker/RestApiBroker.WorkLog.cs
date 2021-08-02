@@ -12,7 +12,7 @@ namespace ShiftManager.Communication
   {
     public ICurrentTimeProvider CurrentTimeProvider { get; init; } = new CurrentTimeProvider();
 
-    Dictionary<UserID, ISingleWorkLog> WorkLogCache { get; } = new();
+    Dictionary<UserID, RestWorkLogWithModel> WorkLogCache { get; } = new();
 
     /// <summary>指定のユーザについて, 休憩終了の打刻を行います</summary>
     /// <param name="userID">ユーザID</param>
@@ -32,25 +32,25 @@ namespace ShiftManager.Communication
     public async Task<ApiResult<DateTime>> DoBreakTimeEndLoggingAsync(IUserID userID)
     {
       DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
+      UserID uid = new(userID);
 
-      if (!WorkLogCache.TryGetValue(new UserID(userID), out var lastWorkLog) || lastWorkLog is null || lastWorkLog.AttendanceTime == default)
+      if (!WorkLogCache.TryGetValue(uid, out var lastWorkLog) || lastWorkLog is null)
         return new(false, ApiResultCodes.Work_Not_Started, CurrentTime);
 
       //最後の要素に出勤打刻が行われていない || 最後の要素に退勤打刻が終わっている
-      if (lastWorkLog.AttendanceTime == default || lastWorkLog.LeavingTime != default)
+      if (lastWorkLog.attendance_time is null || lastWorkLog.leaving_time is not null)
         return new(false, ApiResultCodes.Work_Not_Started, CurrentTime);
 
-      KeyValuePair<DateTime, int> lastBreakLog = lastWorkLog.BreakTimeDictionary.LastOrDefault();
-      if (lastBreakLog.Key == default || lastBreakLog.Value > 0) //休憩開始時刻の記録がない || 休憩終了時刻の記録がある
+      if (lastWorkLog.start_break_time is null || lastWorkLog.end_break_time is not null) //休憩開始時刻の記録がない || 休憩終了時刻の記録がある
         return new(false, ApiResultCodes.BreakTime_Not_Started, CurrentTime);
 
-      int breakTimeLen = SharedFuncs.GetBreakTimeLength(lastBreakLog.Key, CurrentTime);
+      int breakTimeLen = SharedFuncs.GetBreakTimeLength(lastWorkLog.start_break_time ?? default, CurrentTime); //startBreakTimeはnullじゃないはずだけど, 一応
       if (breakTimeLen <= 0)
         return new(false, ApiResultCodes.BreakTimeLen_Zero_Or_Less, CurrentTime);
 
-      lastWorkLog.BreakTimeDictionary[lastBreakLog.Key] = breakTimeLen;
+      lastWorkLog.end_break_time = CurrentTime;
 
-      var res = await Sv.UpdateWorkLogAsync(RestDataConverter.GenerateFromSingleWorkLog(lastWorkLog, userID));
+      var res = await Sv.UpdateWorkLogAsync(lastWorkLog, lastWorkLog.ID);
 
       return new(res.Content is not null, ToApiRes(res.Response.StatusCode), CurrentTime);
     }
@@ -73,25 +73,23 @@ namespace ShiftManager.Communication
     public async Task<ApiResult<DateTime>> DoBreakTimeStartLoggingAsync(IUserID userID)
     {
       DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
+      UserID uid = new(userID);
 
-      if (!WorkLogCache.TryGetValue(new UserID(userID), out var lastWorkLog) || lastWorkLog is null || lastWorkLog.AttendanceTime == default)
+      if (!WorkLogCache.TryGetValue(uid, out var lastWorkLog) || lastWorkLog is null)
         return new(false, ApiResultCodes.Work_Not_Started, CurrentTime);
 
       //最後の要素に出勤打刻が行われていない || 最後の要素に退勤打刻が終わっている
-      if (lastWorkLog.AttendanceTime == default || lastWorkLog.LeavingTime != default)
+      if (lastWorkLog.attendance_time is null || lastWorkLog.leaving_time is not null)
         return new(false, ApiResultCodes.Work_Not_Started, CurrentTime);
 
 
-      KeyValuePair<DateTime, int> lastBreakLog = lastWorkLog.BreakTimeDictionary.LastOrDefault();
-      if (lastBreakLog.Key != default && lastBreakLog.Value <= 0) //休憩終了時刻の記録がない
+      if (lastWorkLog.start_break_time is not null && lastWorkLog.end_break_time is null) //休憩中なのに休憩終了時刻の記録がない
         return new(false, ApiResultCodes.BreakTime_Not_Ended, CurrentTime);
 
-      if (lastBreakLog.Key == default)
-        lastWorkLog.BreakTimeDictionary.Remove(default); //デフォルト値のキーは念のため削除
+      lastWorkLog.start_break_time = CurrentTime;
+      lastWorkLog.end_break_time = null; // 休憩時間は最後の一つのみ記録可能
 
-      lastWorkLog.BreakTimeDictionary.Add(CurrentTime, 0);
-
-      var res = await Sv.UpdateWorkLogAsync(RestDataConverter.GenerateFromSingleWorkLog(lastWorkLog, userID));
+      var res = await Sv.UpdateWorkLogAsync(lastWorkLog, lastWorkLog.ID);
 
       return new(res.Content is not null, ToApiRes(res.Response.StatusCode), CurrentTime);
     }
@@ -115,20 +113,20 @@ namespace ShiftManager.Communication
     {
       DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
 
-      if (!WorkLogCache.TryGetValue(new UserID(userID), out var lastWorkLog) || lastWorkLog is null || lastWorkLog.AttendanceTime == default)
+      if (!WorkLogCache.TryGetValue(new UserID(userID), out var lastWorkLog) || lastWorkLog is null)
         return new(false, ApiResultCodes.Work_Not_Started, CurrentTime);
 
       //最後の要素に出勤打刻が行われていない || 最後の要素に退勤打刻が終わっている
-      if (lastWorkLog.AttendanceTime == default || lastWorkLog.LeavingTime != default)
+      if (lastWorkLog.attendance_time is null|| lastWorkLog.leaving_time is not null)
         return new(false, ApiResultCodes.Work_Not_Started, CurrentTime);
 
       //休憩記録が存在し, かつ最後の記録に休憩時間長が記録されていない
-      if (lastWorkLog.BreakTimeDictionary.Count > 0 && lastWorkLog.BreakTimeDictionary.Last().Value <= 0)
+      if (lastWorkLog.start_break_time is not null && lastWorkLog.end_break_time is null)
         return new(false, ApiResultCodes.BreakTime_Not_Ended, CurrentTime);
 
-      lastWorkLog = new SingleWorkLog(lastWorkLog) with { LeavingTime = CurrentTime };
+      lastWorkLog.leaving_time = CurrentTime;
 
-      var res = await Sv.UpdateWorkLogAsync(RestDataConverter.GenerateFromSingleWorkLog(lastWorkLog, userID));
+      var res = await Sv.UpdateWorkLogAsync(lastWorkLog, lastWorkLog.ID);
 
       return new(res.Content is not null, ToApiRes(res.Response.StatusCode), CurrentTime);
     }
@@ -152,17 +150,38 @@ namespace ShiftManager.Communication
     {
       DateTime CurrentTime = CurrentTimeProvider.CurrentTime;
       UserID uID = new(userID);
-      if (!WorkLogCache.TryGetValue(uID, out var lastWorkLog))
+
+
+      if (WorkLogCache.TryGetValue(uID, out var lastWorkLog)) //WorkLogがすでに存在する
       {
-        if (lastWorkLog is null || lastWorkLog.LeavingTime == default)
+        //出勤時刻がセットされているのに退勤時刻がセットされていない
+        if (lastWorkLog.attendance_time is not null && lastWorkLog.leaving_time is null)
           return new(false, ApiResultCodes.Work_Not_Ended, CurrentTime);
       }
       else
-        WorkLogCache[uID] = new SingleWorkLog(CurrentTime, default, new());
+        WorkLogCache.Add(uID, new()); //新規に追加する(スペースの確保のみ)
 
-      var res = await Sv.CreateWorkLogAsync(RestDataConverter.GenerateFromSingleWorkLog(lastWorkLog, userID));
 
-      return new(res.Content is not null, ToApiRes(res.Response.StatusCode), CurrentTime);
+      RestWorkLogWithModel newWorkLog = new()
+      {
+        user_id = uID.Value,
+        attendance_time = CurrentTime
+      };
+
+      var res = await Sv.CreateWorkLogAsync(newWorkLog);
+      var apiRes = ToApiRes(res.Response.StatusCode);
+
+      if (res.Content is null)
+      {
+        WorkLogCache.Remove(uID); //出勤登録に失敗したら, ローカルでも保持しない
+        return new(false, apiRes, CurrentTime);
+      }
+      else
+      {
+        WorkLogCache[uID] = res.Content; //キャッシュを行う
+
+        return new(true, apiRes, CurrentTime);
+      }
     }
   }
 }

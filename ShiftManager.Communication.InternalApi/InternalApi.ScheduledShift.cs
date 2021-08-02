@@ -9,7 +9,7 @@ namespace ShiftManager.Communication
 {
   public partial class InternalApi : InternalApi_ScheduledShift
   {
-    /// <summary>指定日の予定シフトを, ユーザID指定で取得します</summary>
+    /// <summary>指定日の予定シフトを取得します</summary>
     /// <param name="targetDate">取得する予定シフトの対象日</param>
     /// <param name="userID">取得する予定シフトのユーザID</param>
     /// <returns>実行結果</returns>
@@ -25,12 +25,13 @@ namespace ShiftManager.Communication
   * output = 実行結果 ;
   * end of specification ;
   *******************************************/
-    public Task<ApiResult<SingleShiftData>> GetScheduledShiftByIDAsync(DateTime targetDate, IUserID userID) => Task.Run<ApiResult<SingleShiftData>>(() =>
+    public Task<ApiResult<SingleShiftData>> GetCurrentUserScheduledShiftAsync(DateTime targetDate) => Task.Run<ApiResult<SingleShiftData>>(() =>
     {
       if (!TestD.ScheduledShiftDictionary.TryGetValue(targetDate, out IScheduledShift? scheduledShift) || scheduledShift is null)
         return new(false, ApiResultCodes.Target_Date_Not_Found, null);
 
-      if (!scheduledShift.ShiftDictionary.TryGetValue(new(userID), out ISingleShiftData? singleShiftData) || singleShiftData is null)
+      UserID uid = new(CurrentUserData?.UserID ?? new UserID());
+      if (!scheduledShift.ShiftDictionary.TryGetValue(uid, out ISingleShiftData? singleShiftData) || singleShiftData is null)
         return new(false, ApiResultCodes.UserID_Not_Found_In_Scheduled_Shift, null);
       else
       {

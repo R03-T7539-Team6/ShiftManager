@@ -39,26 +39,35 @@ namespace ShiftManager.Communication.RestData
       return new(new UserID(i.user_id ?? string.Empty), i.work_date?.Date ?? default, i.is_paid_holiday ?? false, i.attendance_time ?? default, i.leaving_time ?? default, breakTDic);
     }
 
-    public static RestShift FromSingleShiftData(this RestShift dst,in ISingleShiftData i, in uint id, in string store_id, in bool is_request)
+    public static RestShift FromSingleShiftData(this RestShift dst, in ISingleShiftData i)
     {
-      dst.id = id;
       dst.user_id = i.UserID.Value;
-      dst.store_id = store_id;
       dst.work_date = i.WorkDate.Date;
       dst.is_paid_holiday = i.IsPaidHoliday;
-      dst.is_request = is_request;
+      
       dst.attendance_time = i.AttendanceTime;
       dst.leaving_time = i.LeavingTime;
+
       if (i.BreakTimeDictionary.Count >= 1)
       {
         var v = i.BreakTimeDictionary.First();
         dst.start_break_time = v.Key;
         dst.end_break_time = v.Key + new TimeSpan(0, v.Value, 0);
       }
+
       return dst;
     }
 
-    public static RestShift GenerateFromSingleShiftData(in ISingleShiftData i, in uint id, in string store_id, in bool is_request)
+    public static RestShift FromSingleShiftData(this RestShift dst, in ISingleShiftData i, in uint? id, in string store_id, in bool is_request)
+    {
+      dst.id = id;
+      dst.store_id = store_id;
+      dst.is_request = is_request;
+
+      return dst.FromSingleShiftData(i);
+    }
+
+    public static RestShift GenerateFromSingleShiftData(in ISingleShiftData i, in uint? id, in string store_id, in bool is_request)
       => new RestShift().FromSingleShiftData(i, id, store_id, is_request);
     #endregion
 

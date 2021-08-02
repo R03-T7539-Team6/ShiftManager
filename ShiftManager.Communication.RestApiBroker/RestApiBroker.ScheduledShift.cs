@@ -11,9 +11,8 @@ namespace ShiftManager.Communication
 
   public partial class RestApiBroker : InternalApi_ScheduledShift
   {
-    /// <summary>指定日の予定シフトを, ユーザID指定で取得します</summary>
+    /// <summary>指定日の予定シフトを, ユーザID指定で取得します  (自身の予定シフトしか取得できません)</summary>
     /// <param name="targetDate">取得する予定シフトの対象日</param>
-    /// <param name="userID">取得する予定シフトのユーザID</param>
     /// <returns>実行結果</returns>
     /*******************************************
   * specification ;
@@ -27,27 +26,24 @@ namespace ShiftManager.Communication
   * output = 実行結果 ;
   * end of specification ;
   *******************************************/
-    public async Task<ApiResult<SingleShiftData>> GetScheduledShiftByIDAsync(DateTime targetDate, IUserID userID)
+    public async Task<ApiResult<SingleShiftData>> GetCurrentUserScheduledShiftAsync(DateTime targetDate)
     {
       if (!IsLoggedIn || CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In, null);
-      var resStore = await Sv.GetStoreFileAsync(CurrentUserData.StoreID.Value);
+      var resStore = await Sv.GetCurrentUserSingleShiftAsync(false, targetDate);
 
-      if (resStore.Content?.shift_schedules is null)
+      if (resStore.Content is null)
         return new(false, ApiResultCodes.Unknown_Error, null);
 
-      if (resStore.Content.shift_schedules.Length <= 0)
-        return new(false, ApiResultCodes.Data_Not_Found, null);
+      if (resStore.Content.Length <= 0)
+        return new(false, ApiResultCodes.Target_Date_Not_Found, null);
 
-      var tmp1 = resStore.Content.shift_schedules.Where(i => i.target_date == targetDate);
-      foreach (var tmp2 in tmp1)
-      {
-        var tmp3 = tmp2.shifts?.Where(i => i.user_id == userID.Value).FirstOrDefault();
-        if (tmp3 != default)
-          return new(true, ApiResultCodes.Success, tmp3.ToSingleShiftData());
-      }
+      var tmp1 = resStore.Content.Where(i => i.work_date == targetDate && i.user_id == CurrentUserData.UserID.Value).FirstOrDefault();
 
-      return new(false, ApiResultCodes.Data_Not_Found, null);
+      if (tmp1 is not null)
+        return new(true, ApiResultCodes.Success, tmp1.ToSingleShiftData());
+
+      return new(false, ApiResultCodes.Target_Date_Not_Found, null);
     }
 
 
@@ -64,7 +60,7 @@ namespace ShiftManager.Communication
   * end of specification ;
   *******************************************/
     public Task<ApiResult> UpdateRequiredWorkerCountListAsync(DateTime targetDate, IReadOnlyCollection<int> requiredWorkerCountList)
-      => Task.Run(() => UpdateScheduledShift(targetDate, (i) => new ScheduledShift(i) with { RequiredWorkerCountList = new(requiredWorkerCountList) }));
+      => Task.Run(() => new ApiResult(true, ApiResultCodes.Not_Supported));
 
 
     /*******************************************
@@ -80,7 +76,8 @@ namespace ShiftManager.Communication
   * end of specification ;
   *******************************************/
     public Task<ApiResult> UpdateShiftSchedulingStateAsync(DateTime targetDate, ShiftSchedulingState shiftSchedulingState)
-      => Task.Run(() => UpdateScheduledShift(targetDate, (i) => new ScheduledShift(i) with { SchedulingState = shiftSchedulingState }));
+      => Task.Run(() => new ApiResult(true, ApiResultCodes.Not_Supported));
+    
 
     /*******************************************
   * specification ;
@@ -94,42 +91,85 @@ namespace ShiftManager.Communication
   * output = 実行結果 ;
   * end of specification ;
   *******************************************/
-    public Task<ApiResult> UpdateSingleScheduledShiftListAsync(DateTime targetDate, IReadOnlyCollection<ISingleShiftData> singleShiftDatas)
-      => Task.Run(() => UpdateScheduledShift(targetDate, (i) => new ScheduledShift(i) with { ShiftDictionary = singleShiftDatas.ToDictionary(i => new UserID(i.UserID)) }));
-
-
-    /*******************************************
-  * specification ;
-  * name = UpdateScheduledShift ;
-  * Function = 予定シフト情報を更新します ;
-  * note = v1.0では未対応 ;
-  * date = 07/05/2021 ;
-  * author = 藤田一範 ;
-  * History = v1.0:新規作成 ;
-  * input = 更新対象の日付, 予定シフト情報更新用メソッド ;
-  * output = 実行結果 ;
-  * end of specification ;
-  *******************************************/
-    private ApiResult UpdateScheduledShift(DateTime targetDate, Func<IScheduledShift, ScheduledShift> DataUpdater)
+    public async Task<ApiResult> UpdateSingleScheduledShiftListAsync(DateTime targetDate, IReadOnlyCollection<ISingleShiftData> singleShiftDatas)
     {
-      return new(false, ApiResultCodes.Unknown_Error); //実装準備扱い
-      /*
-      if (!TestD.ScheduledShiftDictionary.TryGetValue(targetDate, out IScheduledShift? scheduledShift) || scheduledShift is null)
-        return new(false, ApiResultCodes.Target_Date_Not_Found);
-      var newData = DataUpdater.Invoke(scheduledShift);
-      try
+      targetDate = targetDate.Date; //時刻部分の入力をカット
+
+      if (CurrentUserData is null)
+        return new(false, ApiResultCodes.Not_Logged_In);
+
+      string store_id = CurrentUserData.StoreID.Value;
+
+      var res = await Sv.GetCurrentStoreShiftScheduleFileAsync(store_id);
+      var schedule = res.Content;
+      if (schedule is null) //サーバ上にデータが存在しなかった
       {
-        TestD.ScheduledShiftDictionary[targetDate] = newData;
-        return new(true, ApiResultCodes.Success);
+        //新規に作成する
+        schedule = new()
+        {
+          shifts = null, // とりあえずnull (Requestに含めない)
+          shift_state = RestDataConstants.ShiftStatus.Working,
+          store_id = store_id,
+          target_date = targetDate,
+          worker_num = 1,
+          start_of_schedule = targetDate,
+          end_of_schedule = targetDate.AddDays(1)
+        };
+
+        var res_genTask = await Sv.CreateStoreShiftScheduleFileAsync(schedule);
+
+        var resCode = ToApiRes(res_genTask.Response.StatusCode);
+        if (resCode != ApiResultCodes.Success || res_genTask.Content is null)
+          return new(false, resCode); //失敗したらここで終了 (更新を行わない)
       }
-      catch (KeyNotFoundException)
+
+      var shifts = schedule?.shifts ?? Array.Empty<RestShift>();
+
+      //UserID指定でサーバ上のShiftIDを取得して, それをもってデータ更新タスクを組む
+      List<Task<ServerResponse<RestShift>>> Tasks = new();
+      foreach(var i in singleShiftDatas)
       {
-        return new(false, ApiResultCodes.Target_Date_Not_Found);
+        var tmp = shifts.FirstOrDefault(arg => arg.work_date?.Date == targetDate && arg.user_id == i.UserID.Value); //日付とUserIDが一致するものを探索する
+        if (tmp is RestShift s) //nullチェック
+        {
+          var newD = new RestShift(s).FromSingleShiftData(i);
+
+          System.Diagnostics.Debug.WriteLine($"\tUpdateFrom=>{s}");
+          System.Diagnostics.Debug.WriteLine($"\tUpdate To =>{newD}");
+
+          if (s == newD)
+            continue; //更新前後で同じデータなら更新しない (通信データ量削減)
+
+          Tasks.Add(
+            Sv.UpdateShiftAsync(newD) //サーバ上にシフトが存在するため, それを更新する
+            );
+        }
+        else //サーバ上に予定シフトデータが存在しなかった
+        {
+          var newD = RestDataConverter.GenerateFromSingleShiftData(i, null, store_id, false);
+
+          System.Diagnostics.Debug.WriteLine($"\tGenerated =>{newD}");
+          System.Diagnostics.Debug.WriteLine(newD);
+
+          Tasks.Add(
+            Sv.CreateSingleShiftAsync(newD) //新規にシフトを作成する
+            );
+        }
       }
-      catch (ArgumentNullException)
+
+      //データ更新(アップロード)タスク実行
+      var results = await Task.WhenAll(Tasks);
+      foreach(var i in results)
       {
-        return new(false, ApiResultCodes.NewData_Is_NULL);
-      }*/
+        System.Diagnostics.Debug.WriteLine($"UpdateSingleScheduledShiftListAsync => {i.Content}");
+        var resCode = ToApiRes(i.Response.StatusCode);
+        if (resCode != ApiResultCodes.Success)
+          return new(false, resCode);
+      }
+
+      return new(true, ApiResultCodes.Success);
     }
+
+
   }
 }

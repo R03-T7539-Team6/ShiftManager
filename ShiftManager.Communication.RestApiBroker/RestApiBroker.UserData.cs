@@ -51,7 +51,18 @@ namespace ShiftManager.Communication
       if (CurrentUserData is null || res.Content is null)
         return new(false, ApiResultCodes.NewData_Is_NULL, null);
 
-      return new(true, resCode, new WorkLog(CurrentUserData?.UserID ?? new UserID(), new(res.Content.Select(i => i.ToSingleWorkLog() as ISingleWorkLog).ToDictionary(i => i.AttendanceTime.Date))));
+      return new(true, resCode,
+        new WorkLog(
+          CurrentUserData?.UserID ?? new UserID(),
+          new(
+            res.Content
+            .GroupBy(i => i.attendance_time?.Date) // 複数登録があった時用
+            .Where(i => i.Any()) // 念のため.  Keyの日にデータが存在する場合のみ通す
+            .Select(i => i.Last().ToSingleWorkLog() as ISingleWorkLog) // 同一Keyで最後の要素をSingleWorkLogに変換する
+            .ToDictionary(i => i.AttendanceTime.Date) // 出勤日のDate基準に辞書に登録
+            )
+          )
+        );
     }
 
     /*******************************************
