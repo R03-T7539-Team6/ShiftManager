@@ -234,19 +234,26 @@ namespace ShiftManager.Communication
   *******************************************/
     public async Task<ApiResult<ScheduledShift>> GetScheduledShiftByDateAsync(DateTime dateTime)
     {
+      DateTime targetDate = dateTime.Date;
       if (!IsLoggedIn || CurrentUserData is null)
         return new(false, ApiResultCodes.Not_Logged_In, null);
 
-      var res = await Sv.GetStoreFileAsync(CurrentUserData.StoreID.Value); //少し非効率かも
+      var res = await Sv.GetCurrentStoreShiftScheduleFileAsync(CurrentUserData.StoreID.Value); //ファイルは一つ.  shiftsにすべての日のやつが入る
 
       var retCode = ToApiRes(res.Response.StatusCode);
 
-      if (res.Response.StatusCode != HttpStatusCode.OK || res.Content?.shift_schedules is null)
+      if (res.Response.StatusCode != HttpStatusCode.OK || res.Content?.shifts is null)
         return new(false, retCode, null);
 
-      var ret = res.Content.shift_schedules.Where(i => i.target_date?.Date == dateTime.Date).Select(i => i.ToScheduledShift()).FirstOrDefault();
+      var ret = res.Content.shifts
+        .Where(i => i.work_date == targetDate) // 全日程のシフトのうち, 目的の日付のシフトのみを抽出
+        .Select(i => i.ToSingleShiftData() as ISingleShiftData) // それぞれISいんｇぇShiftDataに変換
+        .ToDictionary(i => new UserID(i.UserID)); // UserIDをKeyとする辞書型に変換
 
-      return new(true, retCode, ret);
+      return
+        new(true, retCode,
+          new ScheduledShift(targetDate, targetDate, targetDate.AddDays(1), ShiftSchedulingState.Working, ret, new() { 1 })
+        );
     }
 
     /*******************************************
