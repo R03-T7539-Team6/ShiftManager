@@ -99,11 +99,11 @@ namespace ShiftManager.Communication
     #endregion
 
     #region ログに関する操作
-    public Task<ServerResponse<RestWorkLog[]>> GetCurrentUserWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLog[]>("/logs", log, RestSharp.Method.GET);
+    public Task<ServerResponse<RestWorkLogWithModel[]>> GetCurrentUserWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLogWithModel[]>("/logs", log, RestSharp.Method.GET);
 
-    public Task<ServerResponse<RestWorkLog>> CreateWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLog>("/logs", log, RestSharp.Method.POST);
+    public Task<ServerResponse<RestWorkLogWithModel>> CreateWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLogWithModel>("/logs", log, RestSharp.Method.POST);
 
-    public Task<ServerResponse<RestWorkLog>> UpdateWorkLogAsync(RestWorkLog log) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLog>("/logs", log, RestSharp.Method.PUT); //変えたい情報だけがJsonに含まれることを期待
+    public Task<ServerResponse<RestWorkLogWithModel>> UpdateWorkLogAsync(RestWorkLog log, uint id) => Api.ExecuteWithDataAsync<RestWorkLog, RestWorkLogWithModel>("/logs/" + id.ToString(), log with { user_id = null }, RestSharp.Method.PUT); //変えたい情報だけがJsonに含まれることを期待
     #endregion
   }
 }
