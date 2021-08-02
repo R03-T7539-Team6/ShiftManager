@@ -40,8 +40,12 @@ namespace ShiftManager.Communication.RestData
     public uint? id { get; set; } = null;
     public string? user_id { get; set; } = null;
     public string? store_id { get; set; } = null;
+
+
+    private DateTime? _work_date = null;
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public DateTime? work_date { get; set; } = null;
+    public DateTime? work_date { get => _work_date; set => _work_date = value?.Date; } //WorkDateは必ず00:00:00を入れなければならないため, 入力時に「時」以下を切る (但しnullでない場合のみ)
+    
     public bool? is_paid_holiday { get; set; } = null;
     public bool? is_request { get; set; } = null;
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
