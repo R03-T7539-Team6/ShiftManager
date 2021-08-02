@@ -108,7 +108,8 @@ namespace ShiftManager.Communication.RestData
     public string? store_id { get; set; } = null;
 
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public DateTime? target_date { get; set; } = null;
+    public DateTime? target_date { get => _target_date; set => _target_date = value?.Date; } //TargetDateは必ず00:00:00を入れなければならないため, 入力時に「時」以下を切る (但しnullでない場合のみ)
+    private DateTime? _target_date = null;
 
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public DateTime? start_of_schedule { get; set; } = null;
