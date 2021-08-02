@@ -77,6 +77,7 @@ namespace ShiftManager.Communication
     public Task<ServerResponse> DeleteCurrentUserShiftRequestFileAsync(int id) => throw new NotSupportedException(); //Serverの実装待ち
 
     public Task<ServerResponse<RestShiftSchedule>> GetCurrentStoreShiftScheduleFileAsync(string storeID) => Api.ExecuteAsync<RestShiftSchedule>($"/shifts/schedule/{storeID}", RestSharp.Method.GET);
+    [Obsolete("バグがあり, 正常に取得できない (404 Not Foundが返される)")]
     public Task<ServerResponse<RestShiftSchedule>> GetCurrentStoreShiftScheduleFileAsync(string storeID, DateTime targetDate) => Api.ExecuteAsync<RestShiftSchedule>($"/shifts/schedule/{storeID}?" + GetTargetDateQuery(targetDate), RestSharp.Method.GET);
 
     public Task<ServerResponse<RestShiftSchedule>> CreateStoreShiftScheduleFileAsync(RestShiftSchedule data) => Api.ExecuteWithDataAsync<RestShiftSchedule, RestShiftSchedule>("/shifts/schedule", data, RestSharp.Method.POST); //変えたい情報だけがJsonに含まれることを期待
