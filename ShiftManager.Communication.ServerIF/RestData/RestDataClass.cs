@@ -37,6 +37,20 @@ namespace ShiftManager.Communication.RestData
 
   public record RestShift
   {
+    public RestShift(RestShift b)
+    {
+      id = b.id;
+      user_id = b.user_id;
+      store_id = b.store_id;
+      work_date = b.work_date;
+      is_paid_holiday = b.is_paid_holiday;
+      is_request = b.is_request;
+      attendance_time = b.attendance_time;
+      leaving_time = b.leaving_time;
+      start_break_time = b.start_break_time;
+      end_break_time = b.end_break_time;
+    }
+
     public uint? id { get; set; } = null;
     public string? user_id { get; set; } = null;
     public string? store_id { get; set; } = null;
